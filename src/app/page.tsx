@@ -18,8 +18,9 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import InfoIcon from "@mui/icons-material/Info";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 
 const drawerWidth = 240;
@@ -73,40 +74,196 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
+// const columns: GridColDef[] = [
+//   { field: "id", headerName: "ID", width: 70 },
+//   { field: "firstName", headerName: "First name", width: 130 },
+//   { field: "lastName", headerName: "Last name", width: 130 },
+//   {
+//     field: "age",
+//     headerName: "Age",
+//     type: "number",
+//     width: 90,
+//   },
+//   {
+//     field: "fullName",
+//     headerName: "Full name",
+//     description: "This column has a value getter and is not sortable.",
+//     sortable: false,
+//     width: 160,
+//     valueGetter: (params: GridValueGetterParams) =>
+//       `${params.row.firstName || ""} ${params.row.lastName || ""}`,
+//   },
+// ];
+
+// const rows = [
+//   { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
+//   { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
+//   { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
+//   { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
+//   { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
+//   { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
+//   { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
+//   { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
+//   { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
+// ];
+
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
-  { field: "firstName", headerName: "First name", width: 130 },
-  { field: "lastName", headerName: "Last name", width: 130 },
+  { field: "ch", headerName: "Channel", type: "number", width: 70 },
   {
-    field: "age",
-    headerName: "Age",
+    field: "buffer_number",
+    headerName: "Buffer Number",
     type: "number",
-    width: 90,
+    width: 120,
   },
   {
-    field: "fullName",
-    headerName: "Full name",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
-    width: 160,
-    valueGetter: (params: GridValueGetterParams) =>
-      `${params.row.firstName || ""} ${params.row.lastName || ""}`,
+    field: "num_evts",
+    headerName: "Number of Events",
+    type: "number",
+    width: 150,
+  },
+  {
+    field: "num_triggers",
+    headerName: "Number of Triggers",
+    type: "number",
+    width: 150,
+  },
+  { field: "dead_time", headerName: "Dead Time", type: "number", width: 100 },
+  {
+    field: "anode_current",
+    headerName: "Anode Current",
+    type: "number",
+    width: 130,
+  },
+  {
+    field: "time_anchor",
+    headerName: "Time Anchor",
+    type: "number",
+    width: 110,
+  },
+  {
+    field: "missed_pps",
+    headerName: "Missed PPS",
+    type: "boolean",
+    width: 100,
   },
 ];
 
+// Mock nominalHafx Data
 const rows = [
-  { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
-  { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
-  { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
-  { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-  { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
-  { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
+  {
+    id: 1,
+    ch: 0,
+    buffer_number: 0,
+    num_evts: 675,
+    num_triggers: 739,
+    dead_time: 34.625,
+    anode_current: 91,
+    time_anchor: 1697825894,
+    missed_pps: false,
+  },
+  {
+    id: 2,
+    ch: 0,
+    buffer_number: 1,
+    num_evts: 7395,
+    num_triggers: 8328,
+    dead_time: 390.375,
+    anode_current: 77,
+    time_anchor: 0,
+    missed_pps: false,
+  },
+  {
+    id: 3,
+    ch: 0,
+    buffer_number: 2,
+    num_evts: 7850,
+    num_triggers: 8723,
+    dead_time: 408.875,
+    anode_current: 89,
+    time_anchor: 0,
+    missed_pps: false,
+  },
+  {
+    id: 4,
+    ch: 0,
+    buffer_number: 3,
+    num_evts: 8114,
+    num_triggers: 8945,
+    dead_time: 419.275,
+    anode_current: 93,
+    time_anchor: 0,
+    missed_pps: false,
+  },
+  {
+    id: 5,
+    ch: 0,
+    buffer_number: 4,
+    num_evts: 7893,
+    num_triggers: 8740,
+    dead_time: 409.675,
+    anode_current: 91,
+    time_anchor: 0,
+    missed_pps: false,
+  },
+  {
+    id: 6,
+    ch: 0,
+    buffer_number: 5,
+    num_evts: 7958,
+    num_triggers: 8860,
+    dead_time: 415.275,
+    anode_current: 91,
+    time_anchor: 0,
+    missed_pps: false,
+  },
+  {
+    id: 7,
+    ch: 0,
+    buffer_number: 6,
+    num_evts: 7768,
+    num_triggers: 8660,
+    dead_time: 405.95,
+    anode_current: 85,
+    time_anchor: 0,
+    missed_pps: false,
+  },
+  {
+    id: 8,
+    ch: 0,
+    buffer_number: 7,
+    num_evts: 7550,
+    num_triggers: 8484,
+    dead_time: 397.675,
+    anode_current: 85,
+    time_anchor: 0,
+    missed_pps: false,
+  },
+  {
+    id: 9,
+    ch: 0,
+    buffer_number: 8,
+    num_evts: 8065,
+    num_triggers: 8908,
+    dead_time: 417.525,
+    anode_current: 91,
+    time_anchor: 0,
+    missed_pps: false,
+  },
+  {
+    id: 10,
+    ch: 0,
+    buffer_number: 9,
+    num_evts: 7747,
+    num_triggers: 8660,
+    dead_time: 405.95,
+    anode_current: 90,
+    time_anchor: 0,
+    missed_pps: false,
+  },
 ];
 
-export default function PersistentDrawerLeft() {
+export default function Home() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -161,24 +318,17 @@ export default function PersistentDrawerLeft() {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+          {["Home", "Science Data", "Health Data"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index % 3 === 0 ? (
+                    <InfoIcon />
+                  ) : index % 3 === 1 ? (
+                    <AnalyticsIcon />
+                  ) : (
+                    <FavoriteIcon />
+                  )}
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>

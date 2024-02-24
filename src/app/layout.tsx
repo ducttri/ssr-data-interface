@@ -9,11 +9,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>
-          <Box color={"primary"} height={"100vh"} maxHeight={"100%"}>
-            {children}
-          </Box>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
