@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import { Providers } from "./providers";
 
 export default function RootLayout({
@@ -8,7 +9,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Box color={"primary"} height={"100vh"} maxHeight={"100%"}>
+            {children}
+          </Box>
+        </Providers>
       </body>
     </html>
   );
