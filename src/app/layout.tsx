@@ -86,7 +86,7 @@ export default function RootLayout({
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
           {/* Horizontal Name */}
-          <AppBar position="fixed" open={open}>
+          <AppBar color="primary" position="fixed" open={open}>
             <Toolbar>
               <IconButton
                 color="inherit"
