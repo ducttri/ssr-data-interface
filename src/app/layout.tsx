@@ -23,6 +23,7 @@ import AnalyticsIcon from "@mui/icons-material/Analytics";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import InfoIcon from "@mui/icons-material/Info";
 import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import SideBar from "@/components/SideBar";
 
 const drawerWidth = 240;
 
@@ -66,6 +67,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
+// TODO: Make component
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -96,6 +98,7 @@ export default function RootLayout({
       <body>
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
+          {/* Horizontal Name */}
           <AppBar position="fixed" open={open}>
             <Toolbar>
               <IconButton
@@ -112,48 +115,8 @@ export default function RootLayout({
               </Typography>
             </Toolbar>
           </AppBar>
-          <Drawer
-            sx={{
-              width: drawerWidth,
-              flexShrink: 0,
-              "& .MuiDrawer-paper": {
-                width: drawerWidth,
-                boxSizing: "border-box",
-              },
-            }}
-            variant="persistent"
-            anchor="left"
-            open={open}
-          >
-            <DrawerHeader>
-              <IconButton onClick={handleDrawerClose}>
-                {theme.direction === "ltr" ? (
-                  <ChevronLeftIcon />
-                ) : (
-                  <ChevronRightIcon />
-                )}
-              </IconButton>
-            </DrawerHeader>
-            <Divider />
-            <List>
-              {["Home", "Science Data", "Health Data"].map((text, index) => (
-                <ListItem key={text} disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      {index % 3 === 0 ? (
-                        <InfoIcon />
-                      ) : index % 3 === 1 ? (
-                        <AnalyticsIcon />
-                      ) : (
-                        <FavoriteIcon />
-                      )}
-                    </ListItemIcon>
-                    <ListItemText primary={text} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          </Drawer>
+          {/* Side Bar */}
+          <SideBar open={open} handleDrawerClose={handleDrawerClose}></SideBar>
           <Main open={open}>
             <DrawerHeader />
             <Providers>{children}</Providers>
