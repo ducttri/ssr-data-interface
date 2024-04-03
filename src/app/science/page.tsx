@@ -1,11 +1,11 @@
 "use client";
 
-import Typography from "@mui/material/Typography";
+import { Typography } from "@mui/material";
 
-export default function Home() {
+export default function science() {
   return (
     <Typography variant="h3" gutterBottom>
-      Home
+      Science
     </Typography>
   );
 }

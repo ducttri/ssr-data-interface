@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
@@ -16,6 +15,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { styled, useTheme } from "@mui/material/styles";
+import Link from "@mui/material/Link";
 
 const drawerWidth = 240;
 
@@ -35,6 +35,13 @@ export default function SideBar({
   handleDrawerClose: () => void;
 }) {
   const theme = useTheme();
+
+  const routes = [
+    { name: "Home", path: "/", icon: <InfoIcon /> },
+    { name: "Science Data", path: "/science", icon: <AnalyticsIcon /> },
+    { name: "Health Data", path: "/health", icon: <FavoriteIcon /> },
+    { name: "Quick Look", path: "/quicklook", icon: <InfoIcon /> },
+  ];
 
   return (
     <Drawer
@@ -61,21 +68,20 @@ export default function SideBar({
       </DrawerHeader>
       <Divider />
       <List>
-        {["Home", "Science Data", "Health Data"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 3 === 0 ? (
-                  <InfoIcon />
-                ) : index % 3 === 1 ? (
-                  <AnalyticsIcon />
-                ) : (
-                  <FavoriteIcon />
-                )}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
+        {routes.map((route) => (
+          <Link
+            key={route.name}
+            href={route.path}
+            color="inherit"
+            underline="none"
+          >
+            <ListItem disablePadding>
+              <ListItemButton component="a">
+                <ListItemIcon>{route.icon}</ListItemIcon>
+                <ListItemText primary={route.name} />
+              </ListItemButton>
+            </ListItem>
+          </Link>
         ))}
       </List>
     </Drawer>
