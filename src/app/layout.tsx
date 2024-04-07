@@ -1,6 +1,7 @@
 "use client";
 
 import { Providers } from "./providers";
+import { Analytics } from "@vercel/analytics/react";
 import * as React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -109,6 +110,7 @@ export default function RootLayout({
             <Providers>{children}</Providers>
           </Main>
         </Box>
+        <Analytics />
       </body>
     </html>
   );
