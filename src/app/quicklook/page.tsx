@@ -22,6 +22,18 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
+const JSONDataLabel: string[][][] = [
+  [
+    ["DP5 board temperature", "1", " ºC"],
+    ["Detector high voltage", "0.5", "V"],
+    ["Detector head temperature", "0.1", "K"],
+    ["Fast shaper # of counts", "1", "Counts"],
+    ["Slow shaper # of counts", "1", "Counts"],
+    ["Accumulation Time", "1", "ms"],
+    ["Real time", "1", "ms"],
+  ],
+];
+
 interface JSONData {
   timestamp: number;
   x123: {
@@ -117,13 +129,13 @@ export default function QuickLook() {
             let xData = json.map((item) => item.timestamp);
             // let x123Data = json.map((item) => item.x123);
             let x123Data: number[][] =[];
-            x123Data[0] = json.map((item) => item.x123.accumulation_time);
-            x123Data[1] = json.map((item) => item.x123.board_temp);
-            x123Data[2] = json.map((item) => item.x123.det_high_voltage);
-            x123Data[3] = json.map((item) => item.x123.det_temp);
-            x123Data[4] = json.map((item) => item.x123.fast_counts);
-            x123Data[5] = json.map((item) => item.x123.real_time);
-            x123Data[6] = json.map((item) => item.x123.slow_counts);
+            x123Data[0] = json.map((item) => item.x123.board_temp);
+            x123Data[1] = json.map((item) => item.x123.det_high_voltage);
+            x123Data[2] = json.map((item) => item.x123.det_temp);
+            x123Data[3] = json.map((item) => item.x123.fast_counts);
+            x123Data[4] = json.map((item) => item.x123.slow_counts);
+            x123Data[5] = json.map((item) => item.x123.accumulation_time);
+            x123Data[6] = json.map((item) => item.x123.real_time);
 
 
 
@@ -139,7 +151,11 @@ export default function QuickLook() {
             const starttime = xData[0];
             xData = xData.map((item) => item - starttime);
             currentDate = new Date(starttime*1000);
-            console.log(x123Data);
+            for (let i = 0; i < x123Data[0].length; i++) {
+              for (let j = 0; j < x123Data.length; j++) {
+                x123Data[j][i] = x123Data[j][i] * parseInt(JSONDataLabel[0][j][1]);
+              }
+            }
             setData({ time_stamp: xData, x123: x123Data});
             setFileContent(currentDate.toLocaleString()); // Pretty print the JSON
 
@@ -204,23 +220,25 @@ export default function QuickLook() {
               </Box>
               <TabPanel value="1">
                 <Grid container columns={2}>
-                  {data?.x123.map((item) => (
-                  <Grid item xs={1}>
-                    <Plot
-                      data={[
-                        {
-                          x: data?.time_stamp,
-                          y: item,
-                          type: "scatter",
-                        },
-                      ]}
-                      layout={{
-                        width: self.parent.innerWidth * 0.45,
-                        height: 400,
-                        title: "something here",
-                      }}
-                    />
-                  </Grid>
+                  {data?.x123.map((item, index) => (
+                    <Grid item xs={1}>
+                      <Plot
+                        data={[
+                          {
+                            x: data?.time_stamp,
+                            y: item,
+                            type: "scatter",
+                          },
+                        ]}
+                        layout={{
+                          width: self.parent.innerWidth * 0.45,
+                          height: 400,
+                          title: JSONDataLabel[0][index][0] + " vs. Time",
+                          xaxis: { title: "Time (s)" },
+                          yaxis: { title: JSONDataLabel[0][index][0] + " (" + JSONDataLabel[0][index][2] +")" },
+                        }}
+                      />
+                    </Grid>
                   ))}
                 </Grid>
               </TabPanel>
