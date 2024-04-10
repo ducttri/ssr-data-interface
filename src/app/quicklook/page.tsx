@@ -319,7 +319,7 @@ useEffect(() => {
               <TabPanel value="1">
                 <Grid container columns={2}>
                   {data?.x123.map((item, index) => (
-                    <Grid item xs={1} id="parent-container">
+                    <Grid item xs={1} id="parent-container" key={index}>
                       <PlotlyGraph
                         xData={data?.time_stamp}
                         yData={item}
@@ -336,7 +336,7 @@ useEffect(() => {
               <TabPanel value="2">
                 <Grid container columns={2}>
                   {data?.x1.map((item, index) => (
-                    <Grid item xs={1} id="parent-container">
+                    <Grid item xs={1} id="parent-container" key={index}>
                       <PlotlyGraph
                         xData={data?.time_stamp}
                         yData={item}
@@ -353,7 +353,7 @@ useEffect(() => {
               <TabPanel value="3">
                 <Grid container columns={2}>
                   {data?.c1.map((item, index) => (
-                    <Grid item xs={1} id="parent-container">
+                    <Grid item xs={1} id="parent-container" key={index}>
                       <PlotlyGraph
                         xData={data?.time_stamp}
                         yData={item}
@@ -370,7 +370,7 @@ useEffect(() => {
               <TabPanel value="4">
                 <Grid container columns={2}>
                   {data?.m1.map((item, index) => (
-                    <Grid item xs={1} id="parent-container">
+                    <Grid item xs={1} id="parent-container" key={index}>
                       <PlotlyGraph
                         xData={data?.time_stamp}
                         yData={item}
@@ -387,7 +387,7 @@ useEffect(() => {
               <TabPanel value="5">
                 <Grid container columns={2}>
                   {data?.m5.map((item, index) => (
-                    <Grid item xs={1} id="parent-container">
+                    <Grid item xs={1} id="parent-container" key={index}>
                       <PlotlyGraph
                         xData={data?.time_stamp}
                         yData={item}
