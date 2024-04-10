@@ -2,13 +2,16 @@
 
 import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Tab, Tabs, Typography } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import Plot from "react-plotly.js";
+// import Plot from "react-plotly.js";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import dynamic from "next/dynamic";
+import PlotlyGraph from "@/components/PlotlyGraph";
+const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -31,6 +34,42 @@ const JSONDataLabel: string[][][] = [
     ["Slow shaper # of counts", "1", "Counts"],
     ["Accumulation Time", "1", "ms"],
     ["Real time", "1", "ms"],
+  ],
+  [
+    ["ARM processor temperature", "0.01", "K"],
+    ["SiPM board temperature", "0.01", "K"],
+    ["SiPM operating voltage", "0.01", "V"],
+    ["SiPM target voltage", "0.01", "V"],
+    ["Counts", "1", "Counts"],
+    ["Dead time", "0.000000025", "s"],
+    ["Real time", "0.000000025", "s"],
+  ],
+  [
+    ["ARM processor temperature", "0.01", "K"],
+    ["SiPM board temperature", "0.01", "K"],
+    ["SiPM operating voltage", "0.01", "V"],
+    ["SiPM target voltage", "0.01", "V"],
+    ["Counts", "1", "Counts"],
+    ["Dead time", "0.000000025", "s"],
+    ["Real time", "0.000000025", "s"],
+  ],
+  [
+    ["ARM processor temperature", "0.01", "K"],
+    ["SiPM board temperature", "0.01", "K"],
+    ["SiPM operating voltage", "0.01", "V"],
+    ["SiPM target voltage", "0.01", "V"],
+    ["Counts", "1", "Counts"],
+    ["Dead time", "0.000000025", "s"],
+    ["Real time", "0.000000025", "s"],
+  ],
+  [
+    ["ARM processor temperature", "0.01", "K"],
+    ["SiPM board temperature", "0.01", "K"],
+    ["SiPM operating voltage", "0.01", "V"],
+    ["SiPM target voltage", "0.01", "V"],
+    ["Counts", "1", "Counts"],
+    ["Dead time", "0.000000025", "s"],
+    ["Real time", "0.000000025", "s"],
   ],
 ];
 
@@ -86,34 +125,48 @@ interface JSONData {
 
 export default function QuickLook() {
   const [fileContent, setFileContent] = useState<string | null>(null);
-  const [detector, setDetector] = React.useState("");
+  const [detector, setDetector] = useState("1");
   const [data, setData] = useState<{
     time_stamp: number[];
     x123: number[][];
+    x1: number[][];
+    c1: number[][];
+    m1: number[][];
+    m5: number[][];
   }>();
+  const [width, setWidth] = useState(0);
   let currentDate: Date;
 
-  function insertionSort(x: number[], y: number[][]) : void {
-    for (let i: number = 1; i < x.length; i ++) {
+  function insertionSort(x: number[], y: number[][][]): void {
+    for (let i: number = 1; i < x.length; i++) {
       let key: number = x[i];
-      let key2: number[] = [];
+      let key2: number[][] = [];
+
+      // Initialize key2 with appropriate dimensions
       for (let n = 0; n < y.length; n++) {
-        key2[n] = y[n][i];
+        key2[n] = [];
+        for (let m = 0; m < y[0].length; m++) {
+          key2[n][m] = y[n][m][i];
+        }
       }
+
       let j: number = i - 1;
       while (j >= 0 && x[j] > key) {
         x[j + 1] = x[j];
         for (let n = 0; n < y.length; n++) {
-          y[n][j + 1] = y[n][j];
+          for (let m = 0; m < y[0].length; m++) {
+            y[n][m][j + 1] = y[n][m][j];
+          }
         }
-        j = j - 1;
+        j--;
       }
-      x[j+1] = key;
+      x[j + 1] = key;
       for (let n = 0; n < y.length; n++) {
-        y[n][j + 1] = key2[n];
+        for (let m = 0; m < y[0].length; m++) {
+          y[n][m][j + 1] = key2[n][m];
+        }
       }
     }
-    console.log(x);
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,8 +180,8 @@ export default function QuickLook() {
             const json: JSONData[] = JSON.parse(e.target.result as string);
 
             let xData = json.map((item) => item.timestamp);
-            // let x123Data = json.map((item) => item.x123);
-            let x123Data: number[][] =[];
+
+            let x123Data: number[][] = [];
             x123Data[0] = json.map((item) => item.x123.board_temp);
             x123Data[1] = json.map((item) => item.x123.det_high_voltage);
             x123Data[2] = json.map((item) => item.x123.det_temp);
@@ -137,17 +190,43 @@ export default function QuickLook() {
             x123Data[5] = json.map((item) => item.x123.accumulation_time);
             x123Data[6] = json.map((item) => item.x123.real_time);
 
+            let x1Data: number[][] = [];
+            x1Data[0] = json.map((item) => item.x1.arm_temp);
+            x1Data[1] = json.map((item) => item.x1.sipm_temp);
+            x1Data[2] = json.map((item) => item.x1.sipm_operating_voltage);
+            x1Data[3] = json.map((item) => item.x1.sipm_target_voltage);
+            x1Data[4] = json.map((item) => item.x1.counts);
+            x1Data[5] = json.map((item) => item.x1.dead_time);
+            x1Data[6] = json.map((item) => item.x1.real_time);
 
+            let c1Data: number[][] = [];
+            c1Data[0] = json.map((item) => item.c1.arm_temp);
+            c1Data[1] = json.map((item) => item.c1.sipm_temp);
+            c1Data[2] = json.map((item) => item.c1.sipm_operating_voltage);
+            c1Data[3] = json.map((item) => item.c1.sipm_target_voltage);
+            c1Data[4] = json.map((item) => item.c1.counts);
+            c1Data[5] = json.map((item) => item.c1.dead_time);
+            c1Data[6] = json.map((item) => item.c1.real_time);
 
+            let m1Data: number[][] = [];
+            m1Data[0] = json.map((item) => item.m1.arm_temp);
+            m1Data[1] = json.map((item) => item.m1.sipm_temp);
+            m1Data[2] = json.map((item) => item.m1.sipm_operating_voltage);
+            m1Data[3] = json.map((item) => item.m1.sipm_target_voltage);
+            m1Data[4] = json.map((item) => item.m1.counts);
+            m1Data[5] = json.map((item) => item.m1.dead_time);
+            m1Data[6] = json.map((item) => item.m1.real_time);
 
+            let m5Data: number[][] = [];
+            m5Data[0] = json.map((item) => item.m5.arm_temp);
+            m5Data[1] = json.map((item) => item.m5.sipm_temp);
+            m5Data[2] = json.map((item) => item.m5.sipm_operating_voltage);
+            m5Data[3] = json.map((item) => item.m5.sipm_target_voltage);
+            m5Data[4] = json.map((item) => item.m5.counts);
+            m5Data[5] = json.map((item) => item.m5.dead_time);
+            m5Data[6] = json.map((item) => item.m5.real_time);
 
-
-            // let x1Data = json.map((item) => item.x1);
-            // let c1Data = json.map((item) => item.c1);
-            // let m1Data = json.map((item) => item.m1);
-            // let m5Data = json.map((item) => item.m5);
-
-            insertionSort(xData, x123Data);
+            insertionSort(xData, [x123Data, x1Data, c1Data, m1Data, m5Data]);
             const starttime = xData[0];
             xData = xData.map((item) => item - starttime);
             currentDate = new Date(starttime*1000);
@@ -156,8 +235,9 @@ export default function QuickLook() {
                 x123Data[j][i] = x123Data[j][i] * parseInt(JSONDataLabel[0][j][1]);
               }
             }
-            setData({ time_stamp: xData, x123: x123Data});
-            setFileContent(currentDate.toLocaleString()); // Pretty print the JSON
+
+            setData({ time_stamp: xData, x123: x123Data, x1: x1Data, c1: c1Data, m1: m1Data, m5: m5Data});
+            setFileContent(currentDate.toLocaleString()); 
 
             // setFileContent(JSON.stringify(json[0].timestamp, null, 2)); // Pretty print the JSON
           } catch (error) {
@@ -173,6 +253,24 @@ export default function QuickLook() {
   const handleDetectorChange = (event: React.SyntheticEvent, newValue: string) => {
     setDetector(newValue);
   };
+
+useEffect(() => {
+  const updateWidth = () => {
+    let parentWidth =
+      document.getElementById("parent-container")?.offsetWidth;
+    if (parentWidth === undefined) {
+      setWidth(parentWidth * 0.9); 
+    } else {
+      setWidth(500);
+    }
+    
+  };
+
+  updateWidth();
+
+  window.addEventListener("resize", updateWidth);
+  return () => window.removeEventListener("resize", updateWidth);
+}, []);
 
   return (
     <Grid container columns={16}>
@@ -221,31 +319,88 @@ export default function QuickLook() {
               <TabPanel value="1">
                 <Grid container columns={2}>
                   {data?.x123.map((item, index) => (
-                    <Grid item xs={1}>
-                      <Plot
-                        data={[
-                          {
-                            x: data?.time_stamp,
-                            y: item,
-                            type: "scatter",
-                          },
-                        ]}
-                        layout={{
-                          width: self.parent.innerWidth * 0.45,
-                          height: 400,
-                          title: JSONDataLabel[0][index][0] + " vs. Time",
-                          xaxis: { title: "Time (s)" },
-                          yaxis: { title: JSONDataLabel[0][index][0] + " (" + JSONDataLabel[0][index][2] +")" },
-                        }}
+                    <Grid item xs={1} id="parent-container">
+                      <PlotlyGraph
+                        xData={data?.time_stamp}
+                        yData={item}
+                        xLabel={"Time"}
+                        yLabel={JSONDataLabel[0][index][0]}
+                        xUnit={"s"}
+                        yUnit={JSONDataLabel[0][index][2]}
+                        width={width}
                       />
                     </Grid>
                   ))}
                 </Grid>
               </TabPanel>
-              <TabPanel value="2">X1</TabPanel>
-              <TabPanel value="3">C1</TabPanel>
-              <TabPanel value="4">M1</TabPanel>
-              <TabPanel value="5">M5</TabPanel>
+              <TabPanel value="2">
+                <Grid container columns={2}>
+                  {data?.x1.map((item, index) => (
+                    <Grid item xs={1} id="parent-container">
+                      <PlotlyGraph
+                        xData={data?.time_stamp}
+                        yData={item}
+                        xLabel={"Time"}
+                        yLabel={JSONDataLabel[1][index][0]}
+                        xUnit={"s"}
+                        yUnit={JSONDataLabel[1][index][2]}
+                        width={width}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </TabPanel>
+              <TabPanel value="3">
+                <Grid container columns={2}>
+                  {data?.c1.map((item, index) => (
+                    <Grid item xs={1} id="parent-container">
+                      <PlotlyGraph
+                        xData={data?.time_stamp}
+                        yData={item}
+                        xLabel={"Time"}
+                        yLabel={JSONDataLabel[2][index][0]}
+                        xUnit={"s"}
+                        yUnit={JSONDataLabel[2][index][2]}
+                        width={width}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </TabPanel>
+              <TabPanel value="4">
+                <Grid container columns={2}>
+                  {data?.m1.map((item, index) => (
+                    <Grid item xs={1} id="parent-container">
+                      <PlotlyGraph
+                        xData={data?.time_stamp}
+                        yData={item}
+                        xLabel={"Time"}
+                        yLabel={JSONDataLabel[3][index][0]}
+                        xUnit={"s"}
+                        yUnit={JSONDataLabel[3][index][2]}
+                        width={width}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </TabPanel>
+              <TabPanel value="5">
+                <Grid container columns={2}>
+                  {data?.m5.map((item, index) => (
+                    <Grid item xs={1} id="parent-container">
+                      <PlotlyGraph
+                        xData={data?.time_stamp}
+                        yData={item}
+                        xLabel={"Time"}
+                        yLabel={JSONDataLabel[4][index][0]}
+                        xUnit={"s"}
+                        yUnit={JSONDataLabel[4][index][2]}
+                        width={width}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </TabPanel>
             </TabContext>
           </Box>
         </Grid>
