@@ -1,8 +1,7 @@
 "use client";
 
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Tab, Tabs, Typography } from "@mui/material";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import React, { useEffect, useState } from "react";
+import { Box, Button, Grid, Tab, Typography } from "@mui/material";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 // import Plot from "react-plotly.js";
@@ -11,6 +10,8 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import dynamic from "next/dynamic";
 import PlotlyGraph from "@/components/PlotlyGraph";
+import { CircularProgress } from "@mui/material";
+
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 const VisuallyHiddenInput = styled("input")({
@@ -122,8 +123,8 @@ interface JSONData {
   };
 }
 
-
 export default function QuickLook() {
+  const [isLoading, setIsLoading] = useState(false);
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [detector, setDetector] = useState("1");
   const [data, setData] = useState<{
@@ -134,7 +135,6 @@ export default function QuickLook() {
     m1: number[][];
     m5: number[][];
   }>();
-  const [width, setWidth] = useState(0);
   let currentDate: Date;
 
   function insertionSort(x: number[], y: number[][][]): void {
@@ -169,11 +169,56 @@ export default function QuickLook() {
     }
   }
 
+  function quickSort(
+    x: number[],
+    y: number[][][],
+    left: number = 0,
+    right: number = x.length - 1
+  ): void {
+    if (left < right) {
+      const pivot = partition(x, y, left, right);
+      quickSort(x, y, left, pivot - 1);
+      quickSort(x, y, pivot + 1, right);
+    }
+  }
+
+  function partition(
+    x: number[],
+    y: number[][][],
+    left: number,
+    right: number
+  ): number {
+    const pivot = x[Math.floor((left + right) / 2)];
+    let i = left;
+    let j = right;
+
+    while (i <= j) {
+      while (x[i] < pivot) {
+        i++;
+      }
+      while (x[j] > pivot) {
+        j--;
+      }
+      if (i <= j) {
+        [x[i], x[j]] = [x[j], x[i]];
+        for (let n = 0; n < y.length; n++) {
+          [y[n][i], y[n][j]] = [y[n][j], y[n][i]];
+        }
+        i++;
+        j--;
+      }
+    }
+    return i;
+  }
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const file = files[0];
       const reader = new FileReader();
+
+      setIsLoading(true); // start loading
+
       reader.onload = (e: ProgressEvent<FileReader>) => {
         if (e.target?.result) {
           try {
@@ -227,22 +272,33 @@ export default function QuickLook() {
             m5Data[6] = json.map((item) => item.m5.real_time);
 
             insertionSort(xData, [x123Data, x1Data, c1Data, m1Data, m5Data]);
+            // quickSort(xData, [x123Data, x1Data, c1Data, m1Data, m5Data]);
             const starttime = xData[0];
             xData = xData.map((item) => item - starttime);
-            currentDate = new Date(starttime*1000);
+            currentDate = new Date(starttime * 1000);
             for (let i = 0; i < x123Data[0].length; i++) {
               for (let j = 0; j < x123Data.length; j++) {
-                x123Data[j][i] = x123Data[j][i] * parseInt(JSONDataLabel[0][j][1]);
+                x123Data[j][i] =
+                  x123Data[j][i] * parseInt(JSONDataLabel[0][j][1]);
               }
             }
 
-            setData({ time_stamp: xData, x123: x123Data, x1: x1Data, c1: c1Data, m1: m1Data, m5: m5Data});
-            setFileContent(currentDate.toLocaleString()); 
+            setData({
+              time_stamp: xData,
+              x123: x123Data,
+              x1: x1Data,
+              c1: c1Data,
+              m1: m1Data,
+              m5: m5Data,
+            });
+            setFileContent(currentDate.toLocaleString());
 
             // setFileContent(JSON.stringify(json[0].timestamp, null, 2)); // Pretty print the JSON
           } catch (error) {
             console.error("Error parsing JSON:", error);
             setFileContent("Error reading the file");
+          } finally {
+            setIsLoading(false); // Stop loading
           }
         }
       };
@@ -250,27 +306,12 @@ export default function QuickLook() {
     }
   };
 
-  const handleDetectorChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleDetectorChange = (
+    event: React.SyntheticEvent,
+    newValue: string
+  ) => {
     setDetector(newValue);
   };
-
-useEffect(() => {
-  const updateWidth = () => {
-    let parentWidth =
-      document.getElementById("parent-container")?.offsetWidth;
-    if (parentWidth === undefined) {
-      setWidth(parentWidth * 0.9); 
-    } else {
-      setWidth(500);
-    }
-    
-  };
-
-  updateWidth();
-
-  window.addEventListener("resize", updateWidth);
-  return () => window.removeEventListener("resize", updateWidth);
-}, []);
 
   return (
     <Grid container columns={16}>
@@ -303,6 +344,17 @@ useEffect(() => {
       {fileContent && (
         <Grid item xs={16}>
           <Box sx={{ width: "100%", typography: "body1" }}>
+            {/* LOADING ICON */}
+            {/* {isLoading ? (
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                minHeight="400px"
+              >
+                <CircularProgress />
+              </Box>
+            ) : ( */}
             <TabContext value={detector}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList
@@ -319,7 +371,7 @@ useEffect(() => {
               <TabPanel value="1">
                 <Grid container columns={2}>
                   {data?.x123.map((item, index) => (
-                    <Grid item xs={1} id="parent-container">
+                    <Grid item xs={1} key={index} id="parent-container">
                       <PlotlyGraph
                         xData={data?.time_stamp}
                         yData={item}
@@ -327,7 +379,6 @@ useEffect(() => {
                         yLabel={JSONDataLabel[0][index][0]}
                         xUnit={"s"}
                         yUnit={JSONDataLabel[0][index][2]}
-                        width={width}
                       />
                     </Grid>
                   ))}
@@ -336,7 +387,7 @@ useEffect(() => {
               <TabPanel value="2">
                 <Grid container columns={2}>
                   {data?.x1.map((item, index) => (
-                    <Grid item xs={1} id="parent-container">
+                    <Grid item xs={1} key={index} id="parent-container">
                       <PlotlyGraph
                         xData={data?.time_stamp}
                         yData={item}
@@ -344,7 +395,6 @@ useEffect(() => {
                         yLabel={JSONDataLabel[1][index][0]}
                         xUnit={"s"}
                         yUnit={JSONDataLabel[1][index][2]}
-                        width={width}
                       />
                     </Grid>
                   ))}
@@ -353,7 +403,7 @@ useEffect(() => {
               <TabPanel value="3">
                 <Grid container columns={2}>
                   {data?.c1.map((item, index) => (
-                    <Grid item xs={1} id="parent-container">
+                    <Grid item xs={1} key={index} id="parent-container">
                       <PlotlyGraph
                         xData={data?.time_stamp}
                         yData={item}
@@ -361,7 +411,6 @@ useEffect(() => {
                         yLabel={JSONDataLabel[2][index][0]}
                         xUnit={"s"}
                         yUnit={JSONDataLabel[2][index][2]}
-                        width={width}
                       />
                     </Grid>
                   ))}
@@ -370,7 +419,7 @@ useEffect(() => {
               <TabPanel value="4">
                 <Grid container columns={2}>
                   {data?.m1.map((item, index) => (
-                    <Grid item xs={1} id="parent-container">
+                    <Grid item xs={1} key={index} id="parent-container">
                       <PlotlyGraph
                         xData={data?.time_stamp}
                         yData={item}
@@ -378,7 +427,6 @@ useEffect(() => {
                         yLabel={JSONDataLabel[3][index][0]}
                         xUnit={"s"}
                         yUnit={JSONDataLabel[3][index][2]}
-                        width={width}
                       />
                     </Grid>
                   ))}
@@ -387,7 +435,7 @@ useEffect(() => {
               <TabPanel value="5">
                 <Grid container columns={2}>
                   {data?.m5.map((item, index) => (
-                    <Grid item xs={1} id="parent-container">
+                    <Grid item xs={1} key={index} id="parent-container">
                       <PlotlyGraph
                         xData={data?.time_stamp}
                         yData={item}
@@ -395,7 +443,6 @@ useEffect(() => {
                         yLabel={JSONDataLabel[4][index][0]}
                         xUnit={"s"}
                         yUnit={JSONDataLabel[4][index][2]}
-                        width={width}
                       />
                     </Grid>
                   ))}

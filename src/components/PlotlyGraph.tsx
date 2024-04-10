@@ -9,7 +9,6 @@ const PlotlyGraph = ({
   yLabel,
   xUnit,
   yUnit,
-  width,
 }: {
   xData: number[];
   yData: number[];
@@ -17,7 +16,6 @@ const PlotlyGraph = ({
   yLabel: string;
   xUnit: string;
   yUnit: string;
-  width: number;
 }) => {
   return (
     <Plot
@@ -29,12 +27,14 @@ const PlotlyGraph = ({
         },
       ]}
       layout={{
-        width: width,
+        autosize: true, // Enable responsive sizing
         height: 400,
         title: yLabel + " vs. " + xLabel,
         xaxis: { title: xLabel + " (" + xUnit + ")" },
         yaxis: { title: yLabel + " (" + yUnit + ")" },
       }}
+      useResizeHandler={true} // Important: This tells Plotly to re-render on resize
+      style={{ width: "100%", height: "100%" }} // Ensure the div containing the plot is fully responsive
     />
   );
 };
