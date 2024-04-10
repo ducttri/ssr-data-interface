@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { Box, Button, Grid, Tab, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -273,23 +262,6 @@ export default function QuickLook() {
   ) => {
     setDetector(newValue);
   };
-
-  useEffect(() => {
-    const updateWidth = () => {
-      let parentWidth =
-        document.getElementById("parent-container")?.offsetWidth;
-      if (parentWidth === undefined) {
-        setWidth(500);
-      } else {
-        setWidth(parentWidth * 0.9);
-      }
-    };
-
-    updateWidth();
-
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
 
   return (
     <Grid container columns={16}>
