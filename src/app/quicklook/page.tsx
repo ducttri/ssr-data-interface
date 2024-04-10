@@ -1,6 +1,16 @@
 "use client";
 
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Tab, Tabs, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
@@ -122,7 +132,6 @@ interface JSONData {
   };
 }
 
-
 export default function QuickLook() {
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [detector, setDetector] = useState("1");
@@ -229,15 +238,23 @@ export default function QuickLook() {
             insertionSort(xData, [x123Data, x1Data, c1Data, m1Data, m5Data]);
             const starttime = xData[0];
             xData = xData.map((item) => item - starttime);
-            currentDate = new Date(starttime*1000);
+            currentDate = new Date(starttime * 1000);
             for (let i = 0; i < x123Data[0].length; i++) {
               for (let j = 0; j < x123Data.length; j++) {
-                x123Data[j][i] = x123Data[j][i] * parseInt(JSONDataLabel[0][j][1]);
+                x123Data[j][i] =
+                  x123Data[j][i] * parseInt(JSONDataLabel[0][j][1]);
               }
             }
 
-            setData({ time_stamp: xData, x123: x123Data, x1: x1Data, c1: c1Data, m1: m1Data, m5: m5Data});
-            setFileContent(currentDate.toLocaleString()); 
+            setData({
+              time_stamp: xData,
+              x123: x123Data,
+              x1: x1Data,
+              c1: c1Data,
+              m1: m1Data,
+              m5: m5Data,
+            });
+            setFileContent(currentDate.toLocaleString());
 
             // setFileContent(JSON.stringify(json[0].timestamp, null, 2)); // Pretty print the JSON
           } catch (error) {
@@ -250,27 +267,29 @@ export default function QuickLook() {
     }
   };
 
-  const handleDetectorChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleDetectorChange = (
+    event: React.SyntheticEvent,
+    newValue: string
+  ) => {
     setDetector(newValue);
   };
 
-useEffect(() => {
-  const updateWidth = () => {
-    let parentWidth =
-      document.getElementById("parent-container")?.offsetWidth;
-    if (parentWidth === undefined) {
-      setWidth(500);
-    } else {
-      setWidth(parentWidth * 0.9); 
-    }
-    
-  };
+  useEffect(() => {
+    const updateWidth = () => {
+      let parentWidth =
+        document.getElementById("parent-container")?.offsetWidth;
+      if (parentWidth === undefined) {
+        setWidth(500);
+      } else {
+        setWidth(parentWidth * 0.9);
+      }
+    };
 
-  updateWidth();
+    updateWidth();
 
-  window.addEventListener("resize", updateWidth);
-  return () => window.removeEventListener("resize", updateWidth);
-}, []);
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
 
   return (
     <Grid container columns={16}>
@@ -327,7 +346,6 @@ useEffect(() => {
                         yLabel={JSONDataLabel[0][index][0]}
                         xUnit={"s"}
                         yUnit={JSONDataLabel[0][index][2]}
-                        width={width}
                       />
                     </Grid>
                   ))}
@@ -344,7 +362,6 @@ useEffect(() => {
                         yLabel={JSONDataLabel[1][index][0]}
                         xUnit={"s"}
                         yUnit={JSONDataLabel[1][index][2]}
-                        width={width}
                       />
                     </Grid>
                   ))}
@@ -361,7 +378,6 @@ useEffect(() => {
                         yLabel={JSONDataLabel[2][index][0]}
                         xUnit={"s"}
                         yUnit={JSONDataLabel[2][index][2]}
-                        width={width}
                       />
                     </Grid>
                   ))}
@@ -378,7 +394,6 @@ useEffect(() => {
                         yLabel={JSONDataLabel[3][index][0]}
                         xUnit={"s"}
                         yUnit={JSONDataLabel[3][index][2]}
-                        width={width}
                       />
                     </Grid>
                   ))}
@@ -395,7 +410,6 @@ useEffect(() => {
                         yLabel={JSONDataLabel[4][index][0]}
                         xUnit={"s"}
                         yUnit={JSONDataLabel[4][index][2]}
-                        width={width}
                       />
                     </Grid>
                   ))}
