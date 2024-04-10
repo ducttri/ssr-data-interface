@@ -259,9 +259,9 @@ useEffect(() => {
     let parentWidth =
       document.getElementById("parent-container")?.offsetWidth;
     if (parentWidth === undefined) {
-      setWidth(parentWidth * 0.9); 
-    } else {
       setWidth(500);
+    } else {
+      setWidth(parentWidth * 0.9); 
     }
     
   };
