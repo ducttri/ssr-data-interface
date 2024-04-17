@@ -10,7 +10,7 @@ const PlotlyGraph = ({
   xUnit,
   yUnit,
 }: {
-  xData: number[];
+  xData: string[];
   yData: number[];
   xLabel: string;
   yLabel: string;
