@@ -151,3 +151,8 @@ export interface JSONData {
     };
   };
 }
+
+export interface JSONId {
+  _Id: string;
+  timestamp: number[];
+}

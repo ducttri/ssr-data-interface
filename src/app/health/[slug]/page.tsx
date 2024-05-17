@@ -4,23 +4,23 @@ import { Box, Grid, Tab, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { JSONData } from "@/types/types";
 import GraphList from "@/components/GraphsList";
-import Table from "@/components/Table";
-import EnhancedTable from "@/components/Table";
 
-export default function health() {
-  const [data, setData] = useState<
-    [{ _id: string; timestamp: number[] }] | null
-  >(null);
+export default function Page({ params }: { params: { slug: string } }) {
+  const [data, setData] = useState<JSONData | null>(null);
 
   useEffect(() => {
     const fetchDataWrapper = async () => {
       try {
-        const res = await fetch("/api/fetchId");
+        const data = new FormData();
+        data.set("id", params.slug);
+        const res = await fetch("/api/fetchdata", {
+          method: "POST",
+          body: data,
+        });
         if (!res.ok) throw new Error(await res.text());
         const returndata = await res.json();
-        let json: [{ _id: string; timestamp: number[] }] = returndata.data;
+        let json = returndata.data as JSONData;
         setData(json);
-        console.log(json[0]._id);
       } catch (error) {
         console.log("test");
       }
@@ -33,7 +33,7 @@ export default function health() {
     <Typography variant="h3" gutterBottom>
       Health
       <Grid container columns={2}>
-        {data && <EnhancedTable inputData={data}></EnhancedTable>}
+        {data && <GraphList data={data}></GraphList>}
       </Grid>
     </Typography>
   );
