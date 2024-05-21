@@ -13,13 +13,13 @@ export default function Page({ params }: { params: { slug: string } }) {
       try {
         const data = new FormData();
         data.set("id", params.slug);
-        const res = await fetch("/api/fetchdata", {
+        const res = await fetch("/api/fetch", {
           method: "POST",
           body: data,
         });
         if (!res.ok) throw new Error(await res.text());
         const returndata = await res.json();
-        let json = returndata.data as JSONData;
+        let json = returndata.data[0] as JSONData;
         setData(json);
       } catch (error) {
         console.log("test");

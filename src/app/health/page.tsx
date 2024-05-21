@@ -2,10 +2,8 @@
 
 import { Box, Grid, Tab, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { JSONData } from "@/types/types";
-import GraphList from "@/components/GraphsList";
-import Table from "@/components/Table";
 import EnhancedTable from "@/components/Table";
+import { ObjectId } from "mongodb";
 
 export default function health() {
   const [data, setData] = useState<
@@ -15,14 +13,20 @@ export default function health() {
   useEffect(() => {
     const fetchDataWrapper = async () => {
       try {
-        const res = await fetch("/api/fetchId");
+        const data = new FormData();
+        data.set("projection", JSON.stringify({ timestamp: 1 }));
+        const res = await fetch("/api/fetch", {
+          method: "POST",
+          body: data,
+        });
         if (!res.ok) throw new Error(await res.text());
         const returndata = await res.json();
-        let json: [{ _id: string; timestamp: number[] }] = returndata.data;
-        setData(json);
-        console.log(json[0]._id);
+        if (returndata) {
+          let json: [{ _id: string; timestamp: number[] }] = returndata.data;
+          setData(json);
+        }
       } catch (error) {
-        console.log("test");
+        console.log("error");
       }
     };
 
