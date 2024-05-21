@@ -21,22 +21,52 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import Link from "@mui/material/Link";
+import { JSONData } from "@/types/types";
+import FileOpenIcon from "@mui/icons-material/FileOpen";
+import DownloadIcon from "@mui/icons-material/Download";
 
 interface Data {
   id: number;
   uid: string;
   beginUTC: string;
+  arm_temp_avg: number;
+  arm_temp_min: number;
+  arm_temp_max: number;
+  sipm_temp_avg: number;
+  sipm_temp_min: number;
+  sipm_temp_max: number;
+  sipm_operating_voltage_avg: number;
+  sipm_operating_voltage_min: number;
+  sipm_operating_voltage_max: number;
 }
 
 function createData(
   id: number,
   uid: string,
   beginUTC: string,
+  arm_temp_avg: number,
+  arm_temp_min: number,
+  arm_temp_max: number,
+  sipm_temp_avg: number,
+  sipm_temp_min: number,
+  sipm_temp_max: number,
+  sipm_operating_voltage_avg: number,
+  sipm_operating_voltage_min: number,
+  sipm_operating_voltage_max: number
 ): Data {
   return {
     id,
     uid,
-    beginUTC
+    beginUTC,
+    arm_temp_avg,
+    arm_temp_min,
+    arm_temp_max,
+    sipm_temp_avg,
+    sipm_temp_min,
+    sipm_temp_max,
+    sipm_operating_voltage_avg,
+    sipm_operating_voltage_min,
+    sipm_operating_voltage_max,
   };
 }
 
@@ -95,13 +125,67 @@ const headCells: readonly HeadCell[] = [
     id: "uid",
     numeric: false,
     disablePadding: true,
-    label: "UID",
+    label: "",
   },
   {
     id: "beginUTC",
     numeric: true,
     disablePadding: false,
     label: "Begin UTC",
+  },
+  {
+    id: "arm_temp_avg",
+    numeric: true,
+    disablePadding: false,
+    label: "Average ARM processor temperature",
+  },
+  {
+    id: "arm_temp_min",
+    numeric: true,
+    disablePadding: false,
+    label: "Minimum ARM processor temperature",
+  },
+  {
+    id: "arm_temp_max",
+    numeric: true,
+    disablePadding: false,
+    label: "Maximum ARM processor temperature",
+  },
+  {
+    id: "sipm_temp_avg",
+    numeric: true,
+    disablePadding: false,
+    label: "Average SiPM board temperature",
+  },
+  {
+    id: "sipm_temp_min",
+    numeric: true,
+    disablePadding: false,
+    label: "Minimum SiPM board temperature",
+  },
+  {
+    id: "sipm_temp_max",
+    numeric: true,
+    disablePadding: false,
+    label: "Maximum SiPM board temperature",
+  },
+  {
+    id: "sipm_operating_voltage_avg",
+    numeric: true,
+    disablePadding: false,
+    label: "Average SiPM operating voltage",
+  },
+  {
+    id: "sipm_operating_voltage_min",
+    numeric: true,
+    disablePadding: false,
+    label: "Minimum SiPM operating voltage",
+  },
+  {
+    id: "sipm_operating_voltage_max",
+    numeric: true,
+    disablePadding: false,
+    label: "Maximum SiPM operating voltage",
   },
 ];
 
@@ -212,9 +296,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       )}
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
+        <Tooltip title="Download">
           <IconButton>
-            <DeleteIcon />
+            <DownloadIcon />
           </IconButton>
         </Tooltip>
       ) : (
@@ -227,7 +311,13 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function EnhancedTable({inputData} : {inputData: [{ _id: string, timestamp:number[] }]}) {
+export default function EnhancedTable({
+  inputData,
+  detector,
+}: {
+  inputData: JSONData[];
+  detector: string;
+}) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("id");
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -236,10 +326,65 @@ export default function EnhancedTable({inputData} : {inputData: [{ _id: string, 
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   let rows = inputData.map((data, index) => {
+    if (detector == "c1") {
+      return createData(
+        index,
+        data._id.toString(),
+        new Date(data.processed_data.start_time * 1000).toLocaleString(),
+        data.processed_data.c1.arm_temp.avg,
+        data.processed_data.c1.arm_temp.min,
+        data.processed_data.c1.arm_temp.max,
+        data.processed_data.c1.sipm_temp.avg,
+        data.processed_data.c1.sipm_temp.min,
+        data.processed_data.c1.sipm_temp.max,
+        data.processed_data.c1.sipm_operating_voltage.avg,
+        data.processed_data.c1.sipm_operating_voltage.min,
+        data.processed_data.c1.sipm_operating_voltage.max
+      );
+    } else if (detector == "m1") {
+      return createData(
+        index,
+        data._id.toString(),
+        new Date(data.processed_data.start_time * 1000).toLocaleString(),
+        data.processed_data.m1.arm_temp.avg,
+        data.processed_data.m1.arm_temp.min,
+        data.processed_data.m1.arm_temp.max,
+        data.processed_data.m1.sipm_temp.avg,
+        data.processed_data.m1.sipm_temp.min,
+        data.processed_data.m1.sipm_temp.max,
+        data.processed_data.m1.sipm_operating_voltage.avg,
+        data.processed_data.m1.sipm_operating_voltage.min,
+        data.processed_data.m1.sipm_operating_voltage.max
+      );
+    } else if (detector == "m5") {
+      return createData(
+        index,
+        data._id.toString(),
+        new Date(data.processed_data.start_time * 1000).toLocaleString(),
+        data.processed_data.m5.arm_temp.avg,
+        data.processed_data.m5.arm_temp.min,
+        data.processed_data.m5.arm_temp.max,
+        data.processed_data.m5.sipm_temp.avg,
+        data.processed_data.m5.sipm_temp.min,
+        data.processed_data.m5.sipm_temp.max,
+        data.processed_data.m5.sipm_operating_voltage.avg,
+        data.processed_data.m5.sipm_operating_voltage.min,
+        data.processed_data.m5.sipm_operating_voltage.max
+      );
+    }
     return createData(
       index,
-      data._id,
-      new Date(data.timestamp[0] * 1000).toLocaleString()
+      data._id.toString(),
+      new Date(data.processed_data.start_time * 1000).toLocaleString(),
+      data.processed_data.x1.arm_temp.avg,
+      data.processed_data.x1.arm_temp.min,
+      data.processed_data.x1.arm_temp.max,
+      data.processed_data.x1.sipm_temp.avg,
+      data.processed_data.x1.sipm_temp.min,
+      data.processed_data.x1.sipm_temp.max,
+      data.processed_data.x1.sipm_operating_voltage.avg,
+      data.processed_data.x1.sipm_operating_voltage.min,
+      data.processed_data.x1.sipm_operating_voltage.max
     );
   });
 
@@ -359,9 +504,28 @@ export default function EnhancedTable({inputData} : {inputData: [{ _id: string, 
                       scope="row"
                       padding="none"
                     >
-                      <Link href={"/health/" + row.uid}>{row.uid}</Link>
+                      <Tooltip title="Open File">
+                        <IconButton href={"/health/" + row.uid}>
+                          <FileOpenIcon />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                     <TableCell align="right">{row.beginUTC}</TableCell>
+                    <TableCell align="right">{row.arm_temp_avg}</TableCell>
+                    <TableCell align="right">{row.arm_temp_min}</TableCell>
+                    <TableCell align="right">{row.arm_temp_max}</TableCell>
+                    <TableCell align="right">{row.sipm_temp_max}</TableCell>
+                    <TableCell align="right">{row.sipm_temp_min}</TableCell>
+                    <TableCell align="right">{row.sipm_temp_avg}</TableCell>
+                    <TableCell align="right">
+                      {row.sipm_operating_voltage_avg}
+                    </TableCell>
+                    <TableCell align="right">
+                      {row.sipm_operating_voltage_min}
+                    </TableCell>
+                    <TableCell align="right">
+                      {row.sipm_operating_voltage_max}
+                    </TableCell>
                   </TableRow>
                 );
               })}

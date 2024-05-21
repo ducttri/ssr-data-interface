@@ -7,7 +7,7 @@ import PlotlyGraph from "./PlotlyGraph";
 export default function GraphList({ data }: { data: JSONData }) {
   const [detector, setDetector] = useState("1");
 
-  const utcDates: string[] = data.timestamp.map((timestamp: number) => {
+  const utcDates: string[] = data.raw_data.timestamp.map((timestamp: number) => {
     return new Date(timestamp * 1000).toISOString();
   });
 
@@ -39,71 +39,71 @@ export default function GraphList({ data }: { data: JSONData }) {
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.c1.arm_temp.value}
+                  yData={data.raw_data.c1.arm_temp.value}
                   xLabel={"Time"}
                   yLabel={"ARM processor temperature"}
                   xUnit={"UTC"}
-                  yUnit={data.c1.arm_temp.unit}
+                  yUnit={data.raw_data.c1.arm_temp.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.c1.sipm_temp.value}
+                  yData={data.raw_data.c1.sipm_temp.value}
                   xLabel={"Time"}
                   yLabel={"SiPM board temperature"}
                   xUnit={"UTC"}
-                  yUnit={data.c1.sipm_temp.unit}
+                  yUnit={data.raw_data.c1.sipm_temp.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.c1.sipm_operating_voltage.value}
+                  yData={data.raw_data.c1.sipm_operating_voltage.value}
                   xLabel={"Time"}
                   yLabel={"SiPM operating voltage"}
                   xUnit={"UTC"}
-                  yUnit={data.c1.sipm_operating_voltage.unit}
+                  yUnit={data.raw_data.c1.sipm_operating_voltage.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.c1.sipm_target_voltage.value}
+                  yData={data.raw_data.c1.sipm_target_voltage.value}
                   xLabel={"Time"}
                   yLabel={"SiPM target voltage"}
                   xUnit={"UTC"}
-                  yUnit={data.c1.sipm_target_voltage.unit}
+                  yUnit={data.raw_data.c1.sipm_target_voltage.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.c1.counts.value}
+                  yData={data.raw_data.c1.counts.value}
                   xLabel={"Time"}
                   yLabel={"Counts"}
                   xUnit={"UTC"}
-                  yUnit={data.c1.counts.unit}
+                  yUnit={data.raw_data.c1.counts.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.c1.dead_time.value}
+                  yData={data.raw_data.c1.dead_time.value}
                   xLabel={"Time"}
                   yLabel={"Dead Time"}
                   xUnit={"UTC"}
-                  yUnit={data.c1.dead_time.unit}
+                  yUnit={data.raw_data.c1.dead_time.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.c1.real_time.value}
+                  yData={data.raw_data.c1.real_time.value}
                   xLabel={"Time"}
                   yLabel={"Real Time"}
                   xUnit={"UTC"}
-                  yUnit={data.c1.real_time.unit}
+                  yUnit={data.raw_data.c1.real_time.unit}
                 />
               </Grid>
             </Grid>
@@ -114,71 +114,71 @@ export default function GraphList({ data }: { data: JSONData }) {
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m1.arm_temp.value}
+                  yData={data.raw_data.m1.arm_temp.value}
                   xLabel={"Time"}
                   yLabel={"ARM processor temperature"}
                   xUnit={"UTC"}
-                  yUnit={data.m1.arm_temp.unit}
+                  yUnit={data.raw_data.m1.arm_temp.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m1.sipm_temp.value}
+                  yData={data.raw_data.m1.sipm_temp.value}
                   xLabel={"Time"}
                   yLabel={"SiPM board temperature"}
                   xUnit={"UTC"}
-                  yUnit={data.m1.sipm_temp.unit}
+                  yUnit={data.raw_data.m1.sipm_temp.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m1.sipm_operating_voltage.value}
+                  yData={data.raw_data.m1.sipm_operating_voltage.value}
                   xLabel={"Time"}
                   yLabel={"SiPM operating voltage"}
                   xUnit={"UTC"}
-                  yUnit={data.m1.sipm_operating_voltage.unit}
+                  yUnit={data.raw_data.m1.sipm_operating_voltage.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m1.sipm_target_voltage.value}
+                  yData={data.raw_data.m1.sipm_target_voltage.value}
                   xLabel={"Time"}
                   yLabel={"SiPM target voltage"}
                   xUnit={"UTC"}
-                  yUnit={data.m1.sipm_target_voltage.unit}
+                  yUnit={data.raw_data.m1.sipm_target_voltage.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m1.counts.value}
+                  yData={data.raw_data.m1.counts.value}
                   xLabel={"Time"}
                   yLabel={"Counts"}
                   xUnit={"UTC"}
-                  yUnit={data.m1.counts.unit}
+                  yUnit={data.raw_data.m1.counts.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m1.dead_time.value}
+                  yData={data.raw_data.m1.dead_time.value}
                   xLabel={"Time"}
                   yLabel={"Dead Time"}
                   xUnit={"UTC"}
-                  yUnit={data.m1.dead_time.unit}
+                  yUnit={data.raw_data.m1.dead_time.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m1.real_time.value}
+                  yData={data.raw_data.m1.real_time.value}
                   xLabel={"Time"}
                   yLabel={"Real Time"}
                   xUnit={"UTC"}
-                  yUnit={data.m1.real_time.unit}
+                  yUnit={data.raw_data.m1.real_time.unit}
                 />
               </Grid>
             </Grid>
@@ -189,71 +189,71 @@ export default function GraphList({ data }: { data: JSONData }) {
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m5.arm_temp.value}
+                  yData={data.raw_data.m5.arm_temp.value}
                   xLabel={"Time"}
                   yLabel={"ARM processor temperature"}
                   xUnit={"UTC"}
-                  yUnit={data.m5.arm_temp.unit}
+                  yUnit={data.raw_data.m5.arm_temp.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m5.sipm_temp.value}
+                  yData={data.raw_data.m5.sipm_temp.value}
                   xLabel={"Time"}
                   yLabel={"SiPM board temperature"}
                   xUnit={"UTC"}
-                  yUnit={data.m5.sipm_temp.unit}
+                  yUnit={data.raw_data.m5.sipm_temp.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m5.sipm_operating_voltage.value}
+                  yData={data.raw_data.m5.sipm_operating_voltage.value}
                   xLabel={"Time"}
                   yLabel={"SiPM operating voltage"}
                   xUnit={"UTC"}
-                  yUnit={data.m5.sipm_operating_voltage.unit}
+                  yUnit={data.raw_data.m5.sipm_operating_voltage.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m5.sipm_target_voltage.value}
+                  yData={data.raw_data.m5.sipm_target_voltage.value}
                   xLabel={"Time"}
                   yLabel={"SiPM target voltage"}
                   xUnit={"UTC"}
-                  yUnit={data.m5.sipm_target_voltage.unit}
+                  yUnit={data.raw_data.m5.sipm_target_voltage.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m5.counts.value}
+                  yData={data.raw_data.m5.counts.value}
                   xLabel={"Time"}
                   yLabel={"Counts"}
                   xUnit={"UTC"}
-                  yUnit={data.m5.counts.unit}
+                  yUnit={data.raw_data.m5.counts.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m5.dead_time.value}
+                  yData={data.raw_data.m5.dead_time.value}
                   xLabel={"Time"}
                   yLabel={"Dead Time"}
                   xUnit={"UTC"}
-                  yUnit={data.m5.dead_time.unit}
+                  yUnit={data.raw_data.m5.dead_time.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.m5.real_time.value}
+                  yData={data.raw_data.m5.real_time.value}
                   xLabel={"Time"}
                   yLabel={"Real Time"}
                   xUnit={"UTC"}
-                  yUnit={data.m5.real_time.unit}
+                  yUnit={data.raw_data.m5.real_time.unit}
                 />
               </Grid>
             </Grid>
@@ -264,71 +264,71 @@ export default function GraphList({ data }: { data: JSONData }) {
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x1.arm_temp.value}
+                  yData={data.raw_data.x1.arm_temp.value}
                   xLabel={"Time"}
                   yLabel={"ARM processor temperature"}
                   xUnit={"UTC"}
-                  yUnit={data.x1.arm_temp.unit}
+                  yUnit={data.raw_data.x1.arm_temp.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x1.sipm_temp.value}
+                  yData={data.raw_data.x1.sipm_temp.value}
                   xLabel={"Time"}
                   yLabel={"SiPM board temperature"}
                   xUnit={"UTC"}
-                  yUnit={data.x1.sipm_temp.unit}
+                  yUnit={data.raw_data.x1.sipm_temp.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x1.sipm_operating_voltage.value}
+                  yData={data.raw_data.x1.sipm_operating_voltage.value}
                   xLabel={"Time"}
                   yLabel={"SiPM operating voltage"}
                   xUnit={"UTC"}
-                  yUnit={data.x1.sipm_operating_voltage.unit}
+                  yUnit={data.raw_data.x1.sipm_operating_voltage.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x1.sipm_target_voltage.value}
+                  yData={data.raw_data.x1.sipm_target_voltage.value}
                   xLabel={"Time"}
                   yLabel={"SiPM target voltage"}
                   xUnit={"UTC"}
-                  yUnit={data.x1.sipm_target_voltage.unit}
+                  yUnit={data.raw_data.x1.sipm_target_voltage.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x1.counts.value}
+                  yData={data.raw_data.x1.counts.value}
                   xLabel={"Time"}
                   yLabel={"Counts"}
                   xUnit={"UTC"}
-                  yUnit={data.x1.counts.unit}
+                  yUnit={data.raw_data.x1.counts.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x1.dead_time.value}
+                  yData={data.raw_data.x1.dead_time.value}
                   xLabel={"Time"}
                   yLabel={"Dead Time"}
                   xUnit={"UTC"}
-                  yUnit={data.x1.dead_time.unit}
+                  yUnit={data.raw_data.x1.dead_time.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x1.real_time.value}
+                  yData={data.raw_data.x1.real_time.value}
                   xLabel={"Time"}
                   yLabel={"Real Time"}
                   xUnit={"UTC"}
-                  yUnit={data.x1.real_time.unit}
+                  yUnit={data.raw_data.x1.real_time.unit}
                 />
               </Grid>
             </Grid>
@@ -339,71 +339,71 @@ export default function GraphList({ data }: { data: JSONData }) {
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x123.board_temp.value}
+                  yData={data.raw_data.x123.board_temp.value}
                   xLabel={"Time"}
                   yLabel={"DP5 board temperature"}
                   xUnit={"UTC"}
-                  yUnit={data.x123.board_temp.unit}
+                  yUnit={data.raw_data.x123.board_temp.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x123.det_high_voltage.value}
+                  yData={data.raw_data.x123.det_high_voltage.value}
                   xLabel={"Time"}
                   yLabel={"Detector high voltage"}
                   xUnit={"UTC"}
-                  yUnit={data.x123.det_high_voltage.unit}
+                  yUnit={data.raw_data.x123.det_high_voltage.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x123.det_temp.value}
+                  yData={data.raw_data.x123.det_temp.value}
                   xLabel={"Time"}
                   yLabel={"Detector head temperature"}
                   xUnit={"UTC"}
-                  yUnit={data.x123.det_temp.unit}
+                  yUnit={data.raw_data.x123.det_temp.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x123.fast_counts.value}
+                  yData={data.raw_data.x123.fast_counts.value}
                   xLabel={"Time"}
                   yLabel={"Fast sharper # of counts"}
                   xUnit={"UTC"}
-                  yUnit={data.x123.fast_counts.unit}
+                  yUnit={data.raw_data.x123.fast_counts.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x123.slow_counts.value}
+                  yData={data.raw_data.x123.slow_counts.value}
                   xLabel={"Time"}
                   yLabel={"Slow sharper $ of counts"}
                   xUnit={"UTC"}
-                  yUnit={data.x123.slow_counts.unit}
+                  yUnit={data.raw_data.x123.slow_counts.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x123.accumulation_time.value}
+                  yData={data.raw_data.x123.accumulation_time.value}
                   xLabel={"Time"}
                   yLabel={"Accumulation Time"}
                   xUnit={"UTC"}
-                  yUnit={data.x123.accumulation_time.unit}
+                  yUnit={data.raw_data.x123.accumulation_time.unit}
                 />
               </Grid>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
                   xData={utcDates}
-                  yData={data.x123.real_time.value}
+                  yData={data.raw_data.x123.real_time.value}
                   xLabel={"Time"}
                   yLabel={"Real Time"}
                   xUnit={"UTC"}
-                  yUnit={data.x123.real_time.unit}
+                  yUnit={data.raw_data.x123.real_time.unit}
                 />
               </Grid>
             </Grid>
