@@ -27,7 +27,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     };
 
     fetchDataWrapper();
-  }, []);
+  }, [params, setData]);
 
   return (
     <Typography variant="h3" gutterBottom>
