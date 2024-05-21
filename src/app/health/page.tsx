@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import EnhancedTable from "@/components/Table";
 import { ObjectId } from "mongodb";
 
-export default function health() {
+export default function Health() {
   const [data, setData] = useState<
     [{ _id: string; timestamp: number[] }] | null
   >(null);
@@ -31,7 +31,7 @@ export default function health() {
     };
 
     fetchDataWrapper();
-  }, []);
+  }, [setData]);
 
   return (
     <Typography variant="h3" gutterBottom>
