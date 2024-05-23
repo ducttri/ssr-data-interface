@@ -1,10 +1,9 @@
 "use client";
 
-import { Box, Grid, Tab, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Tab, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import EnhancedTable from "@/components/Table";
 import { JSONData } from "@/types/types";
-import TableList from "@/components/TableList";
 
 export default function Health() {
   const [data, setData] = useState<JSONData[] | null>(null);
@@ -36,7 +35,11 @@ export default function Health() {
     <Typography variant="h3" gutterBottom>
       Health
       <Grid container columns={2}>
-        {data && <TableList data={data}></TableList>}
+        {data ? (
+          <EnhancedTable inputData={data}></EnhancedTable>
+        ) : (
+          <CircularProgress color="inherit" />
+        )}
       </Grid>
     </Typography>
   );

@@ -24,49 +24,142 @@ import Link from "@mui/material/Link";
 import { JSONData } from "@/types/types";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import DownloadIcon from "@mui/icons-material/Download";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { MenuItem, Tab } from "@mui/material";
+import { TabContext, TabList } from "@mui/lab";
 
 interface Data {
   id: number;
   uid: string;
   beginUTC: string;
-  arm_temp_avg: number;
-  arm_temp_min: number;
-  arm_temp_max: number;
-  sipm_temp_avg: number;
-  sipm_temp_min: number;
-  sipm_temp_max: number;
-  sipm_operating_voltage_avg: number;
-  sipm_operating_voltage_min: number;
-  sipm_operating_voltage_max: number;
+  c1_arm_temp_avg: number;
+  c1_arm_temp_min: number;
+  c1_arm_temp_max: number;
+  c1_sipm_temp_avg: number;
+  c1_sipm_temp_min: number;
+  c1_sipm_temp_max: number;
+  c1_sipm_operating_voltage_avg: number;
+  c1_sipm_operating_voltage_min: number;
+  c1_sipm_operating_voltage_max: number;
+
+  m1_arm_temp_avg: number;
+  m1_arm_temp_min: number;
+  m1_arm_temp_max: number;
+  m1_sipm_temp_avg: number;
+  m1_sipm_temp_min: number;
+  m1_sipm_temp_max: number;
+  m1_sipm_operating_voltage_avg: number;
+  m1_sipm_operating_voltage_min: number;
+  m1_sipm_operating_voltage_max: number;
+
+  m5_arm_temp_avg: number;
+  m5_arm_temp_min: number;
+  m5_arm_temp_max: number;
+  m5_sipm_temp_avg: number;
+  m5_sipm_temp_min: number;
+  m5_sipm_temp_max: number;
+  m5_sipm_operating_voltage_avg: number;
+  m5_sipm_operating_voltage_min: number;
+  m5_sipm_operating_voltage_max: number;
+
+  x1_arm_temp_avg: number;
+  x1_arm_temp_min: number;
+  x1_arm_temp_max: number;
+  x1_sipm_temp_avg: number;
+  x1_sipm_temp_min: number;
+  x1_sipm_temp_max: number;
+  x1_sipm_operating_voltage_avg: number;
+  x1_sipm_operating_voltage_min: number;
+  x1_sipm_operating_voltage_max: number;
 }
 
 function createData(
   id: number,
   uid: string,
   beginUTC: string,
-  arm_temp_avg: number,
-  arm_temp_min: number,
-  arm_temp_max: number,
-  sipm_temp_avg: number,
-  sipm_temp_min: number,
-  sipm_temp_max: number,
-  sipm_operating_voltage_avg: number,
-  sipm_operating_voltage_min: number,
-  sipm_operating_voltage_max: number
+  c1_arm_temp_avg: number,
+  c1_arm_temp_min: number,
+  c1_arm_temp_max: number,
+  c1_sipm_temp_avg: number,
+  c1_sipm_temp_min: number,
+  c1_sipm_temp_max: number,
+  c1_sipm_operating_voltage_avg: number,
+  c1_sipm_operating_voltage_min: number,
+  c1_sipm_operating_voltage_max: number,
+
+  m1_arm_temp_avg: number,
+  m1_arm_temp_min: number,
+  m1_arm_temp_max: number,
+  m1_sipm_temp_avg: number,
+  m1_sipm_temp_min: number,
+  m1_sipm_temp_max: number,
+  m1_sipm_operating_voltage_avg: number,
+  m1_sipm_operating_voltage_min: number,
+  m1_sipm_operating_voltage_max: number,
+
+  m5_arm_temp_avg: number,
+  m5_arm_temp_min: number,
+  m5_arm_temp_max: number,
+  m5_sipm_temp_avg: number,
+  m5_sipm_temp_min: number,
+  m5_sipm_temp_max: number,
+  m5_sipm_operating_voltage_avg: number,
+  m5_sipm_operating_voltage_min: number,
+  m5_sipm_operating_voltage_max: number,
+
+  x1_arm_temp_avg: number,
+  x1_arm_temp_min: number,
+  x1_arm_temp_max: number,
+  x1_sipm_temp_avg: number,
+  x1_sipm_temp_min: number,
+  x1_sipm_temp_max: number,
+  x1_sipm_operating_voltage_avg: number,
+  x1_sipm_operating_voltage_min: number,
+  x1_sipm_operating_voltage_max: number
 ): Data {
   return {
     id,
     uid,
     beginUTC,
-    arm_temp_avg,
-    arm_temp_min,
-    arm_temp_max,
-    sipm_temp_avg,
-    sipm_temp_min,
-    sipm_temp_max,
-    sipm_operating_voltage_avg,
-    sipm_operating_voltage_min,
-    sipm_operating_voltage_max,
+    c1_arm_temp_avg,
+    c1_arm_temp_min,
+    c1_arm_temp_max,
+    c1_sipm_temp_avg,
+    c1_sipm_temp_min,
+    c1_sipm_temp_max,
+    c1_sipm_operating_voltage_avg,
+    c1_sipm_operating_voltage_min,
+    c1_sipm_operating_voltage_max,
+
+    m1_arm_temp_avg,
+    m1_arm_temp_min,
+    m1_arm_temp_max,
+    m1_sipm_temp_avg,
+    m1_sipm_temp_min,
+    m1_sipm_temp_max,
+    m1_sipm_operating_voltage_avg,
+    m1_sipm_operating_voltage_min,
+    m1_sipm_operating_voltage_max,
+
+    m5_arm_temp_avg,
+    m5_arm_temp_min,
+    m5_arm_temp_max,
+    m5_sipm_temp_avg,
+    m5_sipm_temp_min,
+    m5_sipm_temp_max,
+    m5_sipm_operating_voltage_avg,
+    m5_sipm_operating_voltage_min,
+    m5_sipm_operating_voltage_max,
+
+    x1_arm_temp_avg,
+    x1_arm_temp_min,
+    x1_arm_temp_max,
+    x1_sipm_temp_avg,
+    x1_sipm_temp_min,
+    x1_sipm_temp_max,
+    x1_sipm_operating_voltage_avg,
+    x1_sipm_operating_voltage_min,
+    x1_sipm_operating_voltage_max,
   };
 }
 
@@ -134,55 +227,55 @@ const headCells: readonly HeadCell[] = [
     label: "Begin UTC",
   },
   {
-    id: "arm_temp_avg",
+    id: "c1_arm_temp_avg",
     numeric: true,
     disablePadding: false,
     label: "Average ARM processor temperature",
   },
   {
-    id: "arm_temp_min",
+    id: "c1_arm_temp_min",
     numeric: true,
     disablePadding: false,
     label: "Minimum ARM processor temperature",
   },
   {
-    id: "arm_temp_max",
+    id: "c1_arm_temp_max",
     numeric: true,
     disablePadding: false,
     label: "Maximum ARM processor temperature",
   },
   {
-    id: "sipm_temp_avg",
+    id: "c1_sipm_temp_avg",
     numeric: true,
     disablePadding: false,
     label: "Average SiPM board temperature",
   },
   {
-    id: "sipm_temp_min",
+    id: "c1_sipm_temp_min",
     numeric: true,
     disablePadding: false,
     label: "Minimum SiPM board temperature",
   },
   {
-    id: "sipm_temp_max",
+    id: "c1_sipm_temp_max",
     numeric: true,
     disablePadding: false,
     label: "Maximum SiPM board temperature",
   },
   {
-    id: "sipm_operating_voltage_avg",
+    id: "c1_sipm_operating_voltage_avg",
     numeric: true,
     disablePadding: false,
     label: "Average SiPM operating voltage",
   },
   {
-    id: "sipm_operating_voltage_min",
+    id: "c1_sipm_operating_voltage_min",
     numeric: true,
     disablePadding: false,
     label: "Minimum SiPM operating voltage",
   },
   {
-    id: "sipm_operating_voltage_max",
+    id: "c1_sipm_operating_voltage_max",
     numeric: true,
     disablePadding: false,
     label: "Maximum SiPM operating voltage",
@@ -313,10 +406,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 export default function EnhancedTable({
   inputData,
-  detector,
 }: {
   inputData: JSONData[];
-  detector: string;
 }) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("id");
@@ -324,58 +415,43 @@ export default function EnhancedTable({
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [detectors, setDetectors] = React.useState<string>("c1");
 
   let rows = inputData.map((data, index) => {
-    if (detector == "c1") {
-      return createData(
-        index,
-        data._id.toString(),
-        new Date(data.processed_data.start_time * 1000).toLocaleString(),
-        data.processed_data.c1.arm_temp.avg,
-        data.processed_data.c1.arm_temp.min,
-        data.processed_data.c1.arm_temp.max,
-        data.processed_data.c1.sipm_temp.avg,
-        data.processed_data.c1.sipm_temp.min,
-        data.processed_data.c1.sipm_temp.max,
-        data.processed_data.c1.sipm_operating_voltage.avg,
-        data.processed_data.c1.sipm_operating_voltage.min,
-        data.processed_data.c1.sipm_operating_voltage.max
-      );
-    } else if (detector == "m1") {
-      return createData(
-        index,
-        data._id.toString(),
-        new Date(data.processed_data.start_time * 1000).toLocaleString(),
-        data.processed_data.m1.arm_temp.avg,
-        data.processed_data.m1.arm_temp.min,
-        data.processed_data.m1.arm_temp.max,
-        data.processed_data.m1.sipm_temp.avg,
-        data.processed_data.m1.sipm_temp.min,
-        data.processed_data.m1.sipm_temp.max,
-        data.processed_data.m1.sipm_operating_voltage.avg,
-        data.processed_data.m1.sipm_operating_voltage.min,
-        data.processed_data.m1.sipm_operating_voltage.max
-      );
-    } else if (detector == "m5") {
-      return createData(
-        index,
-        data._id.toString(),
-        new Date(data.processed_data.start_time * 1000).toLocaleString(),
-        data.processed_data.m5.arm_temp.avg,
-        data.processed_data.m5.arm_temp.min,
-        data.processed_data.m5.arm_temp.max,
-        data.processed_data.m5.sipm_temp.avg,
-        data.processed_data.m5.sipm_temp.min,
-        data.processed_data.m5.sipm_temp.max,
-        data.processed_data.m5.sipm_operating_voltage.avg,
-        data.processed_data.m5.sipm_operating_voltage.min,
-        data.processed_data.m5.sipm_operating_voltage.max
-      );
-    }
     return createData(
       index,
       data._id.toString(),
       new Date(data.processed_data.start_time * 1000).toLocaleString(),
+      data.processed_data.c1.arm_temp.avg,
+      data.processed_data.c1.arm_temp.min,
+      data.processed_data.c1.arm_temp.max,
+      data.processed_data.c1.sipm_temp.avg,
+      data.processed_data.c1.sipm_temp.min,
+      data.processed_data.c1.sipm_temp.max,
+      data.processed_data.c1.sipm_operating_voltage.avg,
+      data.processed_data.c1.sipm_operating_voltage.min,
+      data.processed_data.c1.sipm_operating_voltage.max,
+
+      data.processed_data.m1.arm_temp.avg,
+      data.processed_data.m1.arm_temp.min,
+      data.processed_data.m1.arm_temp.max,
+      data.processed_data.m1.sipm_temp.avg,
+      data.processed_data.m1.sipm_temp.min,
+      data.processed_data.m1.sipm_temp.max,
+      data.processed_data.m1.sipm_operating_voltage.avg,
+      data.processed_data.m1.sipm_operating_voltage.min,
+      data.processed_data.m1.sipm_operating_voltage.max,
+
+      data.processed_data.m5.arm_temp.avg,
+      data.processed_data.m5.arm_temp.min,
+      data.processed_data.m5.arm_temp.max,
+      data.processed_data.m5.sipm_temp.avg,
+      data.processed_data.m5.sipm_temp.min,
+      data.processed_data.m5.sipm_temp.max,
+      data.processed_data.m5.sipm_operating_voltage.avg,
+      data.processed_data.m5.sipm_operating_voltage.min,
+      data.processed_data.m5.sipm_operating_voltage.max,
+
       data.processed_data.x1.arm_temp.avg,
       data.processed_data.x1.arm_temp.min,
       data.processed_data.x1.arm_temp.max,
@@ -440,6 +516,13 @@ export default function EnhancedTable({
     setDense(event.target.checked);
   };
 
+  const handleDetectorChange = (
+    event: React.SyntheticEvent,
+    newValue: string
+  ) => {
+    setDetectors(newValue);
+  };
+
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -458,6 +541,19 @@ export default function EnhancedTable({
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
+        <TabContext value={detectors}>
+          <TabList
+            onChange={handleDetectorChange}
+            aria-label="lab API tabs example"
+          >
+            <Tab label="C1" value="c1" />
+            <Tab label="M1" value="m1" />
+            <Tab label="M5" value="m5" />
+            <Tab label="X1" value="x1" />
+            <Tab label="X123" value="x123" />
+          </TabList>
+        </TabContext>
+
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
@@ -511,21 +607,134 @@ export default function EnhancedTable({
                       </Tooltip>
                     </TableCell>
                     <TableCell align="right">{row.beginUTC}</TableCell>
-                    <TableCell align="right">{row.arm_temp_avg}</TableCell>
-                    <TableCell align="right">{row.arm_temp_min}</TableCell>
-                    <TableCell align="right">{row.arm_temp_max}</TableCell>
-                    <TableCell align="right">{row.sipm_temp_max}</TableCell>
-                    <TableCell align="right">{row.sipm_temp_min}</TableCell>
-                    <TableCell align="right">{row.sipm_temp_avg}</TableCell>
-                    <TableCell align="right">
-                      {row.sipm_operating_voltage_avg}
-                    </TableCell>
-                    <TableCell align="right">
-                      {row.sipm_operating_voltage_min}
-                    </TableCell>
-                    <TableCell align="right">
-                      {row.sipm_operating_voltage_max}
-                    </TableCell>
+
+                    {detectors == "c1" && (
+                      <>
+                        <TableCell align="right">
+                          {row.c1_arm_temp_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.c1_arm_temp_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.c1_arm_temp_max}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.c1_sipm_temp_max}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.c1_sipm_temp_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.c1_sipm_temp_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.c1_sipm_operating_voltage_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.c1_sipm_operating_voltage_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.c1_sipm_operating_voltage_max}
+                        </TableCell>
+                      </>
+                    )}
+
+                    {detectors == "m1" && (
+                      <>
+                        <TableCell align="right">
+                          {row.m1_arm_temp_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m1_arm_temp_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m1_arm_temp_max}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m1_sipm_temp_max}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m1_sipm_temp_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m1_sipm_temp_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m1_sipm_operating_voltage_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m1_sipm_operating_voltage_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m1_sipm_operating_voltage_max}
+                        </TableCell>
+                      </>
+                    )}
+
+                    {detectors == "m5" && (
+                      <>
+                        <TableCell align="right">
+                          {row.m5_arm_temp_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m5_arm_temp_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m5_arm_temp_max}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m5_sipm_temp_max}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m5_sipm_temp_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m5_sipm_temp_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m5_sipm_operating_voltage_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m5_sipm_operating_voltage_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.m5_sipm_operating_voltage_max}
+                        </TableCell>
+                      </>
+                    )}
+
+                    {detectors == "x1" && (
+                      <>
+                        <TableCell align="right">
+                          {row.x1_arm_temp_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.x1_arm_temp_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.x1_arm_temp_max}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.x1_sipm_temp_max}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.x1_sipm_temp_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.x1_sipm_temp_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.x1_sipm_operating_voltage_avg}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.x1_sipm_operating_voltage_min}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.x1_sipm_operating_voltage_max}
+                        </TableCell>
+                      </>
+                    )}
                   </TableRow>
                 );
               })}
