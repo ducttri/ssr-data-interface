@@ -19,7 +19,7 @@ export interface JSONData {
         avg: number;
         min: number;
         max: number;
-      }
+      };
     };
     m1: {
       arm_temp: {
@@ -57,7 +57,7 @@ export interface JSONData {
     };
     x1: {
       arm_temp: {
-        avg: number; 
+        avg: number;
         min: number;
         max: number;
       };
@@ -67,6 +67,23 @@ export interface JSONData {
         max: number;
       };
       sipm_operating_voltage: {
+        avg: number;
+        min: number;
+        max: number;
+      };
+    };
+    x123: {
+      board_temp: {
+        avg: number;
+        min: number;
+        max: number;
+      };
+      det_high_voltage: {
+        avg: number;
+        min: number;
+        max: number;
+      };
+      det_temp: {
         avg: number;
         min: number;
         max: number;
