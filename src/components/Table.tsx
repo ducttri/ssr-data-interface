@@ -27,6 +27,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { MenuItem, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
+import { useEffect } from "react";
 
 interface Data {
   id: number;
@@ -135,7 +136,7 @@ function createData(
   x123_det_high_voltage_max: number,
   x123_det_temp_avg: number,
   x123_det_temp_min: number,
-  x123_det_temp_max: number,
+  x123_det_temp_max: number
 ): Data {
   return {
     id,
@@ -245,13 +246,6 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
-  {
-    id: "uid",
-    numeric: false,
-    disablePadding: true,
-    label: "",
-    detector: "all",
-  },
   {
     id: "beginUTC",
     numeric: false,
@@ -649,6 +643,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             }}
           />
         </TableCell>
+        <TableCell padding="checkbox"></TableCell>
         {headCells.map(
           (headCell) =>
             (headCell.detector == "all" || headCell.detector == detector) && (
@@ -748,63 +743,91 @@ export default function EnhancedTable({
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [detectors, setDetectors] = React.useState<string>("c1");
+  const [data, setData] = React.useState<JSONData[]>([]);
+  const [rows, setRows] = React.useState<Data[]>([]);
 
-  let rows = inputData.map((data, index) => {
-    return createData(
-      index,
-      data._id.toString(),
-      new Date(data.processed_data.start_time * 1000).toLocaleString(),
-      data.processed_data.c1.arm_temp.avg,
-      data.processed_data.c1.arm_temp.min,
-      data.processed_data.c1.arm_temp.max,
-      data.processed_data.c1.sipm_temp.avg,
-      data.processed_data.c1.sipm_temp.min,
-      data.processed_data.c1.sipm_temp.max,
-      data.processed_data.c1.sipm_operating_voltage.avg,
-      data.processed_data.c1.sipm_operating_voltage.min,
-      data.processed_data.c1.sipm_operating_voltage.max,
+  useEffect(() => {
+    const fetchDataWrapper = async () => {
+      try {
+        const formdata = new FormData();
+        formdata.set("projection", JSON.stringify({ processed_data: 1 }));
+        const res = await fetch("/api/fetch", {
+          method: "POST",
+          body: formdata,
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const returndata = await res.json();
+        if (returndata) {
+          let json: JSONData[] = returndata.data;
+          setData(json);
+          setRows(
+            json.map((data, index) => {
+              return createData(
+                index,
+                data._id.toString(),
+                new Date(
+                  data.processed_data.start_time * 1000
+                ).toLocaleString(),
+                data.processed_data.c1.arm_temp.avg,
+                data.processed_data.c1.arm_temp.min,
+                data.processed_data.c1.arm_temp.max,
+                data.processed_data.c1.sipm_temp.avg,
+                data.processed_data.c1.sipm_temp.min,
+                data.processed_data.c1.sipm_temp.max,
+                data.processed_data.c1.sipm_operating_voltage.avg,
+                data.processed_data.c1.sipm_operating_voltage.min,
+                data.processed_data.c1.sipm_operating_voltage.max,
 
-      data.processed_data.m1.arm_temp.avg,
-      data.processed_data.m1.arm_temp.min,
-      data.processed_data.m1.arm_temp.max,
-      data.processed_data.m1.sipm_temp.avg,
-      data.processed_data.m1.sipm_temp.min,
-      data.processed_data.m1.sipm_temp.max,
-      data.processed_data.m1.sipm_operating_voltage.avg,
-      data.processed_data.m1.sipm_operating_voltage.min,
-      data.processed_data.m1.sipm_operating_voltage.max,
+                data.processed_data.m1.arm_temp.avg,
+                data.processed_data.m1.arm_temp.min,
+                data.processed_data.m1.arm_temp.max,
+                data.processed_data.m1.sipm_temp.avg,
+                data.processed_data.m1.sipm_temp.min,
+                data.processed_data.m1.sipm_temp.max,
+                data.processed_data.m1.sipm_operating_voltage.avg,
+                data.processed_data.m1.sipm_operating_voltage.min,
+                data.processed_data.m1.sipm_operating_voltage.max,
 
-      data.processed_data.m5.arm_temp.avg,
-      data.processed_data.m5.arm_temp.min,
-      data.processed_data.m5.arm_temp.max,
-      data.processed_data.m5.sipm_temp.avg,
-      data.processed_data.m5.sipm_temp.min,
-      data.processed_data.m5.sipm_temp.max,
-      data.processed_data.m5.sipm_operating_voltage.avg,
-      data.processed_data.m5.sipm_operating_voltage.min,
-      data.processed_data.m5.sipm_operating_voltage.max,
+                data.processed_data.m5.arm_temp.avg,
+                data.processed_data.m5.arm_temp.min,
+                data.processed_data.m5.arm_temp.max,
+                data.processed_data.m5.sipm_temp.avg,
+                data.processed_data.m5.sipm_temp.min,
+                data.processed_data.m5.sipm_temp.max,
+                data.processed_data.m5.sipm_operating_voltage.avg,
+                data.processed_data.m5.sipm_operating_voltage.min,
+                data.processed_data.m5.sipm_operating_voltage.max,
 
-      data.processed_data.x1.arm_temp.avg,
-      data.processed_data.x1.arm_temp.min,
-      data.processed_data.x1.arm_temp.max,
-      data.processed_data.x1.sipm_temp.avg,
-      data.processed_data.x1.sipm_temp.min,
-      data.processed_data.x1.sipm_temp.max,
-      data.processed_data.x1.sipm_operating_voltage.avg,
-      data.processed_data.x1.sipm_operating_voltage.min,
-      data.processed_data.x1.sipm_operating_voltage.max,
+                data.processed_data.x1.arm_temp.avg,
+                data.processed_data.x1.arm_temp.min,
+                data.processed_data.x1.arm_temp.max,
+                data.processed_data.x1.sipm_temp.avg,
+                data.processed_data.x1.sipm_temp.min,
+                data.processed_data.x1.sipm_temp.max,
+                data.processed_data.x1.sipm_operating_voltage.avg,
+                data.processed_data.x1.sipm_operating_voltage.min,
+                data.processed_data.x1.sipm_operating_voltage.max,
 
-      data.processed_data.x123.board_temp.avg,
-      data.processed_data.x123.board_temp.min,
-      data.processed_data.x123.board_temp.max,
-      data.processed_data.x123.det_high_voltage.avg,
-      data.processed_data.x123.det_high_voltage.min,
-      data.processed_data.x123.det_high_voltage.max,
-      data.processed_data.x123.det_temp.avg,
-      data.processed_data.x123.det_temp.min,
-      data.processed_data.x123.det_temp.max
-    );
-  });
+                data.processed_data.x123.board_temp.avg,
+                data.processed_data.x123.board_temp.min,
+                data.processed_data.x123.board_temp.max,
+                data.processed_data.x123.det_high_voltage.avg,
+                data.processed_data.x123.det_high_voltage.min,
+                data.processed_data.x123.det_high_voltage.max,
+                data.processed_data.x123.det_temp.avg,
+                data.processed_data.x123.det_temp.min,
+                data.processed_data.x123.det_temp.max
+              );
+            })
+          );
+        }
+      } catch (error) {
+        console.log("error");
+      }
+    };
+
+    fetchDataWrapper();
+  }, [setData]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
