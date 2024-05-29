@@ -10,8 +10,92 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  Box,
+  TextField,
+  MenuItem,
+  FormControl,
 } from "@mui/material";
 import * as React from "react";
+
+const detectors = [
+  {
+    value: "c1",
+    label: "C1",
+  },
+  {
+    value: "m1",
+    label: "M1",
+  },
+  {
+    value: "m5",
+    label: "M5",
+  },
+  {
+    value: "x1",
+    label: "X1",
+  },
+  {
+    value: "x123",
+    label: "X123",
+  },
+];
+
+const hafxfield = [
+  {
+    value: "arm_temp",
+    label: "ARM Processor Temperature",
+  },
+  {
+    value: "sipm_temp",
+    label: "SiPM board temperature",
+  },
+  {
+    value: "sipm_operating_voltage",
+    label: "SiPM operating voltage",
+  },
+];
+
+const datatype = [
+  {
+    value: "avg",
+    label: "Avg",
+  },
+  {
+    value: "min",
+    label: "Min",
+  },
+  {
+    value: "max",
+    label: "Max",
+  },
+];
+
+const comperator = [
+  {
+    value: "=",
+    label: "=",
+  },
+  {
+    value: "!=",
+    label: "!=",
+  },
+  {
+    value: ">",
+    label: ">",
+  },
+  {
+    value: ">=",
+    label: ">=",
+  },
+  {
+    value: "<",
+    label: "<",
+  },
+  {
+    value: "<=",
+    label: "<=",
+  },
+];
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
@@ -22,6 +106,14 @@ interface EnhancedTableToolbarProps {
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected, rows, selected } = props;
   const [open, setOpen] = React.useState<boolean>(false);
+  const [detector, setDetector] = React.useState<string>();
+  const [field, setField] = React.useState<string>();
+  const [type, setType] = React.useState<string>();
+  const [opeartor, setOperator] = React.useState<string>();
+
+
+
+
   const handleClick = () => {
     setOpen(true);
   };
@@ -88,7 +180,113 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             fullWidth={true}
           >
             <DialogTitle>Filter</DialogTitle>
-            <DialogContent></DialogContent>
+            <DialogContent>
+              <Box
+                component="form"
+                sx={{
+                  "& .MuiTextField-root": { m: 1 },
+                }}
+                noValidate
+                autoComplete="off"
+              >
+                <FormControl
+                  sx={{
+                    "& .MuiTextField-root": { width: "10ch" },
+                  }}
+                >
+                  <TextField
+                    id="select-detecotr"
+                    select
+                    required
+                    label="Detector"
+                    defaultValue="c1"
+                    variant="standard"
+                  >
+                    {detectors.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </FormControl>
+                <FormControl
+                  sx={{
+                    "& .MuiTextField-root": { width: "30ch" },
+                  }}
+                >
+                  <TextField
+                    id="outlined-select-detector"
+                    required
+                    select
+                    label="Field"
+                    defaultValue="arm_temp"
+                    variant="standard"
+                  >
+                    {hafxfield.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </FormControl>
+                <FormControl
+                  sx={{
+                    "& .MuiTextField-root": { width: "10ch" },
+                  }}
+                >
+                  <TextField
+                    id="outlined-select-hafx"
+                    required
+                    select
+                    label="Type"
+                    defaultValue="avg"
+                    variant="standard"
+                  >
+                    {datatype.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </FormControl>
+                <FormControl
+                  sx={{
+                    "& .MuiTextField-root": { width: "10ch" },
+                  }}
+                >
+                  <TextField
+                    id="outlined-select-operator"
+                    required
+                    select
+                    label="Operator"
+                    defaultValue="="
+                    variant="standard"
+                  >
+                    {comperator.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </FormControl>
+                <FormControl
+                  sx={{
+                    "& .MuiTextField-root": { width: "10ch" },
+                  }}
+                >
+                  <TextField
+                    id="outlined-select-value"
+                    type="number"
+                    required
+                    label="Value"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    variant="standard"
+                  ></TextField>
+                </FormControl>
+              </Box>
+            </DialogContent>
           </Dialog>
         </>
       )}
