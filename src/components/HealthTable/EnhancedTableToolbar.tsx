@@ -1,6 +1,9 @@
 import { Data } from "@/types/types";
 import DownloadIcon from "@mui/icons-material/Download";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import {
   Toolbar,
   alpha,
@@ -16,6 +19,7 @@ import {
   FormControl,
 } from "@mui/material";
 import * as React from "react";
+import dayjs, { Dayjs } from "dayjs";
 
 const detectors = [
   {
@@ -52,6 +56,21 @@ const hafxfield = [
   {
     value: "sipm_operating_voltage",
     label: "SiPM operating voltage",
+  },
+];
+
+const x123field = [
+  {
+    value: "board_temp",
+    label: "DP5 board temperature",
+  },
+  {
+    value: "det_high_voltage",
+    label: "Detector high voltage",
+  },
+  {
+    value: "det_temp",
+    label: "Detector head temperature",
   },
 ];
 
@@ -101,18 +120,18 @@ interface EnhancedTableToolbarProps {
   numSelected: number;
   rows: Data[];
   selected: readonly number[];
+  handleBeginDate: (newDate: Dayjs) => void;
+  handleEndDate: (newDate: Dayjs) => void;
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, rows, selected } = props;
+  const { numSelected, rows, selected, handleBeginDate, handleEndDate } = props;
   const [open, setOpen] = React.useState<boolean>(false);
   const [detector, setDetector] = React.useState<string>();
   const [field, setField] = React.useState<string>();
   const [type, setType] = React.useState<string>();
   const [opeartor, setOperator] = React.useState<string>();
-
-
-
+  const [value, setValue] = React.useState<string>();
 
   const handleClick = () => {
     setOpen(true);
@@ -145,14 +164,23 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Health Data
-        </Typography>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Box sx={{ flex: "10 10 100%", m: 2 }}>
+            <DateTimePicker
+              label="Begin UTC"
+              onChange={(newDate) =>
+                newDate ? handleBeginDate(newDate) : handleBeginDate(dayjs(0))
+              }
+            />
+
+            <DateTimePicker
+              label="End UTC"
+              onChange={(newDate) =>
+                newDate ? handleEndDate(newDate) : handleEndDate(dayjs())
+              }
+            />
+          </Box>
+        </LocalizationProvider>
       )}
       {numSelected > 0 ? (
         <Tooltip title="Download">
@@ -195,11 +223,18 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                   }}
                 >
                   <TextField
-                    id="select-detecotr"
+                    id="select-detector"
                     select
                     required
                     label="Detector"
-                    defaultValue="c1"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    onChange={(event) => {
+                      if (event.target.value != "x123")
+                        setDetector(event.target.value);
+                      setField(undefined);
+                    }}
                     variant="standard"
                   >
                     {detectors.map((option) => (
@@ -209,82 +244,65 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                     ))}
                   </TextField>
                 </FormControl>
-                <FormControl
-                  sx={{
-                    "& .MuiTextField-root": { width: "30ch" },
-                  }}
-                >
-                  <TextField
-                    id="outlined-select-detector"
-                    required
-                    select
-                    label="Field"
-                    defaultValue="arm_temp"
-                    variant="standard"
-                  >
-                    {hafxfield.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </FormControl>
-                <FormControl
-                  sx={{
-                    "& .MuiTextField-root": { width: "10ch" },
-                  }}
-                >
-                  <TextField
-                    id="outlined-select-hafx"
-                    required
-                    select
-                    label="Type"
-                    defaultValue="avg"
-                    variant="standard"
-                  >
-                    {datatype.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </FormControl>
-                <FormControl
-                  sx={{
-                    "& .MuiTextField-root": { width: "10ch" },
-                  }}
-                >
-                  <TextField
-                    id="outlined-select-operator"
-                    required
-                    select
-                    label="Operator"
-                    defaultValue="="
-                    variant="standard"
-                  >
-                    {comperator.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </FormControl>
-                <FormControl
-                  sx={{
-                    "& .MuiTextField-root": { width: "10ch" },
-                  }}
-                >
-                  <TextField
-                    id="outlined-select-value"
-                    type="number"
-                    required
-                    label="Value"
-                    InputLabelProps={{
-                      shrink: true,
+                {detector && (
+                  <FormControl
+                    sx={{
+                      "& .MuiTextField-root": { width: "30ch" },
                     }}
-                    variant="standard"
-                  ></TextField>
-                </FormControl>
+                  >
+                    <TextField
+                      id="outlined-select-detector"
+                      required
+                      select
+                      label="Field"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      onChange={(event) => setField(event.target.value)}
+                      variant="standard"
+                    >
+                      {detector &&
+                        detector != "x123" &&
+                        hafxfield.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      {detector &&
+                        detector == "x123" &&
+                        x123field.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                    </TextField>
+                  </FormControl>
+                )}
+                {detector && field && (
+                  <FormControl
+                    sx={{
+                      "& .MuiTextField-root": { width: "10ch" },
+                    }}
+                  >
+                    <TextField
+                      id="outlined-select-hafx"
+                      required
+                      select
+                      label="Type"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      onChange={(event) => setType(event.target.value)}
+                      variant="standard"
+                    >
+                      {datatype.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </FormControl>
+                )}
               </Box>
             </DialogContent>
           </Dialog>
@@ -293,3 +311,44 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
+
+// <FormControl
+//   sx={{
+//     "& .MuiTextField-root": { width: "10ch" },
+//   }}
+// >
+//   <TextField
+//     id="outlined-select-operator"
+//     required
+//     select
+//     label="Operator"
+//     InputLabelProps={{
+//       shrink: true,
+//     }}
+//     onChange={(event) => setOperator(event.target.value)}
+//     variant="standard"
+//   >
+//     {comperator.map((option) => (
+//       <MenuItem key={option.value} value={option.value}>
+//         {option.label}
+//       </MenuItem>
+//     ))}
+//   </TextField>
+// </FormControl>
+// <FormControl
+//   sx={{
+//     "& .MuiTextField-root": { width: "10ch" },
+//   }}
+// >
+//   <TextField
+//     id="outlined-select-value"
+//     type="number"
+//     required
+//     label="Value"
+//     InputLabelProps={{
+//       shrink: true,
+//     }}
+//     variant="standard"
+//     onChange={(event) => setValue(event.target.value)}
+//   ></TextField>
+// </FormControl>
