@@ -168,6 +168,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           <Box sx={{ flex: "10 10 100%", m: 2 }}>
             <DateTimePicker
               label="Begin UTC"
+              views={["year", "day", "hours", "minutes", "seconds"]}
               onChange={(newDate) =>
                 newDate ? handleBeginDate(newDate) : handleBeginDate(dayjs(0))
               }
@@ -175,6 +176,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
             <DateTimePicker
               label="End UTC"
+              views={["year", "day", "hours", "minutes", "seconds"]}
               onChange={(newDate) =>
                 newDate ? handleEndDate(newDate) : handleEndDate(dayjs())
               }

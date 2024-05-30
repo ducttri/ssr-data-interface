@@ -37,7 +37,7 @@ import { TabContext, TabList } from "@mui/lab";
 import { useEffect } from "react";
 import EnhancedTableHead from "./EnhancedTableHead";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 function createData(
   id: number,
@@ -202,14 +202,21 @@ export default function EnhancedTable() {
   const [detectors, setDetectors] = React.useState<string>("c1");
   const [data, setData] = React.useState<JSONData[]>([]);
   const [rows, setRows] = React.useState<Data[]>([]);
-  const [beginDate, setBeginDate] = React.useState<number>();
-  const [endDate, setEndDate] = React.useState<number>();
+  const [beginDate, setBeginDate] = React.useState<number>(0);
+  const [endDate, setEndDate] = React.useState<number>(dayjs().unix());
 
   useEffect(() => {
     const fetchDataWrapper = async () => {
       try {
         const formdata = new FormData();
         formdata.set("projection", JSON.stringify({ processed_data: 1 }));
+        formdata.set(
+          "filter",
+          JSON.stringify({
+            "processed_data.start_time": { $gte: beginDate , $lte: endDate},
+          })
+        );
+
         const res = await fetch("/api/fetch", {
           method: "POST",
           body: formdata,
@@ -284,88 +291,15 @@ export default function EnhancedTable() {
     };
 
     fetchDataWrapper();
-  }, [setData]);
+  }, [setData, beginDate, endDate]);
 
   const handleBeginDate = async (newDate: Dayjs) => {
     setBeginDate(newDate.unix());
-    try {
-      const formdata = new FormData();
-      formdata.set("projection", JSON.stringify({ processed_data: 1 }));
-      formdata.set("filter", JSON.stringify({ 'processed_data.start_time': {$gte : beginDate} }));
-      const res = await fetch("/api/fetch", {
-        method: "POST",
-        body: formdata,
-      });
-      if (!res.ok) throw new Error(await res.text());
-      const returndata = await res.json();
-      if (returndata) {
-        let json: JSONData[] = returndata.data;
-        setData(json);
-        setRows(
-          json.map((data, index) => {
-            return createData(
-              index,
-              data._id.toString(),
-              new Date(data.processed_data.start_time * 1000).toUTCString(),
-              data.processed_data.c1.arm_temp.avg,
-              data.processed_data.c1.arm_temp.min,
-              data.processed_data.c1.arm_temp.max,
-              data.processed_data.c1.sipm_temp.avg,
-              data.processed_data.c1.sipm_temp.min,
-              data.processed_data.c1.sipm_temp.max,
-              data.processed_data.c1.sipm_operating_voltage.avg,
-              data.processed_data.c1.sipm_operating_voltage.min,
-              data.processed_data.c1.sipm_operating_voltage.max,
-
-              data.processed_data.m1.arm_temp.avg,
-              data.processed_data.m1.arm_temp.min,
-              data.processed_data.m1.arm_temp.max,
-              data.processed_data.m1.sipm_temp.avg,
-              data.processed_data.m1.sipm_temp.min,
-              data.processed_data.m1.sipm_temp.max,
-              data.processed_data.m1.sipm_operating_voltage.avg,
-              data.processed_data.m1.sipm_operating_voltage.min,
-              data.processed_data.m1.sipm_operating_voltage.max,
-
-              data.processed_data.m5.arm_temp.avg,
-              data.processed_data.m5.arm_temp.min,
-              data.processed_data.m5.arm_temp.max,
-              data.processed_data.m5.sipm_temp.avg,
-              data.processed_data.m5.sipm_temp.min,
-              data.processed_data.m5.sipm_temp.max,
-              data.processed_data.m5.sipm_operating_voltage.avg,
-              data.processed_data.m5.sipm_operating_voltage.min,
-              data.processed_data.m5.sipm_operating_voltage.max,
-
-              data.processed_data.x1.arm_temp.avg,
-              data.processed_data.x1.arm_temp.min,
-              data.processed_data.x1.arm_temp.max,
-              data.processed_data.x1.sipm_temp.avg,
-              data.processed_data.x1.sipm_temp.min,
-              data.processed_data.x1.sipm_temp.max,
-              data.processed_data.x1.sipm_operating_voltage.avg,
-              data.processed_data.x1.sipm_operating_voltage.min,
-              data.processed_data.x1.sipm_operating_voltage.max,
-
-              data.processed_data.x123.board_temp.avg,
-              data.processed_data.x123.board_temp.min,
-              data.processed_data.x123.board_temp.max,
-              data.processed_data.x123.det_high_voltage.avg,
-              data.processed_data.x123.det_high_voltage.min,
-              data.processed_data.x123.det_high_voltage.max,
-              data.processed_data.x123.det_temp.avg,
-              data.processed_data.x123.det_temp.min,
-              data.processed_data.x123.det_temp.max
-            );
-          })
-        );
-      }
-    } catch (error) {
-      console.log("error");
-    }
   };
 
-  const handleEndDate = (newDate: Dayjs) => {};
+  const handleEndDate = (newDate: Dayjs) => {
+    setEndDate(newDate.unix());
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
