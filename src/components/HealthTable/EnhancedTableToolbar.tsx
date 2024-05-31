@@ -4,6 +4,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import utc from "dayjs/plugin/utc";
 import {
   Toolbar,
   alpha,
@@ -20,6 +21,8 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import dayjs, { Dayjs } from "dayjs";
+
+dayjs.extend(utc);
 
 const detectors = [
   {
@@ -120,12 +123,14 @@ interface EnhancedTableToolbarProps {
   numSelected: number;
   rows: Data[];
   selected: readonly number[];
-  handleBeginDate: (newDate: Dayjs) => void;
-  handleEndDate: (newDate: Dayjs) => void;
+  endDate: number;
+  beginDate: number;
+  setBeginDate: React.Dispatch<React.SetStateAction<number>>;
+  setEndDate: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, rows, selected, handleBeginDate, handleEndDate } = props;
+  const { numSelected, rows, selected, endDate, beginDate, setBeginDate, setEndDate } = props;
   const [open, setOpen] = React.useState<boolean>(false);
   const [detector, setDetector] = React.useState<string>();
   const [field, setField] = React.useState<string>();
@@ -169,16 +174,26 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             <DateTimePicker
               label="Begin UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
+              value={dayjs.unix(beginDate)}
+              timezone="UTC"
+              maxDate={dayjs()}
               onChange={(newDate) =>
-                newDate ? handleBeginDate(newDate) : handleBeginDate(dayjs(0))
+                newDate
+                  ? setBeginDate(newDate.unix())
+                  : setBeginDate(dayjs(0).unix())
               }
             />
 
             <DateTimePicker
               label="End UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
+              value={dayjs.unix(endDate)}
+              maxDate={dayjs()}
+              timezone="UTC"
               onChange={(newDate) =>
-                newDate ? handleEndDate(newDate) : handleEndDate(dayjs())
+                newDate
+                  ? setEndDate(newDate.unix())
+                  : setEndDate(dayjs().unix())
               }
             />
           </Box>

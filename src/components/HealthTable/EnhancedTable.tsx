@@ -397,8 +397,10 @@ export default function EnhancedTable() {
           numSelected={selected.length}
           rows={rows}
           selected={selected}
-          handleBeginDate={handleBeginDate}
-          handleEndDate={handleEndDate}
+          endDate={endDate}
+          beginDate={beginDate}
+          setEndDate={setEndDate}
+          setBeginDate={setBeginDate}
         />
         <TableContainer>
           <Table
