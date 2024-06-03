@@ -299,3 +299,11 @@ export interface Data {
   x123_det_temp_min: number;
   x123_det_temp_max: number;
 }
+
+export interface FilterData {
+  detector: string;
+  field: string;
+  type: string;
+  operator: string;
+  value: number;
+}
