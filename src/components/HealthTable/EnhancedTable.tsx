@@ -21,67 +21,23 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import Link from "@mui/material/Link";
-import { JSONData } from "@/types/types";
+import { Data, JSONData } from "@/types/types";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import DownloadIcon from "@mui/icons-material/Download";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { MenuItem, Tab } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Menu,
+  MenuItem,
+  Tab,
+} from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
-
-interface Data {
-  id: number;
-  uid: string;
-  beginUTC: string;
-  c1_arm_temp_avg: number;
-  c1_arm_temp_min: number;
-  c1_arm_temp_max: number;
-  c1_sipm_temp_avg: number;
-  c1_sipm_temp_min: number;
-  c1_sipm_temp_max: number;
-  c1_sipm_operating_voltage_avg: number;
-  c1_sipm_operating_voltage_min: number;
-  c1_sipm_operating_voltage_max: number;
-
-  m1_arm_temp_avg: number;
-  m1_arm_temp_min: number;
-  m1_arm_temp_max: number;
-  m1_sipm_temp_avg: number;
-  m1_sipm_temp_min: number;
-  m1_sipm_temp_max: number;
-  m1_sipm_operating_voltage_avg: number;
-  m1_sipm_operating_voltage_min: number;
-  m1_sipm_operating_voltage_max: number;
-
-  m5_arm_temp_avg: number;
-  m5_arm_temp_min: number;
-  m5_arm_temp_max: number;
-  m5_sipm_temp_avg: number;
-  m5_sipm_temp_min: number;
-  m5_sipm_temp_max: number;
-  m5_sipm_operating_voltage_avg: number;
-  m5_sipm_operating_voltage_min: number;
-  m5_sipm_operating_voltage_max: number;
-
-  x1_arm_temp_avg: number;
-  x1_arm_temp_min: number;
-  x1_arm_temp_max: number;
-  x1_sipm_temp_avg: number;
-  x1_sipm_temp_min: number;
-  x1_sipm_temp_max: number;
-  x1_sipm_operating_voltage_avg: number;
-  x1_sipm_operating_voltage_min: number;
-  x1_sipm_operating_voltage_max: number;
-
-  x123_board_temp_avg: number;
-  x123_board_temp_min: number;
-  x123_board_temp_max: number;
-  x123_det_high_voltage_avg: number;
-  x123_det_high_voltage_min: number;
-  x123_det_high_voltage_max: number;
-  x123_det_temp_avg: number;
-  x123_det_temp_min: number;
-  x123_det_temp_max: number;
-}
+import { useEffect } from "react";
+import EnhancedTableHead from "./EnhancedTableHead";
+import EnhancedTableToolbar from "./EnhancedTableToolbar";
+import dayjs, { Dayjs } from "dayjs";
 
 function createData(
   id: number,
@@ -135,7 +91,7 @@ function createData(
   x123_det_high_voltage_max: number,
   x123_det_temp_avg: number,
   x123_det_temp_min: number,
-  x123_det_temp_max: number,
+  x123_det_temp_max: number
 ): Data {
   return {
     id,
@@ -236,511 +192,7 @@ function stableSort<T>(
   return stabilizedThis.map((el) => el[0]);
 }
 
-interface HeadCell {
-  disablePadding: boolean;
-  id: keyof Data;
-  detector: string;
-  label: string;
-  numeric: boolean;
-}
-
-const headCells: readonly HeadCell[] = [
-  {
-    id: "uid",
-    numeric: false,
-    disablePadding: true,
-    label: "",
-    detector: "all",
-  },
-  {
-    id: "beginUTC",
-    numeric: false,
-    disablePadding: false,
-    label: "Begin UTC",
-    detector: "all",
-  },
-  {
-    id: "c1_arm_temp_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "c1",
-  },
-  {
-    id: "c1_arm_temp_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "c1",
-  },
-  {
-    id: "c1_arm_temp_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "c1",
-  },
-  {
-    id: "c1_sipm_temp_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "c1",
-  },
-  {
-    id: "c1_sipm_temp_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "c1",
-  },
-  {
-    id: "c1_sipm_temp_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "c1",
-  },
-  {
-    id: "c1_sipm_operating_voltage_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "c1",
-  },
-  {
-    id: "c1_sipm_operating_voltage_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "c1",
-  },
-  {
-    id: "c1_sipm_operating_voltage_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "c1",
-  },
-  {
-    id: "m1_arm_temp_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "m1",
-  },
-  {
-    id: "m1_arm_temp_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "m1",
-  },
-  {
-    id: "m1_arm_temp_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "m1",
-  },
-  {
-    id: "m1_sipm_temp_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "m1",
-  },
-  {
-    id: "m1_sipm_temp_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "m1",
-  },
-  {
-    id: "m1_sipm_temp_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "m1",
-  },
-  {
-    id: "m1_sipm_operating_voltage_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "m1",
-  },
-  {
-    id: "m1_sipm_operating_voltage_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "m1",
-  },
-  {
-    id: "m1_sipm_operating_voltage_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "m1",
-  },
-  {
-    id: "m5_arm_temp_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "m5",
-  },
-  {
-    id: "m5_arm_temp_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "m5",
-  },
-  {
-    id: "m5_arm_temp_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "m5",
-  },
-  {
-    id: "m5_sipm_temp_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "m5",
-  },
-  {
-    id: "m5_sipm_temp_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "m5",
-  },
-  {
-    id: "m5_sipm_temp_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "m5",
-  },
-  {
-    id: "m5_sipm_operating_voltage_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "m5",
-  },
-  {
-    id: "m5_sipm_operating_voltage_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "m5",
-  },
-  {
-    id: "m5_sipm_operating_voltage_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "m5",
-  },
-  {
-    id: "x1_arm_temp_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "x1",
-  },
-  {
-    id: "x1_arm_temp_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "x1",
-  },
-  {
-    id: "x1_arm_temp_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "x1",
-  },
-  {
-    id: "x1_sipm_temp_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "x1",
-  },
-  {
-    id: "x1_sipm_temp_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "x1",
-  },
-  {
-    id: "x1_sipm_temp_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "x1",
-  },
-  {
-    id: "x1_sipm_operating_voltage_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "x1",
-  },
-  {
-    id: "x1_sipm_operating_voltage_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "x1",
-  },
-  {
-    id: "x1_sipm_operating_voltage_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "x1",
-  },
-  {
-    id: "x123_board_temp_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "x123",
-  },
-  {
-    id: "x123_board_temp_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "x123",
-  },
-  {
-    id: "x123_board_temp_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "x123",
-  },
-  {
-    id: "x123_det_high_voltage_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "x123",
-  },
-  {
-    id: "x123_det_high_voltage_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "x123",
-  },
-  {
-    id: "x123_det_high_voltage_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "x123",
-  },
-  {
-    id: "x123_det_temp_avg",
-    numeric: true,
-    disablePadding: false,
-    label: "Average",
-    detector: "x123",
-  },
-  {
-    id: "x123_det_temp_min",
-    numeric: true,
-    disablePadding: false,
-    label: "Minimum",
-    detector: "x123",
-  },
-  {
-    id: "x123_det_temp_max",
-    numeric: true,
-    disablePadding: false,
-    label: "Maximum",
-    detector: "x123",
-  },
-];
-
-interface EnhancedTableProps {
-  numSelected: number;
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof Data
-  ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
-  rowCount: number;
-  detector: string;
-}
-
-function EnhancedTableHead(props: EnhancedTableProps) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-    detector,
-  } = props;
-  const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
-    };
-
-  return (
-    <TableHead>
-      {detector == "x123" ? (
-        <TableRow>
-          <TableCell colSpan={3} align="center">
-            Details
-          </TableCell>
-          <TableCell colSpan={3} align="center">
-            DP5 board temperature
-          </TableCell>
-          <TableCell colSpan={3} align="center">
-            Detector high voltage
-          </TableCell>
-          <TableCell colSpan={3} align="center">
-            Detector head temperature
-          </TableCell>
-        </TableRow>
-      ) : (
-        <TableRow>
-          <TableCell colSpan={3} align="center">
-            Details
-          </TableCell>
-          <TableCell colSpan={3} align="center">
-            ARM Processor Temperature
-          </TableCell>
-          <TableCell colSpan={3} align="center">
-            SiPM board temperature
-          </TableCell>
-          <TableCell colSpan={3} align="center">
-            SiPM operating voltage
-          </TableCell>
-        </TableRow>
-      )}
-      <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              "aria-label": "select all datas",
-            }}
-          />
-        </TableCell>
-        {headCells.map(
-          (headCell) =>
-            (headCell.detector == "all" || headCell.detector == detector) && (
-              <TableCell
-                key={headCell.id}
-                align={headCell.numeric ? "right" : "center"}
-                padding={headCell.disablePadding ? "none" : "normal"}
-                sortDirection={orderBy === headCell.id ? order : false}
-              >
-                <TableSortLabel
-                  active={orderBy === headCell.id}
-                  direction={orderBy === headCell.id ? order : "asc"}
-                  onClick={createSortHandler(headCell.id)}
-                >
-                  {headCell.label}
-                  {orderBy === headCell.id ? (
-                    <Box component="span" sx={visuallyHidden}>
-                      {order === "desc"
-                        ? "sorted descending"
-                        : "sorted ascending"}
-                    </Box>
-                  ) : null}
-                </TableSortLabel>
-              </TableCell>
-            )
-        )}
-      </TableRow>
-    </TableHead>
-  );
-}
-
-interface EnhancedTableToolbarProps {
-  numSelected: number;
-}
-
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected } = props;
-
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(
-              theme.palette.primary.main,
-              theme.palette.action.activatedOpacity
-            ),
-        }),
-      }}
-    >
-      {numSelected > 0 ? (
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Health Data
-        </Typography>
-      )}
-      {numSelected > 0 ? (
-        <Tooltip title="Download">
-          <IconButton>
-            <DownloadIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
-  );
-}
-export default function EnhancedTable({
-  inputData,
-}: {
-  inputData: JSONData[];
-}) {
+export default function EnhancedTable() {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("id");
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -748,63 +200,98 @@ export default function EnhancedTable({
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [detectors, setDetectors] = React.useState<string>("c1");
+  const [data, setData] = React.useState<JSONData[]>([]);
+  const [rows, setRows] = React.useState<Data[]>([]);
+  const [beginDate, setBeginDate] = React.useState<number>(0);
+  const [endDate, setEndDate] = React.useState<number>(dayjs().unix());
 
-  let rows = inputData.map((data, index) => {
-    return createData(
-      index,
-      data._id.toString(),
-      new Date(data.processed_data.start_time * 1000).toLocaleString(),
-      data.processed_data.c1.arm_temp.avg,
-      data.processed_data.c1.arm_temp.min,
-      data.processed_data.c1.arm_temp.max,
-      data.processed_data.c1.sipm_temp.avg,
-      data.processed_data.c1.sipm_temp.min,
-      data.processed_data.c1.sipm_temp.max,
-      data.processed_data.c1.sipm_operating_voltage.avg,
-      data.processed_data.c1.sipm_operating_voltage.min,
-      data.processed_data.c1.sipm_operating_voltage.max,
+  useEffect(() => {
+    const fetchDataWrapper = async () => {
+      try {
+        const formdata = new FormData();
+        formdata.set("projection", JSON.stringify({ processed_data: 1 }));
+        formdata.set(
+          "filter",
+          JSON.stringify({
+            "processed_data.start_time": { $gte: beginDate, $lte: endDate },
+          })
+        );
 
-      data.processed_data.m1.arm_temp.avg,
-      data.processed_data.m1.arm_temp.min,
-      data.processed_data.m1.arm_temp.max,
-      data.processed_data.m1.sipm_temp.avg,
-      data.processed_data.m1.sipm_temp.min,
-      data.processed_data.m1.sipm_temp.max,
-      data.processed_data.m1.sipm_operating_voltage.avg,
-      data.processed_data.m1.sipm_operating_voltage.min,
-      data.processed_data.m1.sipm_operating_voltage.max,
+        const res = await fetch("/api/fetch", {
+          method: "POST",
+          body: formdata,
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const returndata = await res.json();
+        if (returndata) {
+          let json: JSONData[] = returndata.data;
+          setData(json);
+          setRows(
+            json.map((data, index) => {
+              return createData(
+                index,
+                data._id.toString(),
+                new Date(data.processed_data.start_time * 1000).toUTCString(),
+                data.processed_data.c1.arm_temp.avg,
+                data.processed_data.c1.arm_temp.min,
+                data.processed_data.c1.arm_temp.max,
+                data.processed_data.c1.sipm_temp.avg,
+                data.processed_data.c1.sipm_temp.min,
+                data.processed_data.c1.sipm_temp.max,
+                data.processed_data.c1.sipm_operating_voltage.avg,
+                data.processed_data.c1.sipm_operating_voltage.min,
+                data.processed_data.c1.sipm_operating_voltage.max,
 
-      data.processed_data.m5.arm_temp.avg,
-      data.processed_data.m5.arm_temp.min,
-      data.processed_data.m5.arm_temp.max,
-      data.processed_data.m5.sipm_temp.avg,
-      data.processed_data.m5.sipm_temp.min,
-      data.processed_data.m5.sipm_temp.max,
-      data.processed_data.m5.sipm_operating_voltage.avg,
-      data.processed_data.m5.sipm_operating_voltage.min,
-      data.processed_data.m5.sipm_operating_voltage.max,
+                data.processed_data.m1.arm_temp.avg,
+                data.processed_data.m1.arm_temp.min,
+                data.processed_data.m1.arm_temp.max,
+                data.processed_data.m1.sipm_temp.avg,
+                data.processed_data.m1.sipm_temp.min,
+                data.processed_data.m1.sipm_temp.max,
+                data.processed_data.m1.sipm_operating_voltage.avg,
+                data.processed_data.m1.sipm_operating_voltage.min,
+                data.processed_data.m1.sipm_operating_voltage.max,
 
-      data.processed_data.x1.arm_temp.avg,
-      data.processed_data.x1.arm_temp.min,
-      data.processed_data.x1.arm_temp.max,
-      data.processed_data.x1.sipm_temp.avg,
-      data.processed_data.x1.sipm_temp.min,
-      data.processed_data.x1.sipm_temp.max,
-      data.processed_data.x1.sipm_operating_voltage.avg,
-      data.processed_data.x1.sipm_operating_voltage.min,
-      data.processed_data.x1.sipm_operating_voltage.max,
+                data.processed_data.m5.arm_temp.avg,
+                data.processed_data.m5.arm_temp.min,
+                data.processed_data.m5.arm_temp.max,
+                data.processed_data.m5.sipm_temp.avg,
+                data.processed_data.m5.sipm_temp.min,
+                data.processed_data.m5.sipm_temp.max,
+                data.processed_data.m5.sipm_operating_voltage.avg,
+                data.processed_data.m5.sipm_operating_voltage.min,
+                data.processed_data.m5.sipm_operating_voltage.max,
 
-      data.processed_data.x123.board_temp.avg,
-      data.processed_data.x123.board_temp.min,
-      data.processed_data.x123.board_temp.max,
-      data.processed_data.x123.det_high_voltage.avg,
-      data.processed_data.x123.det_high_voltage.min,
-      data.processed_data.x123.det_high_voltage.max,
-      data.processed_data.x123.det_temp.avg,
-      data.processed_data.x123.det_temp.min,
-      data.processed_data.x123.det_temp.max
-    );
-  });
+                data.processed_data.x1.arm_temp.avg,
+                data.processed_data.x1.arm_temp.min,
+                data.processed_data.x1.arm_temp.max,
+                data.processed_data.x1.sipm_temp.avg,
+                data.processed_data.x1.sipm_temp.min,
+                data.processed_data.x1.sipm_temp.max,
+                data.processed_data.x1.sipm_operating_voltage.avg,
+                data.processed_data.x1.sipm_operating_voltage.min,
+                data.processed_data.x1.sipm_operating_voltage.max,
+
+                data.processed_data.x123.board_temp.avg,
+                data.processed_data.x123.board_temp.min,
+                data.processed_data.x123.board_temp.max,
+                data.processed_data.x123.det_high_voltage.avg,
+                data.processed_data.x123.det_high_voltage.min,
+                data.processed_data.x123.det_high_voltage.max,
+                data.processed_data.x123.det_temp.avg,
+                data.processed_data.x123.det_temp.min,
+                data.processed_data.x123.det_temp.max
+              );
+            })
+          );
+        }
+      } catch (error) {
+        console.log("error");
+      }
+    };
+
+    fetchDataWrapper();
+  }, [setData, beginDate, endDate]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -896,7 +383,15 @@ export default function EnhancedTable({
           </TabList>
         </TabContext>
 
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          rows={rows}
+          selected={selected}
+          endDate={endDate}
+          beginDate={beginDate}
+          setEndDate={setEndDate}
+          setBeginDate={setBeginDate}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

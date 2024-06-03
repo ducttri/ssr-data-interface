@@ -244,3 +244,58 @@ export interface JSONData {
     };
   };
 }
+
+export interface Data {
+  id: number;
+  uid: string;
+  beginUTC: string;
+  c1_arm_temp_avg: number;
+  c1_arm_temp_min: number;
+  c1_arm_temp_max: number;
+  c1_sipm_temp_avg: number;
+  c1_sipm_temp_min: number;
+  c1_sipm_temp_max: number;
+  c1_sipm_operating_voltage_avg: number;
+  c1_sipm_operating_voltage_min: number;
+  c1_sipm_operating_voltage_max: number;
+
+  m1_arm_temp_avg: number;
+  m1_arm_temp_min: number;
+  m1_arm_temp_max: number;
+  m1_sipm_temp_avg: number;
+  m1_sipm_temp_min: number;
+  m1_sipm_temp_max: number;
+  m1_sipm_operating_voltage_avg: number;
+  m1_sipm_operating_voltage_min: number;
+  m1_sipm_operating_voltage_max: number;
+
+  m5_arm_temp_avg: number;
+  m5_arm_temp_min: number;
+  m5_arm_temp_max: number;
+  m5_sipm_temp_avg: number;
+  m5_sipm_temp_min: number;
+  m5_sipm_temp_max: number;
+  m5_sipm_operating_voltage_avg: number;
+  m5_sipm_operating_voltage_min: number;
+  m5_sipm_operating_voltage_max: number;
+
+  x1_arm_temp_avg: number;
+  x1_arm_temp_min: number;
+  x1_arm_temp_max: number;
+  x1_sipm_temp_avg: number;
+  x1_sipm_temp_min: number;
+  x1_sipm_temp_max: number;
+  x1_sipm_operating_voltage_avg: number;
+  x1_sipm_operating_voltage_min: number;
+  x1_sipm_operating_voltage_max: number;
+
+  x123_board_temp_avg: number;
+  x123_board_temp_min: number;
+  x123_board_temp_max: number;
+  x123_det_high_voltage_avg: number;
+  x123_det_high_voltage_min: number;
+  x123_det_high_voltage_max: number;
+  x123_det_temp_avg: number;
+  x123_det_temp_min: number;
+  x123_det_temp_max: number;
+}
