@@ -23,7 +23,9 @@ export async function POST(request: NextRequest) {
       }
       return NextResponse.json({ success: true, data: data });
     } else {
-      const cursor = datacollection.find({ _id: new ObjectId(id) }).project(projection);
+      const cursor = datacollection
+        .find({ _id: new ObjectId(id) })
+        .project(projection);
       let data: JSONData[] = [];
       for await (const doc of cursor) {
         data.push(doc as JSONData);

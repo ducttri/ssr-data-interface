@@ -130,7 +130,15 @@ interface EnhancedTableToolbarProps {
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, rows, selected, endDate, beginDate, setBeginDate, setEndDate } = props;
+  const {
+    numSelected,
+    rows,
+    selected,
+    endDate,
+    beginDate,
+    setBeginDate,
+    setEndDate,
+  } = props;
   const [open, setOpen] = React.useState<boolean>(false);
   const [detector, setDetector] = React.useState<string>();
   const [field, setField] = React.useState<string>();
@@ -174,7 +182,6 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             <DateTimePicker
               label="Begin UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
-              value={dayjs.unix(beginDate)}
               timezone="UTC"
               maxDate={dayjs()}
               onChange={(newDate) =>
@@ -187,7 +194,6 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             <DateTimePicker
               label="End UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
-              value={dayjs.unix(endDate)}
               maxDate={dayjs()}
               timezone="UTC"
               onChange={(newDate) =>

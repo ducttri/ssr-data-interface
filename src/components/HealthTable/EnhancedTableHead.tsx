@@ -1,5 +1,12 @@
 import { Data } from "@/types/types";
-import { TableHead, TableRow, TableCell, Checkbox, TableSortLabel, Box } from "@mui/material";
+import {
+  TableHead,
+  TableRow,
+  TableCell,
+  Checkbox,
+  TableSortLabel,
+  Box,
+} from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
 
 type Order = "asc" | "desc";
@@ -336,8 +343,6 @@ const headCells: readonly HeadCell[] = [
     detector: "x123",
   },
 ];
-
-
 
 interface EnhancedTableProps {
   numSelected: number;

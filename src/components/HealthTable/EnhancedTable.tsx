@@ -213,7 +213,7 @@ export default function EnhancedTable() {
         formdata.set(
           "filter",
           JSON.stringify({
-            "processed_data.start_time": { $gte: beginDate , $lte: endDate},
+            "processed_data.start_time": { $gte: beginDate, $lte: endDate },
           })
         );
 
@@ -293,14 +293,6 @@ export default function EnhancedTable() {
     fetchDataWrapper();
   }, [setData, beginDate, endDate]);
 
-  const handleBeginDate = async (newDate: Dayjs) => {
-    setBeginDate(newDate.unix());
-  };
-
-  const handleEndDate = (newDate: Dayjs) => {
-    setEndDate(newDate.unix());
-  };
-
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof Data
@@ -322,8 +314,6 @@ export default function EnhancedTable() {
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected: readonly number[] = [];
-
-    console.log(id);
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
