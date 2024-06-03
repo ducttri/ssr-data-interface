@@ -446,7 +446,8 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                               onClick={() => {
                                 let oldRows = filter;
                                 oldRows.splice(index, 1);
-                                let newRows: FilterData[] = [].concat(oldRows); // We need this otherwise it won't render conrrectly (blame react)
+                                let newRows: FilterData[] = []; // We need this otherwise it won't render conrrectly (blame react)
+                                newRows.concat(oldRows);
                                 setFilter(newRows);
                               }}
                             >
