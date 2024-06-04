@@ -1,4 +1,4 @@
-import { Data, FilterData } from "@/types/types";
+import { FilterData } from "@/types/types";
 import DownloadIcon from "@mui/icons-material/Download";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -18,7 +18,6 @@ import {
   TextField,
   MenuItem,
   FormControl,
-  Button,
   Paper,
   Table,
   TableBody,
@@ -27,14 +26,11 @@ import {
   TableHead,
   TableRow,
   Select,
-  InputLabel,
 } from "@mui/material";
 import * as React from "react";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Toys, TypeSpecimenOutlined } from "@mui/icons-material";
-import { TemplateContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 dayjs.extend(utc);
 
@@ -135,7 +131,7 @@ const comperator = [
 
 function createFilter(
   detector: string,
-  field: string,
+  field: number,
   type: string,
   operator: string,
   value: number
@@ -145,23 +141,20 @@ function createFilter(
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
-  rows: Data[];
-  selected: readonly number[];
-  endDate: number;
-  beginDate: number;
+  filter: FilterData[];
+  setFilter: React.Dispatch<React.SetStateAction<FilterData[]>>;
   setBeginDate: React.Dispatch<React.SetStateAction<number>>;
   setEndDate: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, setBeginDate, setEndDate } = props;
+  const { numSelected, setBeginDate, setEndDate, filter, setFilter } = props;
   const [open, setOpen] = React.useState<boolean>(false);
   const [detector, setDetector] = React.useState<string>("c1");
-  const [field, setField] = React.useState<string>("0");
+  const [field, setField] = React.useState<number>(1);
   const [type, setType] = React.useState<string>("avg");
   const [operator, setOperator] = React.useState<string>("=");
   const [value, setValue] = React.useState<number>();
-  const [filter, setFilter] = React.useState<FilterData[]>([]);
 
   const handleClick = () => {
     setOpen(true);
@@ -171,16 +164,12 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   };
 
   const handleAddition = () => {
-    let newRows = [
-      createFilter(
-        detector || "",
-        field || "",
-        type || "",
-        operator || "",
-        value || 0
-      ),
-    ].concat(filter);
-    setFilter(newRows);
+    if (detector && field && type && operator && value) {
+      let newRows = [
+        createFilter(detector, field, type, operator, value),
+      ].concat(filter);
+      setFilter(newRows);
+    }
   };
 
   const handleDeletion = (index: number) => {
@@ -321,7 +310,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                           <Select
                             id="select-field"
                             onChange={(event) => {
-                              setField(event.target.value);
+                              setField(event.target.value as unknown as number);
                             }}
                             variant="standard"
                             value={field}
@@ -411,7 +400,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                       </TableCell>
                       <TableCell align="right">
                         {detector &&
-                          field &&
+                          (field) &&
                           type &&
                           operator &&
                           value &&

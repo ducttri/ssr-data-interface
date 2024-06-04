@@ -302,7 +302,7 @@ export interface Data {
 
 export interface FilterData {
   detector: string;
-  field: string;
+  field: number;
   type: string;
   operator: string;
   value: number;

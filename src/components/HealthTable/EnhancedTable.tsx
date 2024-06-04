@@ -1,43 +1,26 @@
 import * as React from "react";
-import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import { visuallyHidden } from "@mui/utils";
-import Link from "@mui/material/Link";
 import { Data, FilterData, JSONData } from "@/types/types";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
-import DownloadIcon from "@mui/icons-material/Download";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Menu,
-  MenuItem,
-  Tab,
-} from "@mui/material";
+import { LinearProgress, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
 import { useEffect } from "react";
 import EnhancedTableHead from "./EnhancedTableHead";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import _ from "lodash";
 
 function createData(
   id: number,
@@ -204,19 +187,52 @@ export default function EnhancedTable() {
   const [rows, setRows] = React.useState<Data[]>([]);
   const [beginDate, setBeginDate] = React.useState<number>(0);
   const [endDate, setEndDate] = React.useState<number>(dayjs().unix());
-  const [filter, setFilter] = React.useState<FilterData[]>([]);
+  const [filters, setFilter] = React.useState<FilterData[]>([]);
+  let loading = false;
+
+  const filterCreator = () => {
+    let returnFilter = {
+      "processed_data.start_time": { $gte: beginDate, $lte: endDate },
+    };
+    for (const filter of filters) {
+      const hafxfield = ["arm_temp", "sipm_temp", "sipm_operating_voltage"];
+      const x123field = ["board_temp", "det_high_voltage", "det_temp"];
+
+      let key = "processed_data." + filter.detector + ".";
+      if (filter.detector == "x123") {
+        key += x123field[filter.field] + "." + filter.type;
+      } else {
+        key += hafxfield[filter.field] + "." + filter.type;
+      }
+
+      let value = {};
+      let filterVal = parseFloat(filter.value.toString());
+
+      if (filter.operator == "=") {
+        value = { $eq: filterVal };
+      } else if (filter.operator == "!=") {
+        value = { $ne: filterVal };
+      } else if (filter.operator == ">") {
+        value = { $gt: filterVal };
+      } else if (filter.operator == ">=") {
+        value = { $gte: filterVal };
+      } else if (filter.operator == "<") {
+        value = { $lt: filterVal };
+      } else if (filter.operator == "<=") {
+        value = { $lte: filterVal };
+      }
+      returnFilter = _.merge({}, returnFilter, { [key]: value });
+    }
+    return returnFilter;
+  };
 
   useEffect(() => {
     const fetchDataWrapper = async () => {
+      loading = true;
       try {
         const formdata = new FormData();
         formdata.set("projection", JSON.stringify({ processed_data: 1 }));
-        formdata.set(
-          "filter",
-          JSON.stringify({
-            "processed_data.start_time": { $gte: beginDate, $lte: endDate },
-          })
-        );
+        formdata.set("filter", JSON.stringify(filterCreator()));
 
         const res = await fetch("/api/fetch", {
           method: "POST",
@@ -285,14 +301,16 @@ export default function EnhancedTable() {
               );
             })
           );
+          setPage(0);
         }
       } catch (error) {
         console.log("error");
       }
+      loading = false;
     };
 
     fetchDataWrapper();
-  }, [setData, beginDate, endDate]);
+  }, [setData, beginDate, endDate, filters]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -371,6 +389,8 @@ export default function EnhancedTable() {
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
+        {loading && <LinearProgress />}
+
         <TabContext value={detectors}>
           <TabList
             onChange={handleDetectorChange}
@@ -386,12 +406,10 @@ export default function EnhancedTable() {
 
         <EnhancedTableToolbar
           numSelected={selected.length}
-          rows={rows}
-          selected={selected}
-          endDate={endDate}
-          beginDate={beginDate}
           setEndDate={setEndDate}
           setBeginDate={setBeginDate}
+          filter={filters}
+          setFilter={setFilter}
         />
         <TableContainer>
           <Table
