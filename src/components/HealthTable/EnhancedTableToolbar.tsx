@@ -210,6 +210,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               label="Begin UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
               timezone="UTC"
+              minDate={dayjs.unix(1704088800)}
               maxDate={dayjs()}
               onChange={(newDate) =>
                 newDate
@@ -222,6 +223,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             <DateTimePicker
               label="End UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
+              minDate={dayjs.unix(1704088800)}
               maxDate={dayjs()}
               timezone="UTC"
               onChange={(newDate) =>
@@ -400,7 +402,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                       </TableCell>
                       <TableCell align="right">
                         {detector &&
-                          (field) &&
+                          field &&
                           type &&
                           operator &&
                           value &&

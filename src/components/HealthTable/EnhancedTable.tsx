@@ -185,7 +185,7 @@ export default function EnhancedTable() {
   const [detectors, setDetectors] = React.useState<string>("c1");
   const [data, setData] = React.useState<JSONData[]>([]);
   const [rows, setRows] = React.useState<Data[]>([]);
-  const [beginDate, setBeginDate] = React.useState<number>(0);
+  const [beginDate, setBeginDate] = React.useState<number>(1704088800);
   const [endDate, setEndDate] = React.useState<number>(dayjs().unix());
   const [filters, setFilter] = React.useState<FilterData[]>([]);
   let loading = false;
@@ -310,7 +310,7 @@ export default function EnhancedTable() {
     };
 
     fetchDataWrapper();
-  }, [setData, beginDate, endDate, filters]);
+  }, [setData, beginDate, endDate, filters, loading]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
