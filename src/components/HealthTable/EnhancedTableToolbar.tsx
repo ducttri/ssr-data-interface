@@ -34,6 +34,7 @@ import dayjs, { Dayjs } from "dayjs";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Toys, TypeSpecimenOutlined } from "@mui/icons-material";
+import { TemplateContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 dayjs.extend(utc);
 
@@ -153,16 +154,12 @@ interface EnhancedTableToolbarProps {
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const {
-    numSelected,
-    setBeginDate,
-    setEndDate,
-  } = props;
+  const { numSelected, setBeginDate, setEndDate } = props;
   const [open, setOpen] = React.useState<boolean>(false);
-  const [detector, setDetector] = React.useState<string>();
-  const [field, setField] = React.useState<string>();
-  const [type, setType] = React.useState<string>();
-  const [operator, setOperator] = React.useState<string>();
+  const [detector, setDetector] = React.useState<string>("c1");
+  const [field, setField] = React.useState<string>("0");
+  const [type, setType] = React.useState<string>("avg");
+  const [operator, setOperator] = React.useState<string>("=");
   const [value, setValue] = React.useState<number>();
   const [filter, setFilter] = React.useState<FilterData[]>([]);
 
@@ -184,6 +181,14 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       ),
     ].concat(filter);
     setFilter(newRows);
+  };
+
+  const handleDeletion = (index: number) => {
+    setFilter((prevFilter) => {
+      const newFilter = prevFilter.slice();
+      newFilter.splice(index, 1);
+      return newFilter;
+    });
   };
 
   return (
@@ -283,9 +288,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                       <TableCell width={"20%"} align="left">
                         Value
                       </TableCell>
-                      <TableCell width={"10%"} align="right">
-                        Delete
-                      </TableCell>
+                      <TableCell width={"10%"} align="right"></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -387,6 +390,13 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                           <TextField
                             id="outlined-select-value"
                             type="number"
+                            error={
+                              value
+                                ? value > 1000 || value < -1000
+                                  ? true
+                                  : false
+                                : false
+                            }
                             required
                             InputLabelProps={{
                               shrink: true,
@@ -400,18 +410,24 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                         </FormControl>
                       </TableCell>
                       <TableCell align="right">
-                        {detector && field && type && operator && value && (
-                          <Tooltip title="Add Filter">
-                            <IconButton
-                              aria-controls={open ? "basic-menu" : undefined}
-                              aria-haspopup="true"
-                              aria-expanded={open ? "true" : undefined}
-                              onClick={handleAddition}
-                            >
-                              <AddCircleOutlineIcon />
-                            </IconButton>
-                          </Tooltip>
-                        )}
+                        {detector &&
+                          field &&
+                          type &&
+                          operator &&
+                          value &&
+                          value <= 1000 &&
+                          value >= -1000 && (
+                            <Tooltip title="Add Filter">
+                              <IconButton
+                                aria-controls={open ? "basic-menu" : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? "true" : undefined}
+                                onClick={handleAddition}
+                              >
+                                <AddCircleOutlineIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                       </TableCell>
                     </TableRow>
                     {filter.map((row, index) => (
@@ -438,12 +454,9 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                               aria-controls={open ? "basic-menu" : undefined}
                               aria-haspopup="true"
                               aria-expanded={open ? "true" : undefined}
+                              key={index}
                               onClick={() => {
-                                let oldRows = filter;
-                                oldRows.splice(index, 1);
-                                let newRows: FilterData[] = []; // We need this otherwise it won't render conrrectly (blame react)
-                                newRows.concat(oldRows);
-                                setFilter(newRows);
+                                handleDeletion(index);
                               }}
                             >
                               <DeleteIcon />

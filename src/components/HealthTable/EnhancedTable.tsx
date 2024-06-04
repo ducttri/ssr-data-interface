@@ -21,7 +21,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import Link from "@mui/material/Link";
-import { Data, JSONData } from "@/types/types";
+import { Data, FilterData, JSONData } from "@/types/types";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import DownloadIcon from "@mui/icons-material/Download";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
@@ -204,6 +204,7 @@ export default function EnhancedTable() {
   const [rows, setRows] = React.useState<Data[]>([]);
   const [beginDate, setBeginDate] = React.useState<number>(0);
   const [endDate, setEndDate] = React.useState<number>(dayjs().unix());
+  const [filter, setFilter] = React.useState<FilterData[]>([]);
 
   useEffect(() => {
     const fetchDataWrapper = async () => {
