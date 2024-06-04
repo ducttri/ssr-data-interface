@@ -301,11 +301,6 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                             id="select-detector"
                             onChange={(event) => {
                               setDetector(event.target.value);
-                              if (detector == "x123") {
-                                setField("0");
-                              } else {
-                                setField("0");
-                              }
                             }}
                             value={detector}
                             variant="standard"
