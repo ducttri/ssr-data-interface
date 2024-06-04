@@ -1,4 +1,4 @@
-import { Data } from "@/types/types";
+import { FilterData } from "@/types/types";
 import DownloadIcon from "@mui/icons-material/Download";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -18,9 +18,19 @@ import {
   TextField,
   MenuItem,
   FormControl,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Select,
 } from "@mui/material";
 import * as React from "react";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 dayjs.extend(utc);
 
@@ -49,30 +59,30 @@ const detectors = [
 
 const hafxfield = [
   {
-    value: "arm_temp",
+    value: "0",
     label: "ARM Processor Temperature",
   },
   {
-    value: "sipm_temp",
+    value: "1",
     label: "SiPM board temperature",
   },
   {
-    value: "sipm_operating_voltage",
+    value: "2",
     label: "SiPM operating voltage",
   },
 ];
 
 const x123field = [
   {
-    value: "board_temp",
+    value: "0",
     label: "DP5 board temperature",
   },
   {
-    value: "det_high_voltage",
+    value: "1",
     label: "Detector high voltage",
   },
   {
-    value: "det_temp",
+    value: "2",
     label: "Detector head temperature",
   },
 ];
@@ -119,38 +129,55 @@ const comperator = [
   },
 ];
 
+function createFilter(
+  detector: string,
+  field: number,
+  type: string,
+  operator: string,
+  value: number
+): FilterData {
+  return { detector, field, type, operator, value };
+}
+
 interface EnhancedTableToolbarProps {
   numSelected: number;
-  rows: Data[];
-  selected: readonly number[];
-  endDate: number;
-  beginDate: number;
+  filter: FilterData[];
+  setFilter: React.Dispatch<React.SetStateAction<FilterData[]>>;
   setBeginDate: React.Dispatch<React.SetStateAction<number>>;
   setEndDate: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const {
-    numSelected,
-    rows,
-    selected,
-    endDate,
-    beginDate,
-    setBeginDate,
-    setEndDate,
-  } = props;
+  const { numSelected, setBeginDate, setEndDate, filter, setFilter } = props;
   const [open, setOpen] = React.useState<boolean>(false);
-  const [detector, setDetector] = React.useState<string>();
-  const [field, setField] = React.useState<string>();
-  const [type, setType] = React.useState<string>();
-  const [opeartor, setOperator] = React.useState<string>();
-  const [value, setValue] = React.useState<string>();
+  const [detector, setDetector] = React.useState<string>("c1");
+  const [field, setField] = React.useState<number>(1);
+  const [type, setType] = React.useState<string>("avg");
+  const [operator, setOperator] = React.useState<string>("=");
+  const [value, setValue] = React.useState<number>();
 
   const handleClick = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleAddition = () => {
+    if (detector && field && type && operator && value) {
+      let newRows = [
+        createFilter(detector, field, type, operator, value),
+      ].concat(filter);
+      setFilter(newRows);
+    }
+  };
+
+  const handleDeletion = (index: number) => {
+    setFilter((prevFilter) => {
+      const newFilter = prevFilter.slice();
+      newFilter.splice(index, 1);
+      return newFilter;
+    });
   };
 
   return (
@@ -178,11 +205,12 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       ) : (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Box sx={{ flex: "10 10 100%", m: 2 }}>
+          <Box sx={{ m: 2 }}>
             <DateTimePicker
               label="Begin UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
               timezone="UTC"
+              minDate={dayjs.unix(1704088800)}
               maxDate={dayjs()}
               onChange={(newDate) =>
                 newDate
@@ -190,10 +218,12 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                   : setBeginDate(dayjs(0).unix())
               }
             />
-
+          </Box>
+          <Box sx={{ flex: "10 10 100%", m: 2 }}>
             <DateTimePicker
               label="End UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
+              minDate={dayjs.unix(1704088800)}
               maxDate={dayjs()}
               timezone="UTC"
               onChange={(newDate) =>
@@ -232,101 +262,203 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           >
             <DialogTitle>Filter</DialogTitle>
             <DialogContent>
-              <Box
-                component="form"
-                sx={{
-                  "& .MuiTextField-root": { m: 1 },
-                }}
-                noValidate
-                autoComplete="off"
-              >
-                <FormControl
-                  sx={{
-                    "& .MuiTextField-root": { width: "10ch" },
-                  }}
-                >
-                  <TextField
-                    id="select-detector"
-                    select
-                    required
-                    label="Detector"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    onChange={(event) => {
-                      if (event.target.value != "x123")
-                        setDetector(event.target.value);
-                      setField(undefined);
-                    }}
-                    variant="standard"
-                  >
-                    {detectors.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell width={"15%"}>Detector</TableCell>
+                      <TableCell width={"35%"} align="left">
+                        Field
+                      </TableCell>
+                      <TableCell width={"10%"} align="left">
+                        Type
+                      </TableCell>
+                      <TableCell width={"10%"} align="left">
+                        Operator
+                      </TableCell>
+                      <TableCell width={"20%"} align="left">
+                        Value
+                      </TableCell>
+                      <TableCell width={"10%"} align="right"></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    <TableRow
+                      key={"adding label"}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}
+                    >
+                      <TableCell component="th" scope="row">
+                        <FormControl sx={{ width: "100%" }}>
+                          <Select
+                            id="select-detector"
+                            onChange={(event) => {
+                              setDetector(event.target.value);
+                            }}
+                            value={detector}
+                            variant="standard"
+                          >
+                            {detectors.map((option) => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="left">
+                        <FormControl sx={{ width: "100%" }}>
+                          <Select
+                            id="select-field"
+                            onChange={(event) => {
+                              setField(event.target.value as unknown as number);
+                            }}
+                            variant="standard"
+                            value={field}
+                          >
+                            {detector &&
+                              detector != "x123" &&
+                              hafxfield.map((option) => (
+                                <MenuItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </MenuItem>
+                              ))}
+                            {detector &&
+                              detector == "x123" &&
+                              x123field.map((option) => (
+                                <MenuItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="left">
+                        <FormControl sx={{ width: "100%" }}>
+                          <Select
+                            id="select-type"
+                            onChange={(event) => {
+                              setType(event.target.value);
+                            }}
+                            variant="standard"
+                            value={type}
+                          >
+                            {datatype.map((option) => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="left">
+                        <FormControl sx={{ width: "100%" }}>
+                          <Select
+                            id="select-operator"
+                            onChange={(event) => {
+                              setOperator(event.target.value);
+                            }}
+                            variant="standard"
+                            value={operator}
+                          >
+                            {comperator.map((option) => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="left">
+                        <FormControl sx={{ width: "100%" }}>
+                          <TextField
+                            id="outlined-select-value"
+                            type="number"
+                            error={
+                              value
+                                ? value > 1000 || value < -1000
+                                  ? true
+                                  : false
+                                : false
+                            }
+                            required
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                            variant="standard"
+                            value={value}
+                            onChange={(event) =>
+                              setValue(event.target.value as unknown as number)
+                            }
+                          ></TextField>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell align="right">
+                        {detector &&
+                          field &&
+                          type &&
+                          operator &&
+                          value &&
+                          value <= 1000 &&
+                          value >= -1000 && (
+                            <Tooltip title="Add Filter">
+                              <IconButton
+                                aria-controls={open ? "basic-menu" : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? "true" : undefined}
+                                onClick={handleAddition}
+                              >
+                                <AddCircleOutlineIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                      </TableCell>
+                    </TableRow>
+                    {filter.map((row, index) => (
+                      <TableRow
+                        key={index}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell component="th" scope="row">
+                          {row.detector}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.detector == "x123"
+                            ? x123field[row.field as unknown as number].label
+                            : hafxfield[row.field as unknown as number].label}
+                        </TableCell>
+                        <TableCell align="right">{row.type}</TableCell>
+                        <TableCell align="right">{row.operator}</TableCell>
+                        <TableCell align="right">{row.value}</TableCell>
+                        <TableCell align="right">
+                          <Tooltip title="Delete Filter">
+                            <IconButton
+                              aria-controls={open ? "basic-menu" : undefined}
+                              aria-haspopup="true"
+                              aria-expanded={open ? "true" : undefined}
+                              key={index}
+                              onClick={() => {
+                                handleDeletion(index);
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </TextField>
-                </FormControl>
-                {detector && (
-                  <FormControl
-                    sx={{
-                      "& .MuiTextField-root": { width: "30ch" },
-                    }}
-                  >
-                    <TextField
-                      id="outlined-select-detector"
-                      required
-                      select
-                      label="Field"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      onChange={(event) => setField(event.target.value)}
-                      variant="standard"
-                    >
-                      {detector &&
-                        detector != "x123" &&
-                        hafxfield.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      {detector &&
-                        detector == "x123" &&
-                        x123field.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                    </TextField>
-                  </FormControl>
-                )}
-                {detector && field && (
-                  <FormControl
-                    sx={{
-                      "& .MuiTextField-root": { width: "10ch" },
-                    }}
-                  >
-                    <TextField
-                      id="outlined-select-hafx"
-                      required
-                      select
-                      label="Type"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      onChange={(event) => setType(event.target.value)}
-                      variant="standard"
-                    >
-                      {datatype.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </FormControl>
-                )}
-              </Box>
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </DialogContent>
           </Dialog>
         </>
@@ -334,44 +466,3 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-
-// <FormControl
-//   sx={{
-//     "& .MuiTextField-root": { width: "10ch" },
-//   }}
-// >
-//   <TextField
-//     id="outlined-select-operator"
-//     required
-//     select
-//     label="Operator"
-//     InputLabelProps={{
-//       shrink: true,
-//     }}
-//     onChange={(event) => setOperator(event.target.value)}
-//     variant="standard"
-//   >
-//     {comperator.map((option) => (
-//       <MenuItem key={option.value} value={option.value}>
-//         {option.label}
-//       </MenuItem>
-//     ))}
-//   </TextField>
-// </FormControl>
-// <FormControl
-//   sx={{
-//     "& .MuiTextField-root": { width: "10ch" },
-//   }}
-// >
-//   <TextField
-//     id="outlined-select-value"
-//     type="number"
-//     required
-//     label="Value"
-//     InputLabelProps={{
-//       shrink: true,
-//     }}
-//     variant="standard"
-//     onChange={(event) => setValue(event.target.value)}
-//   ></TextField>
-// </FormControl>
