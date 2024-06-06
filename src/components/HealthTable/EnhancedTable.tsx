@@ -321,6 +321,37 @@ export default function EnhancedTable() {
     setOrderBy(property);
   };
 
+  const handleDownload = async () => {
+    const selectedData = selected.map((index) => rows[index].uid);
+    console.log(selectedData);
+    try {
+      const params = new URLSearchParams({
+        selectedData: JSON.stringify(selectedData),
+      });
+      const response = await fetch(`/api/download?${params.toString()}`);
+      if (response.body) {
+        const reader = response.body.getReader();
+        const chunks = [];
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+          chunks.push(value);
+        }
+        const blob = new Blob(chunks);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "data.json");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+      console.log(response.body);
+    } catch {}
+  };
+
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelected = rows.map((n) => n.id);
@@ -347,6 +378,7 @@ export default function EnhancedTable() {
       );
     }
     setSelected(newSelected);
+    console.log(newSelected);
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -410,6 +442,7 @@ export default function EnhancedTable() {
           setBeginDate={setBeginDate}
           filter={filters}
           setFilter={setFilter}
+          handleDownload={handleDownload}
         />
         <TableContainer>
           <Table

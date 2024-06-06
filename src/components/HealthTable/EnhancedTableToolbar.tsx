@@ -145,10 +145,18 @@ interface EnhancedTableToolbarProps {
   setFilter: React.Dispatch<React.SetStateAction<FilterData[]>>;
   setBeginDate: React.Dispatch<React.SetStateAction<number>>;
   setEndDate: React.Dispatch<React.SetStateAction<number>>;
+  handleDownload: () => void;
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, setBeginDate, setEndDate, filter, setFilter } = props;
+  const {
+    numSelected,
+    setBeginDate,
+    setEndDate,
+    filter,
+    setFilter,
+    handleDownload,
+  } = props;
   const [open, setOpen] = React.useState<boolean>(false);
   const [detector, setDetector] = React.useState<string>("c1");
   const [field, setField] = React.useState<number>(1);
@@ -237,7 +245,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
       {numSelected > 0 ? (
         <Tooltip title="Download">
-          <IconButton>
+          <IconButton onClick={handleDownload}>
             <DownloadIcon />
           </IconButton>
         </Tooltip>
