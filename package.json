@@ -20,6 +20,7 @@
     "@mui/x-date-pickers": "^7.6.0",
     "@types/lodash": "^4.17.4",
     "@vercel/analytics": "^1.2.2",
+    "archiver": "^7.0.1",
     "dayjs": "^1.11.11",
     "json-bigint": "^1.0.0",
     "lodash": "^4.17.21",
@@ -33,6 +34,7 @@
     "react-plotly.js": "^2.6.0"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.2",
     "@types/json-bigint": "^1.0.4",
     "@types/node": "^20",
     "@types/react": "^18",
