@@ -146,6 +146,7 @@ interface EnhancedTableToolbarProps {
   setBeginDate: React.Dispatch<React.SetStateAction<number>>;
   setEndDate: React.Dispatch<React.SetStateAction<number>>;
   handleDownload: () => void;
+  downloadStatus: boolean;
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
@@ -156,6 +157,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     filter,
     setFilter,
     handleDownload,
+    downloadStatus,
   } = props;
   const [open, setOpen] = React.useState<boolean>(false);
   const [detector, setDetector] = React.useState<string>("c1");
@@ -245,7 +247,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
       {numSelected > 0 ? (
         <Tooltip title="Download">
-          <IconButton onClick={handleDownload}>
+          <IconButton onClick={handleDownload} disabled={downloadStatus}>
             <DownloadIcon />
           </IconButton>
         </Tooltip>

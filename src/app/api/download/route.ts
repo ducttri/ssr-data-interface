@@ -12,27 +12,33 @@ export async function GET(req: NextRequest) {
   const uri = process.env.MONGODB_URI as string;
   const client = new MongoClient(uri);
 
-  console.log(selectedData);
-
   let datas: JSONData[] = [];
 
   const database = client.db("HealthData");
   const datacollection = database.collection("SampleHealthData");
-  datas = selectedData.map(async (id: string) => {
-    const cursor = await datacollection.findOne({ _id: new ObjectId(id) });
-    if (cursor) {
-      datas.push(cursor as JSONData);
-    }
-  });
 
-  console.log(datas);
   try {
+    await Promise.all(
+      selectedData.map(async (id: string) => {
+        try {
+          const cursor = await datacollection.findOne({
+            _id: new ObjectId(id),
+          });
+          if (cursor) {
+            datas.push(cursor as JSONData);
+          }
+        } catch (error) {
+          console.error(`Error fetching document with id ${id}:`, error);
+        }
+      })
+    );
+
     const archive = archiver("zip", { zlib: { level: 9 } });
     const writableStreamBuffer = new WritableStreamBuffer();
     archive.pipe(writableStreamBuffer);
     datas.forEach((jsonObject: JSONData, index: number) => {
       const jsonString = JSON.stringify(jsonObject, null, 2);
-      archive.append(jsonString, { name: `file${index + 1}.json` });
+      archive.append(jsonString, { name: `${selectedData[index]}.json` });
     });
 
     await new Promise<void>((resolve, reject) => {
