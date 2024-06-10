@@ -188,7 +188,8 @@ export default function EnhancedTable() {
   const [beginDate, setBeginDate] = React.useState<number>(1704088800);
   const [endDate, setEndDate] = React.useState<number>(dayjs().unix());
   const [filters, setFilter] = React.useState<FilterData[]>([]);
-  let loading = false;
+  const [download, setDownload] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const filterCreator = () => {
     let returnFilter = {
@@ -228,7 +229,7 @@ export default function EnhancedTable() {
 
   useEffect(() => {
     const fetchDataWrapper = async () => {
-      loading = true;
+      setLoading(true);
       try {
         const formdata = new FormData();
         formdata.set("projection", JSON.stringify({ processed_data: 1 }));
@@ -306,11 +307,11 @@ export default function EnhancedTable() {
       } catch (error) {
         console.log("error");
       }
-      loading = false;
+      setLoading(false);
     };
 
     fetchDataWrapper();
-  }, [setData, beginDate, endDate, filters, loading]);
+  }, [setData, beginDate, endDate, filters]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -319,6 +320,31 @@ export default function EnhancedTable() {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
+  };
+
+  const handleDownload = async () => {
+    const selectedData = selected.map((index) => rows[index].uid);
+    setDownload(true);
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        selectedData: JSON.stringify(selectedData),
+      });
+      await fetch(`/api/download?${params.toString()}`)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "jsons.zip";
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        });
+    } catch {}
+    setDownload(false);
+    setLoading(false);
   };
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -410,6 +436,8 @@ export default function EnhancedTable() {
           setBeginDate={setBeginDate}
           filter={filters}
           setFilter={setFilter}
+          handleDownload={handleDownload}
+          downloadStatus={download}
         />
         <TableContainer>
           <Table

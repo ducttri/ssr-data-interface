@@ -1,42 +1,59 @@
-import { NextRequest, NextResponse } from "next/server";
-import { MongoClient, ObjectId } from "mongodb";
 import { JSONData } from "@/types/types";
+import archiver from "archiver";
+import { MongoClient, ObjectId } from "mongodb";
+import { NextRequest } from "next/server";
+import { WritableStreamBuffer } from "stream-buffers";
 
-export async function POST(request: NextRequest) {
-  const data = await request.formData();
-  const id: string = (data.get("id") as string) || "";
-  const filter: JSON = JSON.parse((data.get("filter") as string) || "{}");
-  const projection: JSON = JSON.parse(
-    (data.get("projection") as string) || "{}"
+export const maxDuration = 60;
+
+export async function GET(req: NextRequest) {
+  const selectedData = JSON.parse(
+    req.nextUrl.searchParams.get("selectedData") || "[]"
   );
 
   const uri = process.env.MONGODB_URI as string;
   const client = new MongoClient(uri);
+
+  let datas: JSONData[] = [];
+
+  const database = client.db("HealthData");
+  const datacollection = database.collection("SampleHealthData");
+
   try {
-    const database = client.db("HealthData");
-    const datacollection = database.collection("SampleHealthData");
-    if (id == "") {
-      const cursor = datacollection.find(filter).project(projection);
-      let data: JSONData[] = [];
-      for await (const doc of cursor) {
-        data.push(doc as JSONData);
-      }
-      return NextResponse.json({ success: true, data: data });
-    } else {
-      const cursor = datacollection.find({ _id: new ObjectId(id) }).project(projection);
-      let data: JSONData[] = [];
-      for await (const doc of cursor) {
-        data.push(doc as JSONData);
-      }
-      return NextResponse.json({ success: true, data: data });
-    }
-  } catch (e) {
-    console.error(e);
-    return NextResponse.json({
-      success: false,
-      error: "Error processing file.",
+    await Promise.all(
+      selectedData.map(async (id: string) => {
+        try {
+          const cursor = await datacollection.findOne({
+            _id: new ObjectId(id),
+          });
+          if (cursor) {
+            datas.push(cursor as JSONData);
+          }
+        } catch (error) {
+          console.error(`Error fetching document with id ${id}:`, error);
+        }
+      })
+    );
+
+    const archive = archiver("zip", { zlib: { level: 9 } });
+    const writableStreamBuffer = new WritableStreamBuffer();
+    archive.pipe(writableStreamBuffer);
+    datas.forEach((jsonObject: JSONData, index: number) => {
+      const jsonString = JSON.stringify(jsonObject, null, 2);
+      archive.append(jsonString, { name: `${selectedData[index]}.json` });
     });
-  } finally {
-    await client.close();
-  }
+
+    await new Promise<void>((resolve, reject) => {
+      archive.on("end", resolve);
+      archive.on("error", reject);
+      archive.finalize();
+    });
+
+    return new Response(writableStreamBuffer.getContents() as Buffer, {
+      headers: {
+        "content-disposition": `attachment; filename="jsons.zip"`,
+        "content-type": "application/zip",
+      },
+    });
+  } catch {}
 }
