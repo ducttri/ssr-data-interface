@@ -4,6 +4,10 @@ import { MongoClient, ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
 import { WritableStreamBuffer } from "stream-buffers";
 
+export const config = {
+  maxDuration: 60,
+};
+
 export async function GET(req: NextRequest) {
   const selectedData = JSON.parse(
     req.nextUrl.searchParams.get("selectedData") || "[]"
