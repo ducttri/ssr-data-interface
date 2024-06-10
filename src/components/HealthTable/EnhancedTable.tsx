@@ -328,27 +328,18 @@ export default function EnhancedTable() {
       const params = new URLSearchParams({
         selectedData: JSON.stringify(selectedData),
       });
-      const response = await fetch(`/api/download?${params.toString()}`);
-      if (response.body) {
-        const reader = response.body.getReader();
-        const chunks = [];
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) {
-            break;
-          }
-          chunks.push(value);
-        }
-        const blob = new Blob(chunks);
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "data.json");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-      console.log(response.body);
+      await fetch(`/api/download?${params.toString()}`)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "jsons.zip";
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        });
     } catch {}
   };
 

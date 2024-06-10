@@ -31,7 +31,8 @@
     "plotly.js-dist-min": "^2.30.1",
     "react": "^18",
     "react-dom": "^18",
-    "react-plotly.js": "^2.6.0"
+    "react-plotly.js": "^2.6.0",
+    "stream-buffers": "^3.0.2"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.2",
@@ -40,6 +41,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-plotly.js": "^2.6.3",
+    "@types/stream-buffers": "^3.0.7",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
     "typescript": "^5"
