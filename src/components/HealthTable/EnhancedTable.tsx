@@ -311,7 +311,7 @@ export default function EnhancedTable() {
     };
 
     fetchDataWrapper();
-  }, [setData, beginDate, endDate, filters, loading]);
+  }, [setData, beginDate, endDate, filters]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -373,7 +373,6 @@ export default function EnhancedTable() {
       );
     }
     setSelected(newSelected);
-    console.log(newSelected);
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
