@@ -8,8 +8,6 @@ import dynamic from "next/dynamic";
 import GraphList from "@/components/GraphsList";
 import { JSONData } from "@/types/types";
 
-const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
-
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -85,11 +83,9 @@ export default function QuickLook() {
           />
         </Button>
       </Grid>
-      {data && (
-        <Grid container columns={2}>
-          {data && <GraphList data={data}/>}
-        </Grid>
-      )}
+      <Grid container columns={2}>
+        {data && <GraphList data={data}></GraphList>}
+      </Grid>
     </Grid>
   );
 }

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       for await (const doc of cursor) {
         data.push(doc as JSONData);
       }
-      return NextResponse.json({ success: true, data: data });
+      return NextResponse.json({ status: 200, statusText: "OK", data: data });
     } else {
       const cursor = datacollection
         .find({ _id: new ObjectId(id) })
@@ -30,12 +30,13 @@ export async function POST(request: NextRequest) {
       for await (const doc of cursor) {
         data.push(doc as JSONData);
       }
-      return NextResponse.json({ success: true, data: data });
+      return NextResponse.json({ status: 200, statusText: "OK", data: data });
     }
   } catch (e) {
     console.error(e);
     return NextResponse.json({
-      success: false,
+      status: 500,
+      statusText: "Internal Server Error",
       error: "Error processing file.",
     });
   } finally {
