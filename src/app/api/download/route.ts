@@ -1,7 +1,7 @@
 import { JSONData } from "@/types/types";
 import archiver from "archiver";
 import { MongoClient, ObjectId } from "mongodb";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { WritableStreamBuffer } from "stream-buffers";
 
 export const maxDuration = 60;
@@ -29,8 +29,12 @@ export async function GET(req: NextRequest) {
           if (cursor) {
             datas.push(cursor as JSONData);
           }
-        } catch (error) {
-          console.error(`Error fetching document with id ${id}:`, error);
+        } catch {
+          return NextResponse.json({
+            status: 500,
+            statusText: "Internal Server Error",
+            error: `Error fetching document with id ${id}`,
+          });
         }
       })
     );
@@ -49,11 +53,19 @@ export async function GET(req: NextRequest) {
       archive.finalize();
     });
 
-    return new Response(writableStreamBuffer.getContents() as Buffer, {
+    return new NextResponse(writableStreamBuffer.getContents() as Buffer, {
+      status: 200,
+      statusText: "OK",
       headers: {
         "content-disposition": `attachment; filename="jsons.zip"`,
         "content-type": "application/zip",
       },
     });
-  } catch {}
+  } catch {
+    return NextResponse.json({
+      status: 500,
+      statusText: "Internal Server Error",
+      error: "Failed to compress data",
+    });
+  }
 }
