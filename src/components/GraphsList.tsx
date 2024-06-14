@@ -1,3 +1,5 @@
+"use client";
+
 import { JSONData } from "@/types/types";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Grid, Tab } from "@mui/material";
@@ -7,9 +9,11 @@ import PlotlyGraph from "./PlotlyGraph";
 export default function GraphList({ data }: { data: JSONData }) {
   const [detector, setDetector] = useState("1");
 
-  const utcDates: string[] = data.raw_data.timestamp.map((timestamp: number) => {
-    return new Date(timestamp * 1000).toISOString();
-  });
+  const utcDates: string[] = data.raw_data.timestamp.map(
+    (timestamp: number) => {
+      return new Date(timestamp * 1000).toISOString();
+    }
+  );
 
   const handleDetectorChange = (
     event: React.SyntheticEvent,

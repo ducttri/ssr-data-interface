@@ -1,3 +1,5 @@
+"use client";
+
 import { Data } from "@/types/types";
 import {
   TableHead,

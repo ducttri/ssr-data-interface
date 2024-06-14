@@ -12,6 +12,13 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import SideBar from "@/components/SideBar";
+import { Button } from "@mui/material";
+import {
+  RegisterLink,
+  LoginLink,
+  LogoutLink,
+} from "@kinde-oss/kinde-auth-nextjs/components";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 const drawerWidth = 240;
 
@@ -72,6 +79,7 @@ export default function RootLayout({
 }>) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const { isAuthenticated, isLoading } = useKindeBrowserClient();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -86,7 +94,6 @@ export default function RootLayout({
       <body>
         <Box sx={{ display: "flex" }}>
           <CssBaseline />
-          {/* Horizontal Name */}
           <AppBar color="primary" position="fixed" open={open}>
             <Toolbar>
               <IconButton
@@ -98,9 +105,24 @@ export default function RootLayout({
               >
                 <MenuIcon />
               </IconButton>
-              <Typography variant="h6" noWrap component="div">
+              <Typography
+                variant="h6"
+                noWrap
+                component="div"
+                sx={{ flexGrow: 1 }}
+              >
                 SSR Data Interface
               </Typography>
+
+              {isAuthenticated ? (
+                <Button variant="contained" component={LogoutLink}>
+                  Log out
+                </Button>
+              ) : (
+                <Button variant="contained" component={LoginLink}>
+                  Sign in
+                </Button>
+              )}
             </Toolbar>
           </AppBar>
           {/* Side Bar */}
