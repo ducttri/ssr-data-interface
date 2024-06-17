@@ -25,6 +25,8 @@
     "archiver": "^7.0.1",
     "dayjs": "^1.11.11",
     "json-bigint": "^1.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.1.0",
     "lodash": "^4.17.21",
     "mongodb": "^6.6.2",
     "next": "14.1.0",

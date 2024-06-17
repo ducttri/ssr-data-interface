@@ -1,45 +1,57 @@
+import jwt, { JwtPayload } from "jsonwebtoken";
+import jwksClient from "jwks-rsa";
 import { NextRequest, NextResponse } from "next/server";
-import { createGunzip } from "zlib";
-import { parse } from "json-bigint";
 
-export async function POST(request: NextRequest) {
-  const data = await request.formData();
-  const file: File | null = data.get("file") as unknown as File;
+interface ParsedCookies {
+  [key: string]: string;
+}
 
-  if (!file) {
-    return NextResponse.json({ success: false });
-  }
+const client = jwksClient({
+  jwksUri: "https://ssrdatainterface.kinde.com/.well-known/jwks.json",
+});
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  const gunzip = createGunzip();
-
-  let newdata = "";
-  const decompressionPromise = new Promise<void>((resolve, reject) => {
-    gunzip.on("data", (chunk) => {
-      newdata += chunk.toString();
-    });
-
-    gunzip.on("end", () => {
-      resolve(); 
-    });
-
-    gunzip.on("error", (error) => {
-      reject(error); 
-    });
-
-    gunzip.end(buffer);
+const getKey = (header: any, callback: any) => {
+  client.getSigningKey(header.kid, (err, key) => {
+    if (err) {
+      callback(err, null);
+    } else {
+      const signingKey = key?.getPublicKey();
+      callback(null, signingKey);
+    }
   });
+};
 
-  try {
-    await decompressionPromise;
-    const jsonData = parse(newdata);
-    return NextResponse.json({ success: true, data: jsonData });
-  } catch (error) {
-    console.error("Error processing file:", error);
-    return NextResponse.json({
-      success: false,
-      error: "Error processing file.",
-    });
-  }
+const verifyAccessToken = (
+  token: string,
+  audience: string,
+  issuer: string
+): Promise<JwtPayload> => {
+  return new Promise((resolve, reject) => {
+    jwt.verify(
+      token,
+      getKey,
+      { algorithms: ["RS256"], audience, issuer },
+      (err, decoded) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(decoded as JwtPayload);
+        }
+      }
+    );
+  });
+};
+
+export async function GET(request: NextRequest) {
+  const audience = "http://localhost:3000/api";
+  const issuer = "https://ssrdatainterface.kinde.com";
+  const token = request.headers.get("authorization") || "";
+  verifyAccessToken(token, audience, issuer)
+    .then((decoded) => {
+      console.log("Token is valid:", decoded);
+    })
+    .catch((err) => {
+      console.error("Token verification failed:", err);
+    }); 
+  return NextResponse.json({ status: "failed" });
 }

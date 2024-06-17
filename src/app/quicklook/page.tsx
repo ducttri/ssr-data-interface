@@ -48,7 +48,7 @@ export default function QuickLook() {
         try {
           const data = new FormData();
           data.set("file", file);
-          const res = await fetch("/api/upload", {
+          const res = await fetch("/api/decompress", {
             method: "POST",
             body: data,
           });
