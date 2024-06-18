@@ -6,24 +6,18 @@ import { useState, useEffect } from "react";
 
 export default function science() {
   const { getToken } = useKindeBrowserClient();
-  const [csrfToken, setCsrfToken] = useState<string>("loading...");
-
-  useEffect(() => {
-    const el = document.querySelector(
-      'meta[name="x-csrf-token"]'
-    ) as HTMLMetaElement | null;
-    if (el) setCsrfToken(el.content);
-    else setCsrfToken("missing");
-  }, []);
 
   const handleAPICall = async () => {
+    const csrfResp = await fetch("/csrf-token");
+    const { csrfToken } = await csrfResp.json();
     try {
-      const res = await fetch(`/api/upload`, {
-        headers: {
-          Authorization: getToken() || "",
-          "X-CSRF-Token": csrfToken,
-        },
-      });
+      const fetchArgs = {
+        method: "POST",
+        headers: {},
+        body: JSON.stringify({ data: 1 }),
+      };
+      if (csrfToken) fetchArgs.headers = { "X-CSRF-Token": csrfToken, Authorization: getToken() };
+      const res = await fetch(`/api/upload`, fetchArgs);
       const data = await res.json();
       console.log(data);
     } catch (err) {

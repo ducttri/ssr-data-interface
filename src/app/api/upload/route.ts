@@ -38,16 +38,29 @@ const verifyAccessToken = (
   });
 };
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   const audience = "http://localhost:3000/api";
   const issuer = "https://ssrdatainterface.kinde.com";
   const token = request.headers.get("authorization") || "";
+  console.log(request);
+  let valid = false;
   verifyAccessToken(token, audience, issuer)
     .then((decoded) => {
       console.log("Token is valid:", decoded);
+      valid = true;
     })
     .catch((err) => {
       console.error("Token verification failed:", err);
-    }); 
-  return NextResponse.json({ status: "failed" });
+    });
+  if (valid) {
+    return NextResponse.json({
+      status: 200,
+      statusText: "Token Valid",
+    });
+  } else {
+    return NextResponse.json({
+      status: 503,
+      statusText: "Token Inalid",
+    });
+  }
 }

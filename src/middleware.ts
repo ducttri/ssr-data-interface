@@ -21,5 +21,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  if (request.nextUrl.pathname === "/csrf-token") {
+    return NextResponse.json({
+      csrfToken: response.headers.get("X-CSRF-Token") || "missing",
+    });
+  }
+
   return response;
 }
