@@ -2,10 +2,6 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
 import { NextRequest, NextResponse } from "next/server";
 
-interface ParsedCookies {
-  [key: string]: string;
-}
-
 const client = jwksClient({
   jwksUri: "https://ssrdatainterface.kinde.com/.well-known/jwks.json",
 });
