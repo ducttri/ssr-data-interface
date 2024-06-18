@@ -21,6 +21,7 @@
     "@mui/material-nextjs": "^5.15.11",
     "@mui/x-data-grid": "^6.19.5",
     "@mui/x-date-pickers": "^7.6.0",
+    "@tabler/icons-react": "^3.6.0",
     "@types/lodash": "^4.17.4",
     "@vercel/analytics": "^1.2.2",
     "archiver": "^7.0.1",
@@ -36,6 +37,7 @@
     "plotly.js-dist-min": "^2.30.1",
     "react": "^18",
     "react-dom": "^18",
+    "react-helmet-async": "^2.0.5",
     "react-plotly.js": "^2.6.0",
     "stream-buffers": "^3.0.2"
   },

@@ -233,15 +233,21 @@ export default function EnhancedTable() {
     const fetchDataWrapper = async () => {
       setLoading(true);
       try {
-        const formdata = new FormData();
-        formdata.set("projection", JSON.stringify({ processed_data: 1 }));
-        formdata.set("filter", JSON.stringify(filterCreator()));
+        // const formdata = new FormData();
+        // formdata.set("projection", JSON.stringify({ processed_data: 1 }));
+        // formdata.set("filter", JSON.stringify(filterCreator()));
 
-        const res = await fetch("/api/fetch", {
-          method: "POST",
-          body: formdata,
+        // const res = await fetch("/api/fetch", {
+        //   method: "POST",
+        //   body: formdata,
+        // });
+        // if (!res.ok) throw new Error(await res.text());
+        const params = new URLSearchParams({
+          query: JSON.stringify(filterCreator()),
+          options: JSON.stringify({ processed_data: 1 }),
         });
-        if (!res.ok) throw new Error(await res.text());
+        const res = await fetch(`/api/newfetch?${params.toString()}`);
+
         const returndata = await res.json();
         if (returndata) {
           let json: JSONData[] = returndata.data;
