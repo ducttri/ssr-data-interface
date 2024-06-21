@@ -2,13 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { MongoClient, ObjectId } from "mongodb";
 import { JSONData } from "@/types/types";
 
-export async function POST(request: NextRequest) {
-  const data = await request.formData();
-  const id: string = (data.get("id") as string) || "";
-  const filter: JSON = JSON.parse((data.get("filter") as string) || "{}");
-  const projection: JSON = JSON.parse(
-    (data.get("projection") as string) || "{}"
-  );
+export async function GET(req: NextRequest) {
+  const query = JSON.parse(req.nextUrl.searchParams.get("query") || "{}");
+  const options = JSON.parse(req.nextUrl.searchParams.get("options") || "{}");
+  const id = req.nextUrl.searchParams.get("ids") || "";
 
   const uri = process.env.MONGODB_URI as string;
   const client = new MongoClient(uri);
@@ -16,7 +13,7 @@ export async function POST(request: NextRequest) {
     const database = client.db("HealthData");
     const datacollection = database.collection("SampleHealthData");
     if (id == "") {
-      const cursor = datacollection.find(filter).project(projection);
+      const cursor = datacollection.find(query, options);
       let data: JSONData[] = [];
       for await (const doc of cursor) {
         data.push(doc as JSONData);
@@ -24,8 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: 200, statusText: "OK", data: data });
     } else {
       const cursor = datacollection
-        .find({ _id: new ObjectId(id) })
-        .project(projection);
+        .find({ _id: new ObjectId(id) }, options)
       let data: JSONData[] = [];
       for await (const doc of cursor) {
         data.push(doc as JSONData);

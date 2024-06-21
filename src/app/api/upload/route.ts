@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   const audience = "http://localhost:3000/api";
   const issuer = "https://ssrdatainterface.kinde.com";
   const token = request.headers.get("authorization") || "";
-  console.log(request);
+  console.log(request.headers);
   let valid = false;
   verifyAccessToken(token, audience, issuer)
     .then((decoded) => {

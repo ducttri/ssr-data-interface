@@ -246,7 +246,7 @@ export default function EnhancedTable() {
           query: JSON.stringify(filterCreator()),
           options: JSON.stringify({ processed_data: 1 }),
         });
-        const res = await fetch(`/api/newfetch?${params.toString()}`);
+        const res = await fetch(`/api/fetch?${params.toString()}`);
 
         const returndata = await res.json();
         if (returndata) {

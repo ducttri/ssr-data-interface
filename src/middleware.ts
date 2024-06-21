@@ -11,14 +11,12 @@ const csrfProtect = createCsrfProtect({
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
-  if (request.nextUrl.pathname === "/api/upload") {
-    try {
-      await csrfProtect(request, response);
-    } catch (err) {
-      if (err instanceof CsrfError)
-        return new NextResponse("invalid csrf token", { status: 403 });
-      throw err;
-    }
+  try {
+    await csrfProtect(request, response);
+  } catch (err) {
+    if (err instanceof CsrfError)
+      return new NextResponse("invalid csrf token", { status: 403 });
+    throw err;
   }
 
   if (request.nextUrl.pathname === "/csrf-token") {
