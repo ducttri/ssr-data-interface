@@ -18,7 +18,7 @@ import { Data, FilterData, JSONData } from "@/types/types";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import { LinearProgress, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import EnhancedTableHead from "./EnhancedTableHead";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import dayjs from "dayjs";
@@ -194,7 +194,7 @@ export default function EnhancedTable() {
   const [download, setDownload] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const filterCreator = () => {
+  const filterCreator = useCallback(() => {
     let returnFilter = {
       "processed_data.start_time": { $gte: beginDate, $lte: endDate },
     };
@@ -228,21 +228,12 @@ export default function EnhancedTable() {
       returnFilter = _.merge({}, returnFilter, { [key]: value });
     }
     return returnFilter;
-  };
+  }, [])
 
   useEffect(() => {
     const fetchDataWrapper = async () => {
       setLoading(true);
       try {
-        // const formdata = new FormData();
-        // formdata.set("projection", JSON.stringify({ processed_data: 1 }));
-        // formdata.set("filter", JSON.stringify(filterCreator()));
-
-        // const res = await fetch("/api/fetch", {
-        //   method: "POST",
-        //   body: formdata,
-        // });
-        // if (!res.ok) throw new Error(await res.text());
         const params = new URLSearchParams({
           query: JSON.stringify(filterCreator()),
           options: JSON.stringify({ processed_data: 1 }),
