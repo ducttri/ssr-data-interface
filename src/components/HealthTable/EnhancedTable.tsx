@@ -320,7 +320,7 @@ export default function EnhancedTable() {
     };
 
     fetchDataWrapper();
-  }, [setData, beginDate, endDate, filters]);
+  }, [setData, beginDate, endDate, filters, filterCreator]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
