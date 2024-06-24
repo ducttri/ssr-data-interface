@@ -8,11 +8,14 @@ import PageContainer from "@/components/container/PageContainer";
 
 export default function Health() {
   return (
-    <PageContainer title="Dashboard" description="this is Dashboard">
+    <PageContainer title="Health" description="Health Database">
       <Typography variant="h3" gutterBottom>
         Health
       </Typography>
-      <EnhancedTable></EnhancedTable>
+
+      <Box width={'100%'}>
+        <EnhancedTable/>
+      </Box>
     </PageContainer>
   );
 }

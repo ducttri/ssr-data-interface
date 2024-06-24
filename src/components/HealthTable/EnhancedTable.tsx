@@ -23,6 +23,7 @@ import EnhancedTableHead from "./EnhancedTableHead";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import dayjs from "dayjs";
 import _ from "lodash";
+import Link from "next/link";
 
 function createData(
   id: number,
@@ -494,12 +495,14 @@ export default function EnhancedTable() {
                       padding="none"
                     >
                       <Tooltip title="Open File">
-                        <IconButton href={"/health/" + row.uid}>
+                        <IconButton LinkComponent={Link} href={"/health/" + row.uid}>
                           <FileOpenIcon />
                         </IconButton>
                       </Tooltip>
                     </TableCell>
-                    <TableCell align="right">{row.beginUTC}</TableCell>
+                    <TableCell align="left" style={{ width: 1 }}>
+                      {row.beginUTC}
+                    </TableCell>
 
                     {detectors == "c1" && (
                       <>
