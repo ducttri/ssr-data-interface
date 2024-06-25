@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -16,11 +18,12 @@ import { Data, FilterData, JSONData } from "@/types/types";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import { LinearProgress, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import EnhancedTableHead from "./EnhancedTableHead";
 import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import dayjs from "dayjs";
 import _ from "lodash";
+import Link from "next/link";
 
 function createData(
   id: number,
@@ -191,7 +194,7 @@ export default function EnhancedTable() {
   const [download, setDownload] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const filterCreator = () => {
+  const filterCreator = useCallback(() => {
     let returnFilter = {
       "processed_data.start_time": { $gte: beginDate, $lte: endDate },
     };
@@ -225,21 +228,18 @@ export default function EnhancedTable() {
       returnFilter = _.merge({}, returnFilter, { [key]: value });
     }
     return returnFilter;
-  };
+  }, [])
 
   useEffect(() => {
     const fetchDataWrapper = async () => {
       setLoading(true);
       try {
-        const formdata = new FormData();
-        formdata.set("projection", JSON.stringify({ processed_data: 1 }));
-        formdata.set("filter", JSON.stringify(filterCreator()));
-
-        const res = await fetch("/api/fetch", {
-          method: "POST",
-          body: formdata,
+        const params = new URLSearchParams({
+          query: JSON.stringify(filterCreator()),
+          options: JSON.stringify({ processed_data: 1 }),
         });
-        if (!res.ok) throw new Error(await res.text());
+        const res = await fetch(`/api/fetch?${params.toString()}`);
+
         const returndata = await res.json();
         if (returndata) {
           let json: JSONData[] = returndata.data;
@@ -311,7 +311,7 @@ export default function EnhancedTable() {
     };
 
     fetchDataWrapper();
-  }, [setData, beginDate, endDate, filters]);
+  }, [setData, beginDate, endDate, filters, filterCreator]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -486,12 +486,14 @@ export default function EnhancedTable() {
                       padding="none"
                     >
                       <Tooltip title="Open File">
-                        <IconButton href={"/health/" + row.uid}>
+                        <IconButton LinkComponent={Link} href={"/health/" + row.uid}>
                           <FileOpenIcon />
                         </IconButton>
                       </Tooltip>
                     </TableCell>
-                    <TableCell align="right">{row.beginUTC}</TableCell>
+                    <TableCell align="left" style={{ width: 1 }}>
+                      {row.beginUTC}
+                    </TableCell>
 
                     {detectors == "c1" && (
                       <>

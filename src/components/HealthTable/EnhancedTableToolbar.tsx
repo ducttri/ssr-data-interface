@@ -1,3 +1,5 @@
+"use client";
+
 import { FilterData } from "@/types/types";
 import DownloadIcon from "@mui/icons-material/Download";
 import FilterListIcon from "@mui/icons-material/FilterList";

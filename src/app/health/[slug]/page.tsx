@@ -11,12 +11,11 @@ export default function Page({ params }: { params: { slug: string } }) {
   useEffect(() => {
     const fetchDataWrapper = async () => {
       try {
-        const data = new FormData();
-        data.set("id", params.slug);
-        const res = await fetch("/api/fetch", {
-          method: "POST",
-          body: data,
+        const param = new URLSearchParams({
+          id: params.slug
         });
+        const res = await fetch(`/api/fetch?${param.toString()}`);
+
         if (!res.ok) throw new Error(await res.text());
         const returndata = await res.json();
         let json = returndata.data[0] as JSONData;
