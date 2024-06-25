@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import dynamic from "next/dynamic";
-import GraphList from "@/components/GraphsList";
+import GraphList from "@/components/healthGraph/GraphsList";
 import { JSONData } from "@/types/types";
 
 const VisuallyHiddenInput = styled("input")({

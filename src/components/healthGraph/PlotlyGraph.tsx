@@ -1,5 +1,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
+import { baselightTheme } from "@/utils/theme/DefaultColors";
+
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 const PlotlyGraph = ({
@@ -24,6 +26,9 @@ const PlotlyGraph = ({
           x: xData,
           y: yData,
           type: "scatter",
+          line: {
+            color: baselightTheme.palette.primary.main,
+          },
         },
       ]}
       layout={{

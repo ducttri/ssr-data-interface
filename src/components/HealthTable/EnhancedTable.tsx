@@ -16,7 +16,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { Data, FilterData, JSONData } from "@/types/types";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
-import { LinearProgress, Tab } from "@mui/material";
+import { Button, LinearProgress, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
 import { useCallback, useEffect } from "react";
 import EnhancedTableHead from "./EnhancedTableHead";
@@ -24,6 +24,8 @@ import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import dayjs from "dayjs";
 import _ from "lodash";
 import Link from "next/link";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
 
 function createData(
   id: number,
@@ -135,6 +137,18 @@ function createData(
   };
 }
 
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -228,7 +242,7 @@ export default function EnhancedTable() {
       returnFilter = _.merge({}, returnFilter, { [key]: value });
     }
     return returnFilter;
-  }, [])
+  }, []);
 
   useEffect(() => {
     const fetchDataWrapper = async () => {
@@ -427,6 +441,22 @@ export default function EnhancedTable() {
             <Tab label="M5" value="m5" />
             <Tab label="X1" value="x1" />
             <Tab label="X123" value="x123" />
+            <Box flexGrow={1} />
+            <Box>
+              <Button
+                color="primary"
+                component="label"
+                variant="contained"
+                startIcon={<CloudUploadIcon />}
+              >
+                Upload file
+                <VisuallyHiddenInput
+                  type="file"
+                  // onChange={handleFileChange
+                  accept="application/json,application/gzip"
+                />
+              </Button>
+            </Box>
           </TabList>
         </TabContext>
 
@@ -486,7 +516,10 @@ export default function EnhancedTable() {
                       padding="none"
                     >
                       <Tooltip title="Open File">
-                        <IconButton LinkComponent={Link} href={"/health/" + row.uid}>
+                        <IconButton
+                          LinkComponent={Link}
+                          href={"/health/" + row.uid}
+                        >
                           <FileOpenIcon />
                         </IconButton>
                       </Tooltip>
