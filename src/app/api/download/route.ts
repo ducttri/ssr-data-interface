@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
             _id: new ObjectId(id),
           });
           if (cursor) {
-            datas.push(cursor as JSONData);
+            datas.push(cursor as unknown as JSONData);
           }
         } catch {
           return NextResponse.json({

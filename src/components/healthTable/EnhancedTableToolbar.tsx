@@ -36,6 +36,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 dayjs.extend(utc);
 
@@ -182,6 +183,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const [type, setType] = React.useState<string>("avg");
   const [operator, setOperator] = React.useState<string>("=");
   const [value, setValue] = React.useState<number>();
+  const { isAuthenticated } = useKindeBrowserClient();
 
   const handleClick = () => {
     setOpen(true);
@@ -232,7 +234,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       ) : (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Box sx={{ m: 2 }}>
+          <Box sx={{ pl: 2, pr: 2 }}>
             <DateTimePicker
               label="Begin UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
@@ -246,7 +248,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               }
             />
           </Box>
-          <Box sx={{ m: 2 }}>
+          <Box sx={{ pl: 2, pr: 2 }}>
             <DateTimePicker
               label="End UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
@@ -271,21 +273,24 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Tooltip>
       ) : (
         <>
-          <Box sx={{ m: 1 }}>
-            <Button
-              color="primary"
-              component="label"
-              variant="contained"
-              startIcon={<CloudUploadIcon />}
-            >
-              Upload Data
-              <VisuallyHiddenInput
-                type="file"
-                // onChange={handleFileChange
-                accept="application/json,application/gzip"
-              />
-            </Button>
-          </Box>
+          {isAuthenticated && (
+            <Box sx={{ m: 1 }}>
+              <Button
+                color="primary"
+                component="label"
+                variant="contained"
+                startIcon={<CloudUploadIcon />}
+              >
+                Upload Data
+                <VisuallyHiddenInput
+                  type="file"
+                  // onChange={handleFileChange
+                  accept="application/json,application/gzip"
+                />
+              </Button>
+            </Box>
+          )}
+
           <Tooltip title="Filter list">
             <IconButton
               aria-controls={open ? "basic-menu" : undefined}
