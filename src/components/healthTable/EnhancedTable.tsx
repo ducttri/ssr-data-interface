@@ -228,7 +228,7 @@ export default function EnhancedTable() {
       returnFilter = _.merge({}, returnFilter, { [key]: value });
     }
     return returnFilter;
-  }, []);
+  }, [beginDate, endDate, filters]);
 
   useEffect(() => {
     const fetchDataWrapper = async () => {
