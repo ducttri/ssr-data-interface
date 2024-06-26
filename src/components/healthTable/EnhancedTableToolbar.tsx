@@ -28,13 +28,28 @@ import {
   TableHead,
   TableRow,
   Select,
+  Button,
 } from "@mui/material";
 import * as React from "react";
 import dayjs from "dayjs";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
 
 dayjs.extend(utc);
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 const detectors = [
   {
@@ -231,7 +246,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               }
             />
           </Box>
-          <Box sx={{ flex: "10 10 100%", m: 2 }}>
+          <Box sx={{ m: 2 }}>
             <DateTimePicker
               label="End UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
@@ -245,6 +260,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               }
             />
           </Box>
+          <Box flexGrow={1} />
         </LocalizationProvider>
       )}
       {numSelected > 0 ? (
@@ -255,6 +271,21 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Tooltip>
       ) : (
         <>
+          <Box sx={{ m: 1 }}>
+            <Button
+              color="primary"
+              component="label"
+              variant="contained"
+              startIcon={<CloudUploadIcon />}
+            >
+              Upload Data
+              <VisuallyHiddenInput
+                type="file"
+                // onChange={handleFileChange
+                accept="application/json,application/gzip"
+              />
+            </Button>
+          </Box>
           <Tooltip title="Filter list">
             <IconButton
               aria-controls={open ? "basic-menu" : undefined}
