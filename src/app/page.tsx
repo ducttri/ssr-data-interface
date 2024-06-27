@@ -71,9 +71,9 @@ export default function Home() {
           national challenges and catalyzes economic growth via developing and
           transferring revolutionary technologies to enable exploration
           capabilities for NASA and the nation (Strategic Objective 3.1).
-          IMPRESS's detector system is being developed with the intention of its
-          applicability to any system requiring fast high-energy (X-ray and
-          gamma ray) spectroscopy with high time precision.
+          IMPRESS&apos;s detector system is being developed with the intention
+          of its applicability to any system requiring fast high-energy (X-ray
+          and gamma ray) spectroscopy with high time precision.
         </Typography>
         <Typography sx={{ m: 4 }} variant="body1">
           <b>Sponsor</b>: National Science Foundation

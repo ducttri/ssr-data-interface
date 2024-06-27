@@ -35,8 +35,8 @@ const PlotlyGraph = ({
         autosize: true, // Enable responsive sizing
         height: 400,
         title: yLabel + " vs. " + xLabel,
-        xaxis: { title: xLabel + " (" + xUnit + ")" },
-        yaxis: { title: yLabel + " (" + yUnit + ")" },
+        xaxis: { title: xLabel + " (" + xUnit + ")", rangeslider: {} },
+        yaxis: { title: yLabel + " (" + yUnit + ")", fixedrange: true },
       }}
       useResizeHandler={true} // Important: This tells Plotly to re-render on resize
       style={{ width: "100%", height: "100%" }} // Ensure the div containing the plot is fully responsive
