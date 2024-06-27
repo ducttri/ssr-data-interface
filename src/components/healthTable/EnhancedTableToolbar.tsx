@@ -191,11 +191,10 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const [type, setType] = React.useState<string>("avg");
   const [operator, setOperator] = React.useState<string>("=");
   const [value, setValue] = React.useState<number>();
-  const { isAuthenticated, getToken } = useKindeBrowserClient();
+  const { isAuthenticated, getToken, getPermission } = useKindeBrowserClient();
   const [openError, setOpenError] = React.useState(false);
   const [success, setSuccess] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState("");
-
   const handleClick = () => {
     setOpen(true);
   };
@@ -259,7 +258,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         setSuccess(false);
         setOpenError(true);
       }
-      console.log(data);
+      // console.log(data);
     } catch (err) {
       console.log(err);
     }
@@ -360,7 +359,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Tooltip>
       ) : (
         <>
-          {isAuthenticated && (
+          {isAuthenticated && getPermission("data-upload")?.isGranted && (
             <Box sx={{ m: 1 }}>
               <Button
                 color="primary"

@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     try {
       const database = client.db("HealthData");
       const datacollection = database.collection("SampleHealthData");
-      const result = await datacollection.insertOne(data);
+      // const result = await datacollection.insertOne(data);
       // console.log(result);
       return NextResponse.json({
         status: 200,
