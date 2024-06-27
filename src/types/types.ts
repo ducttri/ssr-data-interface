@@ -1,7 +1,6 @@
-import { ObjectId } from "mongodb";
 
 export interface JSONData {
-  _id: ObjectId;
+  _id: string;
   processed_data: {
     start_time: number;
     c1: {

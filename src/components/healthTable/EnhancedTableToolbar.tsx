@@ -1,8 +1,6 @@
 "use client";
 
-import { FilterData } from "@/types/types";
-import DownloadIcon from "@mui/icons-material/Download";
-import FilterListIcon from "@mui/icons-material/FilterList";
+import { FilterData, JSONData } from "@/types/types";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -28,13 +26,37 @@ import {
   TableHead,
   TableRow,
   Select,
+  Button,
+  Alert,
+  AlertTitle,
+  Snackbar,
 } from "@mui/material";
 import * as React from "react";
 import dayjs from "dayjs";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { styled } from "@mui/material/styles";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { jsonValidator } from "@/utils/helpers/jsonValidator";
+import {
+  IconX,
+  IconPlus,
+  IconFilter,
+  IconCloudUpload,
+  IconCloudDownload,
+} from "@tabler/icons-react";
 
 dayjs.extend(utc);
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 const detectors = [
   {
@@ -149,6 +171,7 @@ interface EnhancedTableToolbarProps {
   setEndDate: React.Dispatch<React.SetStateAction<number>>;
   handleDownload: () => void;
   downloadStatus: boolean;
+  fetchDataWrapper: () => void;
 }
 
 export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
@@ -160,6 +183,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     setFilter,
     handleDownload,
     downloadStatus,
+    fetchDataWrapper,
   } = props;
   const [open, setOpen] = React.useState<boolean>(false);
   const [detector, setDetector] = React.useState<string>("c1");
@@ -167,12 +191,26 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const [type, setType] = React.useState<string>("avg");
   const [operator, setOperator] = React.useState<string>("=");
   const [value, setValue] = React.useState<number>();
-
+  const { isAuthenticated, getToken, getPermission } = useKindeBrowserClient();
+  const [openError, setOpenError] = React.useState(false);
+  const [success, setSuccess] = React.useState(true);
+  const [errorMessage, setErrorMessage] = React.useState("");
   const handleClick = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleErrorClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenError(false);
   };
 
   const handleAddition = () => {
@@ -190,6 +228,71 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       newFilter.splice(index, 1);
       return newFilter;
     });
+  };
+
+  const handleAPICall = async (jsonData: JSONData) => {
+    const csrfResp = await fetch("/csrf-token");
+    const { csrfToken } = await csrfResp.json();
+    try {
+      const dataForm = new FormData();
+      dataForm.set("data", JSON.stringify(jsonData));
+      const fetchArgs = {
+        method: "POST",
+        headers: {},
+        body: dataForm,
+      };
+      if (csrfToken)
+        fetchArgs.headers = {
+          "X-CSRF-Token": csrfToken,
+          Authorization: getToken(),
+        };
+      const res = await fetch(`/api/upload`, fetchArgs);
+      const data = await res.json();
+      if (data.status == 200) {
+        setErrorMessage("Succesfully upload data.");
+        setSuccess(true);
+        setOpenError(true);
+        fetchDataWrapper();
+      } else {
+        setErrorMessage("Failed to upload.");
+        setSuccess(false);
+        setOpenError(true);
+      }
+      // console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+
+      let json: JSON;
+
+      const reader = new FileReader();
+      reader.onload = async (e: ProgressEvent<FileReader>) => {
+        if (e.target?.result) {
+          try {
+            json = JSON.parse(e.target.result as string);
+            const valid = await jsonValidator(json);
+            if (valid) {
+              handleAPICall(json as unknown as JSONData);
+            } else {
+              setErrorMessage("Failed to upload.");
+              setSuccess(false);
+              setOpenError(true);
+            }
+          } catch (error) {
+            console.error("Error parsing JSON:", error);
+          }
+        }
+      };
+      reader.readAsText(file);
+    }
   };
 
   return (
@@ -217,7 +320,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       ) : (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Box sx={{ m: 2 }}>
+          <Box sx={{ pr: 1 }}>
             <DateTimePicker
               label="Begin UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
@@ -231,7 +334,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               }
             />
           </Box>
-          <Box sx={{ flex: "10 10 100%", m: 2 }}>
+          <Box sx={{ pl: 1, pr: 1 }}>
             <DateTimePicker
               label="End UTC"
               views={["year", "day", "hours", "minutes", "seconds"]}
@@ -245,16 +348,63 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               }
             />
           </Box>
+          <Box flexGrow={1} />
         </LocalizationProvider>
       )}
       {numSelected > 0 ? (
         <Tooltip title="Download">
           <IconButton onClick={handleDownload} disabled={downloadStatus}>
-            <DownloadIcon />
+            <IconCloudDownload />
           </IconButton>
         </Tooltip>
       ) : (
         <>
+          {isAuthenticated && getPermission("data-upload")?.isGranted && (
+            <Box sx={{ m: 1 }}>
+              <Button
+                color="primary"
+                component="label"
+                variant="contained"
+                startIcon={<IconCloudUpload />}
+              >
+                Upload Data
+                <VisuallyHiddenInput
+                  type="file"
+                  onChange={handleFileChange}
+                  accept="application/json,application/gzip"
+                />
+              </Button>
+              <Snackbar
+                open={openError}
+                autoHideDuration={6000}
+                onClose={handleErrorClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              >
+                {success ? (
+                  <Alert
+                    onClose={handleErrorClose}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: "100%" }}
+                  >
+                    <AlertTitle>Success</AlertTitle>
+                    {errorMessage}
+                  </Alert>
+                ) : (
+                  <Alert
+                    onClose={handleErrorClose}
+                    severity="error"
+                    variant="filled"
+                    sx={{ width: "100%" }}
+                  >
+                    <AlertTitle>Error</AlertTitle>
+                    {errorMessage}
+                  </Alert>
+                )}
+              </Snackbar>
+            </Box>
+          )}
+
           <Tooltip title="Filter list">
             <IconButton
               aria-controls={open ? "basic-menu" : undefined}
@@ -262,7 +412,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               aria-expanded={open ? "true" : undefined}
               onClick={handleClick}
             >
-              <FilterListIcon />
+              <IconFilter />
             </IconButton>
           </Tooltip>
           <Dialog
@@ -427,7 +577,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                                 aria-expanded={open ? "true" : undefined}
                                 onClick={handleAddition}
                               >
-                                <AddCircleOutlineIcon />
+                                <IconPlus />
                               </IconButton>
                             </Tooltip>
                           )}
@@ -462,7 +612,7 @@ export default function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                                 handleDeletion(index);
                               }}
                             >
-                              <DeleteIcon />
+                              <IconX />
                             </IconButton>
                           </Tooltip>
                         </TableCell>

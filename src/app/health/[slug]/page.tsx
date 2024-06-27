@@ -3,7 +3,7 @@
 import { Box, Grid, Tab, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { JSONData } from "@/types/types";
-import GraphList from "@/components/GraphsList";
+import GraphList from "@/components/healthGraph/GraphsList";
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [data, setData] = useState<JSONData | null>(null);

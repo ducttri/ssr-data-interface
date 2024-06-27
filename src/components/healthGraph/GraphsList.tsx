@@ -5,6 +5,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Grid, Tab } from "@mui/material";
 import { useState } from "react";
 import PlotlyGraph from "./PlotlyGraph";
+import Zoom from "@mui/material/Zoom";
 
 export default function GraphList({ data }: { data: JSONData }) {
   const [detector, setDetector] = useState("1");
@@ -38,7 +39,8 @@ export default function GraphList({ data }: { data: JSONData }) {
               <Tab label="X123" value="5" />
             </TabList>
           </Box>
-          <TabPanel value="1">
+
+          <TabPanel value="1">  
             <Grid container columns={2}>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph

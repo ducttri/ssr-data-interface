@@ -15,8 +15,7 @@ import Tooltip from "@mui/material/Tooltip";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { Data, FilterData, JSONData } from "@/types/types";
-import FileOpenIcon from "@mui/icons-material/FileOpen";
-import { LinearProgress, Tab } from "@mui/material";
+import { Button, LinearProgress, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
 import { useCallback, useEffect } from "react";
 import EnhancedTableHead from "./EnhancedTableHead";
@@ -24,6 +23,7 @@ import EnhancedTableToolbar from "./EnhancedTableToolbar";
 import dayjs from "dayjs";
 import _ from "lodash";
 import Link from "next/link";
+import { IconFileInfo } from "@tabler/icons-react";
 
 function createData(
   id: number,
@@ -228,88 +228,88 @@ export default function EnhancedTable() {
       returnFilter = _.merge({}, returnFilter, { [key]: value });
     }
     return returnFilter;
-  }, [])
+  }, [beginDate, endDate, filters]);
+
+  const fetchDataWrapper = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        query: JSON.stringify(filterCreator()),
+        options: JSON.stringify({ processed_data: 1 }),
+      });
+      const res = await fetch(`/api/fetch?${params.toString()}`);
+
+      const returndata = await res.json();
+      if (returndata) {
+        let json: JSONData[] = returndata.data;
+        setData(json);
+        setRows(
+          json.map((data, index) => {
+            return createData(
+              index,
+              data._id,
+              new Date(data.processed_data.start_time * 1000).toUTCString(),
+              data.processed_data.c1.arm_temp.avg,
+              data.processed_data.c1.arm_temp.min,
+              data.processed_data.c1.arm_temp.max,
+              data.processed_data.c1.sipm_temp.avg,
+              data.processed_data.c1.sipm_temp.min,
+              data.processed_data.c1.sipm_temp.max,
+              data.processed_data.c1.sipm_operating_voltage.avg,
+              data.processed_data.c1.sipm_operating_voltage.min,
+              data.processed_data.c1.sipm_operating_voltage.max,
+
+              data.processed_data.m1.arm_temp.avg,
+              data.processed_data.m1.arm_temp.min,
+              data.processed_data.m1.arm_temp.max,
+              data.processed_data.m1.sipm_temp.avg,
+              data.processed_data.m1.sipm_temp.min,
+              data.processed_data.m1.sipm_temp.max,
+              data.processed_data.m1.sipm_operating_voltage.avg,
+              data.processed_data.m1.sipm_operating_voltage.min,
+              data.processed_data.m1.sipm_operating_voltage.max,
+
+              data.processed_data.m5.arm_temp.avg,
+              data.processed_data.m5.arm_temp.min,
+              data.processed_data.m5.arm_temp.max,
+              data.processed_data.m5.sipm_temp.avg,
+              data.processed_data.m5.sipm_temp.min,
+              data.processed_data.m5.sipm_temp.max,
+              data.processed_data.m5.sipm_operating_voltage.avg,
+              data.processed_data.m5.sipm_operating_voltage.min,
+              data.processed_data.m5.sipm_operating_voltage.max,
+
+              data.processed_data.x1.arm_temp.avg,
+              data.processed_data.x1.arm_temp.min,
+              data.processed_data.x1.arm_temp.max,
+              data.processed_data.x1.sipm_temp.avg,
+              data.processed_data.x1.sipm_temp.min,
+              data.processed_data.x1.sipm_temp.max,
+              data.processed_data.x1.sipm_operating_voltage.avg,
+              data.processed_data.x1.sipm_operating_voltage.min,
+              data.processed_data.x1.sipm_operating_voltage.max,
+
+              data.processed_data.x123.board_temp.avg,
+              data.processed_data.x123.board_temp.min,
+              data.processed_data.x123.board_temp.max,
+              data.processed_data.x123.det_high_voltage.avg,
+              data.processed_data.x123.det_high_voltage.min,
+              data.processed_data.x123.det_high_voltage.max,
+              data.processed_data.x123.det_temp.avg,
+              data.processed_data.x123.det_temp.min,
+              data.processed_data.x123.det_temp.max
+            );
+          })
+        );
+        setPage(0);
+      }
+    } catch (error) {
+      console.log("error");
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchDataWrapper = async () => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams({
-          query: JSON.stringify(filterCreator()),
-          options: JSON.stringify({ processed_data: 1 }),
-        });
-        const res = await fetch(`/api/fetch?${params.toString()}`);
-
-        const returndata = await res.json();
-        if (returndata) {
-          let json: JSONData[] = returndata.data;
-          setData(json);
-          setRows(
-            json.map((data, index) => {
-              return createData(
-                index,
-                data._id.toString(),
-                new Date(data.processed_data.start_time * 1000).toUTCString(),
-                data.processed_data.c1.arm_temp.avg,
-                data.processed_data.c1.arm_temp.min,
-                data.processed_data.c1.arm_temp.max,
-                data.processed_data.c1.sipm_temp.avg,
-                data.processed_data.c1.sipm_temp.min,
-                data.processed_data.c1.sipm_temp.max,
-                data.processed_data.c1.sipm_operating_voltage.avg,
-                data.processed_data.c1.sipm_operating_voltage.min,
-                data.processed_data.c1.sipm_operating_voltage.max,
-
-                data.processed_data.m1.arm_temp.avg,
-                data.processed_data.m1.arm_temp.min,
-                data.processed_data.m1.arm_temp.max,
-                data.processed_data.m1.sipm_temp.avg,
-                data.processed_data.m1.sipm_temp.min,
-                data.processed_data.m1.sipm_temp.max,
-                data.processed_data.m1.sipm_operating_voltage.avg,
-                data.processed_data.m1.sipm_operating_voltage.min,
-                data.processed_data.m1.sipm_operating_voltage.max,
-
-                data.processed_data.m5.arm_temp.avg,
-                data.processed_data.m5.arm_temp.min,
-                data.processed_data.m5.arm_temp.max,
-                data.processed_data.m5.sipm_temp.avg,
-                data.processed_data.m5.sipm_temp.min,
-                data.processed_data.m5.sipm_temp.max,
-                data.processed_data.m5.sipm_operating_voltage.avg,
-                data.processed_data.m5.sipm_operating_voltage.min,
-                data.processed_data.m5.sipm_operating_voltage.max,
-
-                data.processed_data.x1.arm_temp.avg,
-                data.processed_data.x1.arm_temp.min,
-                data.processed_data.x1.arm_temp.max,
-                data.processed_data.x1.sipm_temp.avg,
-                data.processed_data.x1.sipm_temp.min,
-                data.processed_data.x1.sipm_temp.max,
-                data.processed_data.x1.sipm_operating_voltage.avg,
-                data.processed_data.x1.sipm_operating_voltage.min,
-                data.processed_data.x1.sipm_operating_voltage.max,
-
-                data.processed_data.x123.board_temp.avg,
-                data.processed_data.x123.board_temp.min,
-                data.processed_data.x123.board_temp.max,
-                data.processed_data.x123.det_high_voltage.avg,
-                data.processed_data.x123.det_high_voltage.min,
-                data.processed_data.x123.det_high_voltage.max,
-                data.processed_data.x123.det_temp.avg,
-                data.processed_data.x123.det_temp.min,
-                data.processed_data.x123.det_temp.max
-              );
-            })
-          );
-          setPage(0);
-        }
-      } catch (error) {
-        console.log("error");
-      }
-      setLoading(false);
-    };
-
     fetchDataWrapper();
   }, [setData, beginDate, endDate, filters, filterCreator]);
 
@@ -438,6 +438,7 @@ export default function EnhancedTable() {
           setFilter={setFilter}
           handleDownload={handleDownload}
           downloadStatus={download}
+          fetchDataWrapper={fetchDataWrapper}
         />
         <TableContainer>
           <Table
@@ -486,8 +487,11 @@ export default function EnhancedTable() {
                       padding="none"
                     >
                       <Tooltip title="Open File">
-                        <IconButton LinkComponent={Link} href={"/health/" + row.uid}>
-                          <FileOpenIcon />
+                        <IconButton
+                          LinkComponent={Link}
+                          href={"/health/" + row.uid}
+                        >
+                          <IconFileInfo />
                         </IconButton>
                       </Tooltip>
                     </TableCell>

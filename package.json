@@ -24,6 +24,8 @@
     "@tabler/icons-react": "^3.6.0",
     "@types/lodash": "^4.17.4",
     "@vercel/analytics": "^1.2.2",
+    "ajv": "^8.16.0",
+    "ajv-formats": "^3.0.1",
     "archiver": "^7.0.1",
     "dayjs": "^1.11.11",
     "json-bigint": "^1.0.0",

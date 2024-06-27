@@ -1,5 +1,7 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { compileSchema } from "ajv/dist/compile";
+import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
+import { MongoClient, ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 const client = jwksClient({
@@ -38,29 +40,59 @@ const verifyAccessToken = (
   });
 };
 
+const verifyRole = (roles: JwtPayload[]): boolean => {
+  if (Array.isArray(roles) && roles.some((role) => role.name === "Admin")) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export async function POST(request: NextRequest) {
   const audience = "http://localhost:3000/api";
   const issuer = "https://ssrdatainterface.kinde.com";
   const token = request.headers.get("authorization") || "";
-  console.log(request.headers);
   let valid = false;
-  verifyAccessToken(token, audience, issuer)
+  await verifyAccessToken(token, audience, issuer)
     .then((decoded) => {
       console.log("Token is valid:", decoded);
-      valid = true;
+      if (verifyRole(decoded.roles)) {
+        valid = true;
+      } else {
+        return NextResponse.json({
+          status: 403,
+          statusText: "User doesn't have permission",
+        });
+      }
     })
     .catch((err) => {
       console.error("Token verification failed:", err);
     });
   if (valid) {
-    return NextResponse.json({
-      status: 200,
-      statusText: "Token Valid",
-    });
+    const dataForm = await request.formData();
+    const data: JSON = JSON.parse((dataForm.get("data") as string) || "{}");
+    const uri = process.env.MONGODB_URI as string;
+    const client = new MongoClient(uri);
+    console.log("HERE");
+    try {
+      const database = client.db("HealthData");
+      const datacollection = database.collection("SampleHealthData");
+      // const result = await datacollection.insertOne(data);
+      // console.log(result);
+      return NextResponse.json({
+        status: 200,
+        statusText: "Succesfully upload data",
+      });
+    } catch {
+      return NextResponse.json({
+        status: 503,
+        statusText: "Unsuccesfully upload data",
+      });
+    }
   } else {
     return NextResponse.json({
       status: 503,
-      statusText: "Token Inalid",
+      statusText: "Failed to verify token",
     });
   }
 }

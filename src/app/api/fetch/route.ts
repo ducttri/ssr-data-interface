@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
       const cursor = datacollection.find(query, options);
       let data: JSONData[] = [];
       for await (const doc of cursor) {
-        data.push(doc as JSONData);
+        data.push(doc as unknown as JSONData);
       }
       return NextResponse.json({ status: 200, statusText: "OK", data: data });
     } else {
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
         .find({ _id: new ObjectId(id) }, options)
       let data: JSONData[] = [];
       for await (const doc of cursor) {
-        data.push(doc as JSONData);
+        data.push(doc as unknown as JSONData);
       }
       return NextResponse.json({ status: 200, statusText: "OK", data: data });
     }

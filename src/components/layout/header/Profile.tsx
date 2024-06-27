@@ -88,7 +88,9 @@ const Profile = () => {
             color="primary"
             component={LogoutLink}
             fullWidth
-          >Log out</Button>
+          >
+            Log out
+          </Button>
         </Box>
       </Menu>
     </Box>
