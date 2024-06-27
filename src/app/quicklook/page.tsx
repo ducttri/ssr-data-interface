@@ -12,11 +12,11 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import dynamic from "next/dynamic";
 import GraphList from "@/components/healthGraph/GraphsList";
 import { JSONData } from "@/types/types";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
+import { IconUpload } from "@tabler/icons-react";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -105,7 +105,7 @@ export default function QuickLook() {
           color="primary"
           component="label"
           variant="contained"
-          startIcon={<CloudUploadIcon />}
+          startIcon={<IconUpload />}
         >
           Upload file
           <VisuallyHiddenInput
@@ -116,7 +116,7 @@ export default function QuickLook() {
         </Button>
       </Grid>
       <Grid container columns={2}>
-        {data && <GraphList data={data}></GraphList>}
+        <Box sx={{ pt: 2 }}>{data && <GraphList data={data}></GraphList>}</Box>
       </Grid>
       <Snackbar
         open={open}
