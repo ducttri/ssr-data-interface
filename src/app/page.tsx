@@ -5,7 +5,7 @@ import { Box, Typography, Divider } from "@mui/material";
 
 export default function Home() {
   return (
-    <PageContainer title="Dashboard" description="this is Dashboard">
+    <PageContainer title="Home" description="Home">
       <Box
         sx={{
           borderRadius: 1,

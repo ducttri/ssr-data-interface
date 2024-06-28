@@ -5,14 +5,14 @@ import { useEffect, useState } from "react";
 import { JSONData } from "@/types/types";
 import GraphList from "@/components/healthGraph/GraphsList";
 
-export default function Page({ params }: { params: { slug: string } }) {
+export default function Page({ params }: { params: { id: string } }) {
   const [data, setData] = useState<JSONData | null>(null);
 
   useEffect(() => {
     const fetchDataWrapper = async () => {
       try {
         const param = new URLSearchParams({
-          id: params.slug
+          id: params.id
         });
         const res = await fetch(`/api/fetch?${param.toString()}`);
 
