@@ -1,7 +1,5 @@
+import { RegisterLink } from '@kinde-oss/kinde-auth-nextjs';
 import { Box, Typography, Button } from '@mui/material';
-// import img1 from 'public/images/backgrounds/rocket.png';
-import Image from 'next/image';
-import Link from 'next/link';
 
 export const Upgrade = () => {
     return (
@@ -14,7 +12,7 @@ export const Upgrade = () => {
             <>
                 <Box >
                     <Typography variant="h5" sx={{width:"80px"}} fontSize='16px' mb={1}>Haven&apos;t account ?</Typography>
-                    <Button color="primary" target="_blank" disableElevation component={Link} href="/authentication/register" variant="contained" aria-label="logout" size="small">
+                    <Button color="primary" target="_blank" disableElevation component={RegisterLink} variant="contained" aria-label="logout" size="small">
                         Sign Up
                     </Button>
                 </Box>
