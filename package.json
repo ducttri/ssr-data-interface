@@ -41,7 +41,8 @@
     "react-dom": "^18",
     "react-helmet-async": "^2.0.5",
     "react-plotly.js": "^2.6.0",
-    "stream-buffers": "^3.0.2"
+    "stream-buffers": "^3.0.2",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.2",
