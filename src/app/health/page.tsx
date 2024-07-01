@@ -2,7 +2,7 @@
 
 import { Box, CircularProgress, Grid, Tab, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import EnhancedTable from "@/components/healthTable/EnhancedTable";
+import EnhancedTable from "@/components/newHealthTable/EnhancedTable";
 import { JSONData } from "@/types/types";
 import PageContainer from "@/components/container/PageContainer";
 

@@ -22,9 +22,24 @@ export default function Home() {
           alt="The house from the offer."
           src="https://smallsat.umn.edu/sites/smallsat.umn.edu/files/files/media/impresssat.png"
         />
-        <Typography sx={{ m: 4 }} variant="h1" gutterBottom>
-          IMPRESS Data Interface
-        </Typography>
+        <Box
+          bgcolor={"white"}
+          position="relative"
+          top="-10px"
+          width={"100%"}
+          gap={4}
+        >
+          <Box
+            bgcolor={"white"}
+            position="relative"
+            top="-10px"
+            height={"10px"}
+            width={"100%"}
+          ></Box>
+          <Typography sx={{ pl: 4, pr: 4 }} variant="h1" gutterBottom>
+            IMPRESS Data Interface
+          </Typography>
+        </Box>
         <Divider />
         <Typography sx={{ m: 4 }} variant="h2" gutterBottom>
           Mission Statement
