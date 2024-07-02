@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import dynamic from "next/dynamic";
 import GraphList from "@/components/healthGraph/GraphsList";
-import { JSONData } from "@/types/types";
+import { HealthJSONData } from "@/types/types";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
 import { IconUpload } from "@tabler/icons-react";
 import PageContainer from "@/components/container/PageContainer";
@@ -32,7 +32,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 export default function QuickLook() {
-  const [data, setData] = useState<JSONData | null>(null);
+  const [data, setData] = useState<HealthJSONData | null>(null);
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState(true);
 
@@ -63,7 +63,7 @@ export default function QuickLook() {
               json = JSON.parse(e.target.result as string);
               const valid = await jsonValidator(json);
               if (valid) {
-                setData(json as unknown as JSONData);
+                setData(json as unknown as HealthJSONData);
                 setSuccess(true);
                 setOpen(true);
               } else {
@@ -88,7 +88,7 @@ export default function QuickLook() {
           if (!res.ok) throw new Error(await res.text());
           const returndata = await res.json();
           json = returndata.data;
-          setData(json as unknown as JSONData);
+          setData(json as unknown as HealthJSONData);
         } catch (e: any) {
           console.error(e);
         }
