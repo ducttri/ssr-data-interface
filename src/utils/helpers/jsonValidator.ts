@@ -1,9 +1,9 @@
 import Ajv, { JSONSchemaType } from "ajv";
-import { JSONData } from "@/types/types";
+import { HealthJSONData } from "@/types/types";
 
 const ajv = new Ajv();
 
-const schema: JSONSchemaType<JSONData> = {
+const schema: JSONSchemaType<HealthJSONData> = {
   type: "object",
   properties: {
     _id: { type: "string" },
