@@ -91,7 +91,7 @@ const fetcher = (url: string | URL | Request) =>
       })
     );
 
-preload("/api/fetch/", fetcher);
+preload("/api/fetch/health/processed-data", fetcher);
 
 export default function EnhancedTable() {
   const [order, setOrder] = React.useState<Order>("asc");
@@ -107,7 +107,7 @@ export default function EnhancedTable() {
   const [filters, setFilter] = React.useState<FilterData[]>([]);
   const [download, setDownload] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const { data, error, isLoading } = useSWR(`/api/fetch/`, fetcher);
+  const { data, error, isLoading } = useSWR(`/api/fetch/health/processed-data`, fetcher);
 
   useEffect(() => {
     if (data) {
@@ -298,7 +298,13 @@ export default function EnhancedTable() {
                     >
                       <Tooltip title="Open File">
                         <IconButton
-                          LinkComponent={Link}
+                          component={Link}
+                          // onClick={() =>
+                          //   preload(
+                          //     "/api/fetch/health/id=" + row.uid,
+                          //     fetcher
+                          //   )
+                          // }
                           href={"/health/" + row.uid}
                         >
                           <IconFileInfo />
