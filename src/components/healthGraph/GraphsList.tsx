@@ -1,13 +1,13 @@
 "use client";
 
-import { JSONData } from "@/types/types";
+import { HealthJSONData } from "@/types/types";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Grid, Tab } from "@mui/material";
 import { useState } from "react";
 import PlotlyGraph from "./PlotlyGraph";
 import Zoom from "@mui/material/Zoom";
 
-export default function GraphList({ data }: { data: JSONData }) {
+export default function GraphList({ data }: { data: HealthJSONData }) {
   const [detector, setDetector] = useState("1");
 
   const utcDates: string[] = data.raw_data.timestamp.map(
@@ -40,7 +40,7 @@ export default function GraphList({ data }: { data: JSONData }) {
             </TabList>
           </Box>
 
-          <TabPanel value="1">  
+          <TabPanel value="1">
             <Grid container columns={2}>
               <Grid item xs={1} id="parent-container">
                 <PlotlyGraph
