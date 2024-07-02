@@ -1,4 +1,4 @@
-import { JSONData } from "@/types/types";
+import { HealthJSONData } from "@/types/types";
 import archiver from "archiver";
 import { MongoClient, ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   const uri = process.env.MONGODB_URI as string;
   const client = new MongoClient(uri);
 
-  let datas: JSONData[] = [];
+  let datas: HealthJSONData[] = [];
 
   const database = client.db("HealthData");
   const datacollection = database.collection("SampleHealthData");
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
             _id: new ObjectId(id),
           });
           if (cursor) {
-            datas.push(cursor as unknown as JSONData);
+            datas.push(cursor as unknown as HealthJSONData);
           }
         } catch {
           return NextResponse.json({
@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
     const archive = archiver("zip", { zlib: { level: 9 } });
     const writableStreamBuffer = new WritableStreamBuffer();
     archive.pipe(writableStreamBuffer);
-    datas.forEach((jsonObject: JSONData, index: number) => {
+    datas.forEach((jsonObject: HealthJSONData, index: number) => {
       const jsonString = JSON.stringify(jsonObject, null, 2);
       archive.append(jsonString, { name: `${selectedData[index]}.json` });
     });

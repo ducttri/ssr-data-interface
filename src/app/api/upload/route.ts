@@ -49,7 +49,7 @@ const verifyRole = (roles: JwtPayload[]): boolean => {
 };
 
 export async function POST(request: NextRequest) {
-  const audience = "http://localhost:3000/api";
+  const audience = process.env.KINDE_AUDIENCE as string;
   const issuer = "https://ssrdatainterface.kinde.com";
   const token = request.headers.get("authorization") || "";
   let valid = false;
