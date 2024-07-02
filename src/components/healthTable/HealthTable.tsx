@@ -14,12 +14,12 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import { Data, FilterData, JSONData } from "@/types/types";
+import { FilterHealthData, HealthJSONData, RowHealthData } from "@/types/types";
 import { Button, CircularProgress, LinearProgress, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
 import { useCallback, useEffect } from "react";
-import EnhancedTableHead from "./EnhancedTableHead";
-import EnhancedTableToolbar from "./EnhancedTableToolbar";
+import EnhancedTableHead from "./HealthTableHead";
+import EnhancedTableToolbar from "./HealthTableToolbar";
 import dayjs from "dayjs";
 import _ from "lodash";
 import Link from "next/link";
@@ -33,81 +33,31 @@ const fetcher = (url: string | URL | Request) =>
   fetch(url)
     .then((res) => res.json())
     .then((datas) =>
-      datas.data.map((data: JSONData, index: number) => {
-        return createData(
-          index,
-          data._id,
-          new Date(data.processed_data.start_time * 1000).toUTCString(),
-          data.processed_data.c1.arm_temp.avg,
-          data.processed_data.c1.arm_temp.min,
-          data.processed_data.c1.arm_temp.max,
-          data.processed_data.c1.sipm_temp.avg,
-          data.processed_data.c1.sipm_temp.min,
-          data.processed_data.c1.sipm_temp.max,
-          data.processed_data.c1.sipm_operating_voltage.avg,
-          data.processed_data.c1.sipm_operating_voltage.min,
-          data.processed_data.c1.sipm_operating_voltage.max,
-
-          data.processed_data.m1.arm_temp.avg,
-          data.processed_data.m1.arm_temp.min,
-          data.processed_data.m1.arm_temp.max,
-          data.processed_data.m1.sipm_temp.avg,
-          data.processed_data.m1.sipm_temp.min,
-          data.processed_data.m1.sipm_temp.max,
-          data.processed_data.m1.sipm_operating_voltage.avg,
-          data.processed_data.m1.sipm_operating_voltage.min,
-          data.processed_data.m1.sipm_operating_voltage.max,
-
-          data.processed_data.m5.arm_temp.avg,
-          data.processed_data.m5.arm_temp.min,
-          data.processed_data.m5.arm_temp.max,
-          data.processed_data.m5.sipm_temp.avg,
-          data.processed_data.m5.sipm_temp.min,
-          data.processed_data.m5.sipm_temp.max,
-          data.processed_data.m5.sipm_operating_voltage.avg,
-          data.processed_data.m5.sipm_operating_voltage.min,
-          data.processed_data.m5.sipm_operating_voltage.max,
-
-          data.processed_data.x1.arm_temp.avg,
-          data.processed_data.x1.arm_temp.min,
-          data.processed_data.x1.arm_temp.max,
-          data.processed_data.x1.sipm_temp.avg,
-          data.processed_data.x1.sipm_temp.min,
-          data.processed_data.x1.sipm_temp.max,
-          data.processed_data.x1.sipm_operating_voltage.avg,
-          data.processed_data.x1.sipm_operating_voltage.min,
-          data.processed_data.x1.sipm_operating_voltage.max,
-
-          data.processed_data.x123.board_temp.avg,
-          data.processed_data.x123.board_temp.min,
-          data.processed_data.x123.board_temp.max,
-          data.processed_data.x123.det_high_voltage.avg,
-          data.processed_data.x123.det_high_voltage.min,
-          data.processed_data.x123.det_high_voltage.max,
-          data.processed_data.x123.det_temp.avg,
-          data.processed_data.x123.det_temp.min,
-          data.processed_data.x123.det_temp.max
-        );
+      datas.data.map((data: HealthJSONData, index: number) => {
+        return createData(index, data);
       })
     );
 
 preload("/api/fetch/health/processed-data", fetcher);
 
-export default function EnhancedTable() {
+export default function HealthTable() {
   const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof Data>("id");
+  const [orderBy, setOrderBy] = React.useState<keyof RowHealthData>("id");
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [detectors, setDetectors] = React.useState<string>("c1");
-  const [rows, setRows] = React.useState<Data[]>([]);
+  const [rows, setRows] = React.useState<RowHealthData[]>([]);
   const [beginDate, setBeginDate] = React.useState<number>(1704088800);
   const [endDate, setEndDate] = React.useState<number>(dayjs().unix());
-  const [filters, setFilter] = React.useState<FilterData[]>([]);
+  const [filters, setFilter] = React.useState<FilterHealthData[]>([]);
   const [download, setDownload] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const { data, error, isLoading } = useSWR(`/api/fetch/health/processed-data`, fetcher);
+  const { data, error, isLoading } = useSWR(
+    `/api/fetch/health/processed-data`,
+    fetcher
+  );
 
   useEffect(() => {
     if (data) {
@@ -115,9 +65,17 @@ export default function EnhancedTable() {
     }
   }, [data]);
 
+  // useEffect(() => {
+  //   let newData;
+  //   for (const i : Data in data) {
+  //     if (i.)
+  //   }
+
+  // }, [beginDate, endDate, filters]);
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data
+    property: keyof RowHealthData
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -253,6 +211,7 @@ export default function EnhancedTable() {
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
+            stickyHeader
             aria-labelledby="tableTitle"
             size={dense ? "small" : "medium"}
           >
@@ -299,12 +258,6 @@ export default function EnhancedTable() {
                       <Tooltip title="Open File">
                         <IconButton
                           component={Link}
-                          // onClick={() =>
-                          //   preload(
-                          //     "/api/fetch/health/id=" + row.uid,
-                          //     fetcher
-                          //   )
-                          // }
                           href={"/health/" + row.uid}
                         >
                           <IconFileInfo />

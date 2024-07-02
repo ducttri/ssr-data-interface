@@ -1,6 +1,6 @@
 "use client";
 
-import { Data } from "@/types/types";
+import { RowHealthData } from "@/types/types";
 import {
   TableHead,
   TableRow,
@@ -15,7 +15,7 @@ type Order = "asc" | "desc";
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Data;
+  id: keyof RowHealthData;
   detector: string;
   label: string;
   numeric: boolean;
@@ -346,11 +346,11 @@ const headCells: readonly HeadCell[] = [
   },
 ];
 
-interface EnhancedTableProps {
+interface HealthTableProps {
   numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
-    property: keyof Data
+    property: keyof RowHealthData
   ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
@@ -359,7 +359,7 @@ interface EnhancedTableProps {
   detector: string;
 }
 
-export default function EnhancedTableHead(props: EnhancedTableProps) {
+export default function HealthTableHead(props: HealthTableProps) {
   const {
     onSelectAllClick,
     order,
@@ -370,7 +370,7 @@ export default function EnhancedTableHead(props: EnhancedTableProps) {
     detector,
   } = props;
   const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof RowHealthData) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 

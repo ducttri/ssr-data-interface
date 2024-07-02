@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MongoClient, ObjectId } from "mongodb";
-import { JSONData } from "@/types/types";
+import { HealthJSONData } from "@/types/types";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
@@ -21,7 +21,9 @@ export async function GET(req: NextRequest) {
     const database = client.db("HealthData");
     const datacollection = database.collection("SampleHealthData");
     const queries = { _id: new ObjectId(id) };
-    const data = (await datacollection.findOne(queries)) as unknown as JSONData;
+    const data = (await datacollection.findOne(
+      queries
+    )) as unknown as HealthJSONData;
     return NextResponse.json(data);
   } catch (e) {
     console.error(e);

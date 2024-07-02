@@ -1,250 +1,99 @@
-
-export interface JSONData {
+export interface HealthJSONData {
   _id: string;
-  processed_data: {
-    start_time: number;
-    c1: {
-      arm_temp: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-      sipm_temp: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-      sipm_operating_voltage: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-    };
-    m1: {
-      arm_temp: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-      sipm_temp: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-      sipm_operating_voltage: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-    };
-    m5: {
-      arm_temp: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-      sipm_temp: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-      sipm_operating_voltage: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-    };
-    x1: {
-      arm_temp: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-      sipm_temp: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-      sipm_operating_voltage: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-    };
-    x123: {
-      board_temp: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-      det_high_voltage: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-      det_temp: {
-        avg: number;
-        min: number;
-        max: number;
-      };
-    };
+  processed_data: ProcessedHealthData;
+  raw_data: RawHealthData;
+}
+
+export interface ProcessedHealthData {
+  start_time: number;
+  c1: {
+    arm_temp: ProcessedHealthDataType;
+    sipm_temp: ProcessedHealthDataType;
+    sipm_operating_voltage: ProcessedHealthDataType;
   };
-  raw_data: {
-    timestamp: number[];
-    x123: {
-      accumulation_time: {
-        unit: string;
-        value: number[];
-      };
-      board_temp: {
-        unit: string;
-        value: number[];
-      };
-      det_high_voltage: {
-        unit: string;
-        value: number[];
-      };
-      det_temp: {
-        unit: string;
-        value: number[];
-      };
-      fast_counts: {
-        unit: string;
-        value: number[];
-      };
-      real_time: {
-        unit: string;
-        value: number[];
-      };
-      slow_counts: {
-        unit: string;
-        value: number[];
-      };
-    };
-    x1: {
-      arm_temp: {
-        unit: string;
-        value: number[];
-      };
-      counts: {
-        unit: string;
-        value: number[];
-      };
-      dead_time: {
-        unit: string;
-        value: number[];
-      };
-      real_time: {
-        unit: string;
-        value: number[];
-      };
-      sipm_operating_voltage: {
-        unit: string;
-        value: number[];
-      };
-      sipm_target_voltage: {
-        unit: string;
-        value: number[];
-      };
-      sipm_temp: {
-        unit: string;
-        value: number[];
-      };
-    };
-    c1: {
-      arm_temp: {
-        unit: string;
-        value: number[];
-      };
-      counts: {
-        unit: string;
-        value: number[];
-      };
-      dead_time: {
-        unit: string;
-        value: number[];
-      };
-      real_time: {
-        unit: string;
-        value: number[];
-      };
-      sipm_operating_voltage: {
-        unit: string;
-        value: number[];
-      };
-      sipm_target_voltage: {
-        unit: string;
-        value: number[];
-      };
-      sipm_temp: {
-        unit: string;
-        value: number[];
-      };
-    };
-    m1: {
-      arm_temp: {
-        unit: string;
-        value: number[];
-      };
-      counts: {
-        unit: string;
-        value: number[];
-      };
-      dead_time: {
-        unit: string;
-        value: number[];
-      };
-      real_time: {
-        unit: string;
-        value: number[];
-      };
-      sipm_operating_voltage: {
-        unit: string;
-        value: number[];
-      };
-      sipm_target_voltage: {
-        unit: string;
-        value: number[];
-      };
-      sipm_temp: {
-        unit: string;
-        value: number[];
-      };
-    };
-    m5: {
-      arm_temp: {
-        unit: string;
-        value: number[];
-      };
-      counts: {
-        unit: string;
-        value: number[];
-      };
-      dead_time: {
-        unit: string;
-        value: number[];
-      };
-      real_time: {
-        unit: string;
-        value: number[];
-      };
-      sipm_operating_voltage: {
-        unit: string;
-        value: number[];
-      };
-      sipm_target_voltage: {
-        unit: string;
-        value: number[];
-      };
-      sipm_temp: {
-        unit: string;
-        value: number[];
-      };
-    };
+  m1: {
+    arm_temp: ProcessedHealthDataType;
+    sipm_temp: ProcessedHealthDataType;
+    sipm_operating_voltage: ProcessedHealthDataType;
+  };
+  m5: {
+    arm_temp: ProcessedHealthDataType;
+    sipm_temp: ProcessedHealthDataType;
+    sipm_operating_voltage: ProcessedHealthDataType;
+  };
+  x1: {
+    arm_temp: ProcessedHealthDataType;
+    sipm_temp: ProcessedHealthDataType;
+    sipm_operating_voltage: ProcessedHealthDataType;
+  };
+  x123: {
+    board_temp: ProcessedHealthDataType;
+    det_high_voltage: ProcessedHealthDataType;
+    det_temp: ProcessedHealthDataType;
   };
 }
 
-export interface Data {
+export interface ProcessedHealthDataType {
+  avg: number;
+  min: number;
+  max: number;
+}
+
+export interface RawHealthData {
+  timestamp: number[];
+  x123: {
+    accumulation_time: RawHealthDataType;
+    board_temp: RawHealthDataType;
+    det_high_voltage: RawHealthDataType;
+    det_temp: RawHealthDataType;
+    fast_counts: RawHealthDataType;
+    real_time: RawHealthDataType;
+    slow_counts: RawHealthDataType;
+  };
+  x1: {
+    arm_temp: RawHealthDataType;
+    counts: RawHealthDataType;
+    dead_time: RawHealthDataType;
+    real_time: RawHealthDataType;
+    sipm_operating_voltage: RawHealthDataType;
+    sipm_target_voltage: RawHealthDataType;
+    sipm_temp: RawHealthDataType;
+  };
+  c1: {
+    arm_temp: RawHealthDataType;
+    counts: RawHealthDataType;
+    dead_time: RawHealthDataType;
+    real_time: RawHealthDataType;
+    sipm_operating_voltage: RawHealthDataType;
+    sipm_target_voltage: RawHealthDataType;
+    sipm_temp: RawHealthDataType;
+  };
+  m1: {
+    arm_temp: RawHealthDataType;
+    counts: RawHealthDataType;
+    dead_time: RawHealthDataType;
+    real_time: RawHealthDataType;
+    sipm_operating_voltage: RawHealthDataType;
+    sipm_target_voltage: RawHealthDataType;
+    sipm_temp: RawHealthDataType;
+  };
+  m5: {
+    arm_temp: RawHealthDataType;
+    counts: RawHealthDataType;
+    dead_time: RawHealthDataType;
+    real_time: RawHealthDataType;
+    sipm_operating_voltage: RawHealthDataType;
+    sipm_target_voltage: RawHealthDataType;
+    sipm_temp: RawHealthDataType;
+  };
+}
+
+export interface RawHealthDataType {
+  unit: string;
+  value: number[];
+}
+
+export interface RowHealthData {
   id: number;
   uid: string;
   beginUTC: string;
@@ -299,7 +148,7 @@ export interface Data {
   x123_det_temp_max: number;
 }
 
-export interface FilterData {
+export interface FilterHealthData {
   detector: string;
   field: number;
   type: string;

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MongoClient, ObjectId } from "mongodb";
-import { JSONData } from "@/types/types";
+import { HealthJSONData } from "@/types/types";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
@@ -14,7 +14,7 @@ export async function GET() {
     const datacollection = database.collection("SampleHealthData");
     const data = (await datacollection
       .find({}, { projection: { processed_data: 1 } })
-      .toArray()) as unknown as JSONData[];
+      .toArray()) as unknown as HealthJSONData[];
     return NextResponse.json({
       status: 200,
       statusText: "OK",
