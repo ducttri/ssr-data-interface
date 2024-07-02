@@ -1,4 +1,4 @@
-import { FilterData } from "@/types/types";
+import { FilterHealthData } from "@/types/types";
 import {
   Tooltip,
   IconButton,
@@ -121,13 +121,13 @@ function createFilter(
   type: string,
   operator: string,
   value: number
-): FilterData {
+): FilterHealthData {
   return { detector, field, type, operator, value };
 }
 
 interface HealthTableFilterProps {
-  filter: FilterData[];
-  setFilter: React.Dispatch<React.SetStateAction<FilterData[]>>;
+  filter: FilterHealthData[];
+  setFilter: React.Dispatch<React.SetStateAction<FilterHealthData[]>>;
 }
 
 export default function HealthTableFilter(props: HealthTableFilterProps) {
