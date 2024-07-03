@@ -65,13 +65,38 @@ export default function HealthTable() {
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   let newData;
-  //   for (const i : Data in data) {
-  //     if (i.)
-  //   }
+  function filterChecker(data: RowHealthData): boolean {
+    for (const filter of filters) {
+      if (filter.operator == "=") {
+        if (data[filter.key] != filter.value) return false;
+      } else if (filter.operator == "!=") {
+        if (data[filter.key] == filter.value) return false;
+      } else if (filter.operator == ">") {
+        if ((data[filter.key] as number) <= filter.value) return false;
+      } else if (filter.operator == ">=") {
+        if ((data[filter.key] as number) < filter.value) return false;
+      } else if (filter.operator == "<") {
+        if ((data[filter.key] as number) >= filter.value) return false;
+      } else if (filter.operator == "<=") {
+        if ((data[filter.key] as number) > filter.value) return false;
+      }
+    }
+    return true;
+  }
 
-  // }, [beginDate, endDate, filters]);
+  useEffect(() => {
+    if (data) {
+      let newData: RowHealthData[] = [];
+      data.forEach((row: RowHealthData) => {
+        if (row.beginUTC >= beginDate && row.beginUTC <= endDate) {
+          if (filterChecker(row)) {
+            newData.push(row);
+          }
+        }
+      });
+      setRows(newData);
+    }
+  }, [beginDate, endDate, filters]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -265,7 +290,7 @@ export default function HealthTable() {
                       </Tooltip>
                     </TableCell>
                     <TableCell align="left" style={{ width: 1 }}>
-                      {row.beginUTC}
+                      {new Date(row.beginUTC * 1000).toUTCString()}
                     </TableCell>
 
                     {detectors == "c1" && (

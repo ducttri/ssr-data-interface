@@ -96,7 +96,7 @@ export interface RawHealthDataType {
 export interface RowHealthData {
   id: number;
   uid: string;
-  beginUTC: string;
+  beginUTC: number;
   c1_arm_temp_avg: number;
   c1_arm_temp_min: number;
   c1_arm_temp_max: number;
@@ -148,7 +148,59 @@ export interface RowHealthData {
   x123_det_temp_max: number;
 }
 
+export type RowHealthDataType =
+  | "id"
+  | "uid"
+  | "beginUTC"
+  | "c1_arm_temp_avg"
+  | "c1_arm_temp_min"
+  | "c1_arm_temp_max"
+  | "c1_sipm_temp_avg"
+  | "c1_sipm_temp_min"
+  | "c1_sipm_temp_max"
+  | "c1_sipm_operating_voltage_avg"
+  | "c1_sipm_operating_voltage_min"
+  | "c1_sipm_operating_voltage_max"
+  | "m1_arm_temp_avg"
+  | "m1_arm_temp_min"
+  | "m1_arm_temp_max"
+  | "m1_sipm_temp_avg"
+  | "m1_sipm_temp_min"
+  | "m1_sipm_temp_max"
+  | "m1_sipm_operating_voltage_avg"
+  | "m1_sipm_operating_voltage_min"
+  | "m1_sipm_operating_voltage_max"
+  | "m5_arm_temp_avg"
+  | "m5_arm_temp_min"
+  | "m5_arm_temp_max"
+  | "m5_sipm_temp_avg"
+  | "m5_sipm_temp_min"
+  | "m5_sipm_temp_max"
+  | "m5_sipm_operating_voltage_avg"
+  | "m5_sipm_operating_voltage_min"
+  | "m5_sipm_operating_voltage_max"
+  | "x1_arm_temp_avg"
+  | "x1_arm_temp_min"
+  | "x1_arm_temp_max"
+  | "x1_sipm_temp_avg"
+  | "x1_sipm_temp_min"
+  | "x1_sipm_temp_max"
+  | "x1_sipm_operating_voltage_avg"
+  | "x1_sipm_operating_voltage_min"
+  | "x1_sipm_operating_voltage_max"
+  | "x123_board_temp_avg"
+  | "x123_board_temp_min"
+  | "x123_board_temp_max"
+  | "x123_det_high_voltage_avg"
+  | "x123_det_high_voltage_min"
+  | "x123_det_high_voltage_max"
+  | "x123_det_temp_avg"
+  | "x123_det_temp_min"
+  | "x123_det_temp_max";
+
+
 export interface FilterHealthData {
+  key: RowHealthDataType;
   detector: string;
   field: number;
   type: string;

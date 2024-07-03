@@ -1,4 +1,4 @@
-import { FilterHealthData } from "@/types/types";
+import { FilterHealthData, RowHealthDataType } from "@/types/types";
 import {
   Tooltip,
   IconButton,
@@ -46,14 +46,17 @@ const detectors = [
 const hafxfield = [
   {
     value: "0",
+    actual: "arm_temp",
     label: "ARM Processor Temperature",
   },
   {
     value: "1",
+    actual: "sipm_temp",
     label: "SiPM board temperature",
   },
   {
     value: "2",
+    actual: "sipm_operating_voltage",
     label: "SiPM operating voltage",
   },
 ];
@@ -61,14 +64,17 @@ const hafxfield = [
 const x123field = [
   {
     value: "0",
+    actual: "board_temp",
     label: "DP5 board temperature",
   },
   {
     value: "1",
+    actual: "det_high_voltage",
     label: "Detector high voltage",
   },
   {
     value: "2",
+    actual: "det_temp",
     label: "Detector head temperature",
   },
 ];
@@ -122,7 +128,12 @@ function createFilter(
   operator: string,
   value: number
 ): FilterHealthData {
-  return { detector, field, type, operator, value };
+  const key = (detector +
+    "_" +
+    (detector == "x123" ? x123field[field].actual : hafxfield[field].actual) +
+    "_" +
+    type) as RowHealthDataType;
+  return { key, detector, field, type, operator, value };
 }
 
 interface HealthTableFilterProps {

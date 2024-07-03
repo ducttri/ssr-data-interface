@@ -4,7 +4,7 @@ export function createData(id: number, data: HealthJSONData): RowHealthData {
   return {
     id: id,
     uid: data._id,
-    beginUTC: new Date(data.processed_data.start_time * 1000).toUTCString(),
+    beginUTC: data.processed_data.start_time,
     c1_arm_temp_avg: data.processed_data.c1.arm_temp.avg,
     c1_arm_temp_min: data.processed_data.c1.arm_temp.min,
     c1_arm_temp_max: data.processed_data.c1.arm_temp.max,
