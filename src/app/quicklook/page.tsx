@@ -7,17 +7,15 @@ import {
   Button,
   Grid,
   Snackbar,
-  Tab,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import dynamic from "next/dynamic";
-import GraphList from "@/components/healthGraph/GraphsList";
+import GraphList from "@/components/HealthGraph/GraphsList";
 import { HealthJSONData } from "@/types/types";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
 import { IconUpload } from "@tabler/icons-react";
-import PageContainer from "@/components/container/PageContainer";
+import PageContainer from "@/components/Container/PageContainer";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",

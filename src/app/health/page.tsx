@@ -1,10 +1,8 @@
 "use client";
 
-import { Box, CircularProgress, Grid, Tab, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import HealthTable from "@/components/healthTable/HealthTable";
-import { HealthJSONData } from "@/types/types";
-import PageContainer from "@/components/container/PageContainer";
+import { Box, Typography } from "@mui/material";
+import HealthTable from "@/components/HealthTable/HealthTable";
+import PageContainer from "@/components/Container/PageContainer";
 
 export default function Health() {
   return (

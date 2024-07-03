@@ -1,6 +1,6 @@
 "use client";
 
-import PageContainer from "@/components/container/PageContainer";
+import PageContainer from "@/components/Container/PageContainer";
 import { Typography } from "@mui/material";
 
 
