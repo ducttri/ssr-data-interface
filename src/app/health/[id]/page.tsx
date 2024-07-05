@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, CircularProgress, Grid, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 import GraphList from "@/components/HealthGraph/GraphsList";
 import useSWR from "swr";
 import PageContainer from "@/components/Container/PageContainer";
@@ -19,9 +19,16 @@ export default function Page({ params }: { params: { id: string } }) {
 
   if (isLoading)
     return (
-      <Box sx={{ width: "100%", display: "flex" }} alignContent={"center"}>
-        <CircularProgress />
-      </Box>
+      <PageContainer title="Health" description="Health Database">
+        <Typography variant="h3" gutterBottom>
+          Health
+        </Typography>
+        <Box sx={{ width: "100%" }}>
+          <Paper sx={{ width: "100%", mb: 2 }}>
+            <CircularProgress />
+          </Paper>
+        </Box>
+      </PageContainer>
     );
   if (error) return <Box>{error}</Box>;
 
@@ -29,10 +36,14 @@ export default function Page({ params }: { params: { id: string } }) {
     <PageContainer title="Health" description="Health Database">
       <Typography variant="h3" gutterBottom>
         Health
-        <Grid container columns={2}>
-          {data && <GraphList data={data}></GraphList>}
-        </Grid>
       </Typography>
+      <Box sx={{ width: "100%" }}>
+        <Paper sx={{ width: "100%", mb: 2 }}>
+          <Grid container columns={2}>
+            {data && <GraphList data={data}></GraphList>}
+          </Grid>
+        </Paper>
+      </Box>
     </PageContainer>
   );
 }
