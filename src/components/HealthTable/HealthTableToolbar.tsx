@@ -22,11 +22,10 @@ import dayjs from "dayjs";
 import { styled } from "@mui/material/styles";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
-import {
-  IconCloudUpload,
-  IconCloudDownload,
-} from "@tabler/icons-react";
+import { IconCloudUpload, IconCloudDownload } from "@tabler/icons-react";
 import HealthTableFilter from "./HealthTableFilter";
+import { HealthJSONDataSchema } from "@/types/jsonSchema";
+import { JSONSchemaType } from "ajv";
 
 dayjs.extend(utc);
 
@@ -68,7 +67,6 @@ export default function HealthTableToolbar(props: HealthTableToolbarProps) {
   const [openError, setOpenError] = React.useState(false);
   const [success, setSuccess] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState("");
-
 
   const handleErrorClose = (
     event: React.SyntheticEvent | Event,
@@ -129,7 +127,10 @@ export default function HealthTableToolbar(props: HealthTableToolbarProps) {
         if (e.target?.result) {
           try {
             json = JSON.parse(e.target.result as string);
-            const valid = await jsonValidator(json);
+            const valid = await jsonValidator(
+              json,
+              HealthJSONDataSchema as JSONSchemaType<any>
+            );
             if (valid) {
               handleAPICall(json as unknown as HealthJSONData);
             } else {
@@ -256,7 +257,7 @@ export default function HealthTableToolbar(props: HealthTableToolbarProps) {
             </Box>
           )}
 
-          <HealthTableFilter filter={filter} setFilter={setFilter}/>
+          <HealthTableFilter filter={filter} setFilter={setFilter} />
         </>
       )}
     </Toolbar>
