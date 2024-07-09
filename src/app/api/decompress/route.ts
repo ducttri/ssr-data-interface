@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createGunzip } from "zlib";
 import { parse } from "json-bigint";
+import { HealthJSONData } from "@/types/types";
 
 export async function POST(request: NextRequest) {
   const data = await request.formData();
@@ -21,11 +22,11 @@ export async function POST(request: NextRequest) {
     });
 
     gunzip.on("end", () => {
-      resolve(); 
+      resolve();
     });
 
     gunzip.on("error", (error) => {
-      reject(error); 
+      reject(error);
     });
 
     gunzip.end(buffer);
@@ -33,10 +34,10 @@ export async function POST(request: NextRequest) {
 
   try {
     await decompressionPromise;
-    const jsonData = parse(newdata);
+    const jsonData = parse(newdata) as HealthJSONData;
     return NextResponse.json({ success: true, data: jsonData });
-  } catch (error) {
-    console.error("Error processing file:", error);
+  } catch (e) {
+    console.error("Failed to parse data: " + e);
     return NextResponse.json({
       success: false,
       error: "Error processing file.",

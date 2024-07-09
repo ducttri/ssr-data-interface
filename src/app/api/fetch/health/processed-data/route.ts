@@ -1,10 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { MongoClient, ObjectId } from "mongodb";
+import { NextResponse } from "next/server";
+import { MongoClient } from "mongodb";
 import { HealthJSONData } from "@/types/types";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-
-dayjs.extend(utc);
 
 export async function GET() {
   const uri = process.env.MONGODB_URI as string;
@@ -19,10 +15,9 @@ export async function GET() {
       status: 200,
       statusText: "OK",
       data: data,
-      time: dayjs(),
     });
   } catch (e) {
-    console.error(e);
+    console.error("Failed to fetch data: " + e);
     return NextResponse.json({
       status: 500,
       statusText: "Internal Server Error",

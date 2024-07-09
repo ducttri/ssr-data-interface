@@ -29,7 +29,8 @@ export async function GET(req: NextRequest) {
           if (cursor) {
             datas.push(cursor as unknown as HealthJSONData);
           }
-        } catch {
+        } catch (e) {
+          console.error("Failed to fetch data: " + e);
           return NextResponse.json({
             status: 500,
             statusText: "Internal Server Error",
@@ -61,7 +62,8 @@ export async function GET(req: NextRequest) {
         "content-type": "application/zip",
       },
     });
-  } catch {
+  } catch (e) {
+    console.error("Failed to compress data: " + e);
     return NextResponse.json({
       status: 500,
       statusText: "Internal Server Error",

@@ -1,7 +1,6 @@
-import { compileSchema } from "ajv/dist/compile";
-import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 const client = jwksClient({
@@ -73,17 +72,16 @@ export async function POST(request: NextRequest) {
     const data: JSON = JSON.parse((dataForm.get("data") as string) || "{}");
     const uri = process.env.MONGODB_URI as string;
     const client = new MongoClient(uri);
-    console.log("HERE");
     try {
       const database = client.db("HealthData");
       const datacollection = database.collection("SampleHealthData");
-      // const result = await datacollection.insertOne(data);
-      // console.log(result);
+      const result = await datacollection.insertOne(data);
       return NextResponse.json({
         status: 200,
         statusText: "Succesfully upload data",
       });
-    } catch {
+    } catch (e) {
+      console.error("Failed to upload data: " + e);
       return NextResponse.json({
         status: 503,
         statusText: "Unsuccesfully upload data",
