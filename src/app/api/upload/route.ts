@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
   const issuer = "https://ssrdatainterface.kinde.com";
   const token = request.headers.get("authorization") || "";
   let valid = false;
+
   await verifyAccessToken(token, audience, issuer)
     .then((decoded) => {
       console.log("Token is valid:", decoded);
@@ -67,15 +68,18 @@ export async function POST(request: NextRequest) {
     .catch((err) => {
       console.error("Token verification failed:", err);
     });
+
   if (valid) {
     const dataForm = await request.formData();
     const data: JSON = JSON.parse((dataForm.get("data") as string) || "{}");
     const uri = process.env.MONGODB_URI as string;
     const client = new MongoClient(uri);
+
     try {
       const database = client.db("HealthData");
       const datacollection = database.collection("SampleHealthData");
       const result = await datacollection.insertOne(data);
+      
       return NextResponse.json({
         status: 200,
         statusText: "Succesfully upload data",

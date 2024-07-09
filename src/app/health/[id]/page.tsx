@@ -15,8 +15,6 @@ export default function Page({ params }: { params: { id: string } }) {
     fetcher
   );
 
-  console.log(data);
-
   if (isLoading)
     return (
       <PageContainer title="Health" description="Health Database">
@@ -30,6 +28,7 @@ export default function Page({ params }: { params: { id: string } }) {
         </Box>
       </PageContainer>
     );
+    
   if (error) return <Box>{error}</Box>;
 
   return (

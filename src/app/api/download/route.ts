@@ -10,14 +10,11 @@ export async function GET(req: NextRequest) {
   const selectedData = JSON.parse(
     req.nextUrl.searchParams.get("selectedData") || "[]"
   );
-
   const uri = process.env.MONGODB_URI as string;
   const client = new MongoClient(uri);
-
-  let datas: HealthJSONData[] = [];
-
   const database = client.db("HealthData");
   const datacollection = database.collection("SampleHealthData");
+  let datas: HealthJSONData[] = [];
 
   try {
     await Promise.all(
@@ -26,11 +23,13 @@ export async function GET(req: NextRequest) {
           const cursor = await datacollection.findOne({
             _id: new ObjectId(id),
           });
+
           if (cursor) {
             datas.push(cursor as unknown as HealthJSONData);
           }
         } catch (e) {
           console.error("Failed to fetch data: " + e);
+
           return NextResponse.json({
             status: 500,
             statusText: "Internal Server Error",
@@ -42,9 +41,11 @@ export async function GET(req: NextRequest) {
 
     const archive = archiver("zip", { zlib: { level: 9 } });
     const writableStreamBuffer = new WritableStreamBuffer();
+
     archive.pipe(writableStreamBuffer);
     datas.forEach((jsonObject: HealthJSONData, index: number) => {
       const jsonString = JSON.stringify(jsonObject, null, 2);
+
       archive.append(jsonString, { name: `${selectedData[index]}.json` });
     });
 
@@ -64,6 +65,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (e) {
     console.error("Failed to compress data: " + e);
+    
     return NextResponse.json({
       status: 500,
       statusText: "Internal Server Error",

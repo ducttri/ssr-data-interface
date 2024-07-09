@@ -16,6 +16,8 @@ import { HealthJSONData } from "@/types/types";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
 import { IconUpload } from "@tabler/icons-react";
 import PageContainer from "@/components/Container/PageContainer";
+import { HealthJSONDataSchema } from "@/types/jsonSchema";
+import { JSONSchemaType } from "ajv";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -53,13 +55,19 @@ export default function QuickLook() {
       const file = files[0];
       const iszipped: boolean = file.name.endsWith(".json.gz") ? true : false;
       let json: JSON;
+
       if (!iszipped) {
         const reader = new FileReader();
+
         reader.onload = async (e: ProgressEvent<FileReader>) => {
           if (e.target?.result) {
             try {
               json = JSON.parse(e.target.result as string);
-              const valid = await jsonValidator(json);
+              const valid = await jsonValidator(
+                json,
+                HealthJSONDataSchema as JSONSchemaType<any>
+              );
+
               if (valid) {
                 setData(json as unknown as HealthJSONData);
                 setSuccess(true);
@@ -68,12 +76,12 @@ export default function QuickLook() {
                 setSuccess(false);
                 setOpen(true);
               }
-              console.log(valid);
             } catch (error) {
               console.error("Error parsing JSON:", error);
             }
           }
         };
+
         reader.readAsText(file);
       } else {
         try {

@@ -10,7 +10,7 @@ export default function Health() {
       <Typography variant="h3" gutterBottom>
         Health
       </Typography>
-
+      
       <Box width={"100%"}>
         <HealthTable />
       </Box>

@@ -6,6 +6,7 @@ import { HealthJSONData } from "@/types/types";
 export async function POST(request: NextRequest) {
   const data = await request.formData();
   const file: File | null = data.get("file") as unknown as File;
+  let newdata = "";
 
   if (!file) {
     return NextResponse.json({ success: false });
@@ -14,8 +15,7 @@ export async function POST(request: NextRequest) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
   const gunzip = createGunzip();
-
-  let newdata = "";
+  
   const decompressionPromise = new Promise<void>((resolve, reject) => {
     gunzip.on("data", (chunk) => {
       newdata += chunk.toString();
