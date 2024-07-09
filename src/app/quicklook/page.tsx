@@ -7,17 +7,17 @@ import {
   Button,
   Grid,
   Snackbar,
-  Tab,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import dynamic from "next/dynamic";
-import GraphList from "@/components/healthGraph/GraphsList";
-import { JSONData } from "@/types/types";
+import GraphList from "@/components/HealthGraph/GraphsList";
+import { HealthJSONData } from "@/types/types";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
 import { IconUpload } from "@tabler/icons-react";
-import PageContainer from "@/components/container/PageContainer";
+import PageContainer from "@/components/Container/PageContainer";
+import { HealthJSONDataSchema } from "@/types/jsonSchema";
+import { JSONSchemaType } from "ajv";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -32,7 +32,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 export default function QuickLook() {
-  const [data, setData] = useState<JSONData | null>(null);
+  const [data, setData] = useState<HealthJSONData | null>(null);
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState(true);
 
@@ -55,27 +55,33 @@ export default function QuickLook() {
       const file = files[0];
       const iszipped: boolean = file.name.endsWith(".json.gz") ? true : false;
       let json: JSON;
+
       if (!iszipped) {
         const reader = new FileReader();
+
         reader.onload = async (e: ProgressEvent<FileReader>) => {
           if (e.target?.result) {
             try {
               json = JSON.parse(e.target.result as string);
-              const valid = await jsonValidator(json);
+              const valid = await jsonValidator(
+                json,
+                HealthJSONDataSchema as JSONSchemaType<any>
+              );
+
               if (valid) {
-                setData(json as unknown as JSONData);
+                setData(json as unknown as HealthJSONData);
                 setSuccess(true);
                 setOpen(true);
               } else {
                 setSuccess(false);
                 setOpen(true);
               }
-              console.log(valid);
             } catch (error) {
               console.error("Error parsing JSON:", error);
             }
           }
         };
+
         reader.readAsText(file);
       } else {
         try {
@@ -88,7 +94,7 @@ export default function QuickLook() {
           if (!res.ok) throw new Error(await res.text());
           const returndata = await res.json();
           json = returndata.data;
-          setData(json as unknown as JSONData);
+          setData(json as unknown as HealthJSONData);
         } catch (e: any) {
           console.error(e);
         }

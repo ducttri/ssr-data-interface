@@ -1,10 +1,8 @@
 "use client";
 
-import { Box, CircularProgress, Grid, Tab, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import EnhancedTable from "@/components/healthTable/EnhancedTable";
-import { JSONData } from "@/types/types";
-import PageContainer from "@/components/container/PageContainer";
+import { Box, Typography } from "@mui/material";
+import HealthTable from "@/components/HealthTable/HealthTable";
+import PageContainer from "@/components/Container/PageContainer";
 
 export default function Health() {
   return (
@@ -12,9 +10,9 @@ export default function Health() {
       <Typography variant="h3" gutterBottom>
         Health
       </Typography>
-
-      <Box width={'100%'}>
-        <EnhancedTable/>
+      
+      <Box width={"100%"}>
+        <HealthTable />
       </Box>
     </PageContainer>
   );

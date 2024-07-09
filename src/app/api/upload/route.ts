@@ -1,7 +1,6 @@
-import { compileSchema } from "ajv/dist/compile";
-import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 const client = jwksClient({
@@ -49,10 +48,11 @@ const verifyRole = (roles: JwtPayload[]): boolean => {
 };
 
 export async function POST(request: NextRequest) {
-  const audience = "http://localhost:3000/api";
+  const audience = process.env.KINDE_AUDIENCE as string;
   const issuer = "https://ssrdatainterface.kinde.com";
   const token = request.headers.get("authorization") || "";
   let valid = false;
+
   await verifyAccessToken(token, audience, issuer)
     .then((decoded) => {
       console.log("Token is valid:", decoded);
@@ -68,22 +68,24 @@ export async function POST(request: NextRequest) {
     .catch((err) => {
       console.error("Token verification failed:", err);
     });
+
   if (valid) {
     const dataForm = await request.formData();
     const data: JSON = JSON.parse((dataForm.get("data") as string) || "{}");
     const uri = process.env.MONGODB_URI as string;
     const client = new MongoClient(uri);
-    console.log("HERE");
+
     try {
       const database = client.db("HealthData");
       const datacollection = database.collection("SampleHealthData");
-      // const result = await datacollection.insertOne(data);
-      // console.log(result);
+      const result = await datacollection.insertOne(data);
+      
       return NextResponse.json({
         status: 200,
         statusText: "Succesfully upload data",
       });
-    } catch {
+    } catch (e) {
+      console.error("Failed to upload data: " + e);
       return NextResponse.json({
         status: 503,
         statusText: "Unsuccesfully upload data",

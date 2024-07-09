@@ -1,5 +1,4 @@
 import React from "react";
-// mui imports
 import {
   ListItemIcon,
   ListItem,
@@ -63,8 +62,9 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
   return (
     <List component="div" disablePadding key={item.id}>
       <ListItemStyled>
-        <ListItemButton
+        <ListItemButton 
           component={Link}
+          prefetch={true}
           href={item.href}
           disabled={item.disabled}
           selected={pathDirect === item.href}
