@@ -15,20 +15,6 @@ export default function Page({ params }: { params: { id: string } }) {
     fetcher
   );
 
-  if (isLoading)
-    return (
-      <PageContainer title="Health" description="Health Database">
-        <Typography variant="h3" gutterBottom>
-          Health
-        </Typography>
-        <Box sx={{ width: "100%" }}>
-          <Paper sx={{ width: "100%", mb: 2 }}>
-            <CircularProgress />
-          </Paper>
-        </Box>
-      </PageContainer>
-    );
-    
   if (error) return <Box>{error}</Box>;
 
   return (

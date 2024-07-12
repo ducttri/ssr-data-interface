@@ -4,7 +4,7 @@ import { baselightTheme } from "@/utils/theme/DefaultColors";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
-const PlotlyGraph = ({
+export const LineGraph = ({
   xData,
   yData,
   xLabel,
@@ -12,8 +12,8 @@ const PlotlyGraph = ({
   xUnit,
   yUnit,
 }: {
-  xData: string[];
-  yData: number[];
+  xData: any[];
+  yData: any[];
   xLabel: string;
   yLabel: string;
   xUnit: string;
@@ -33,7 +33,6 @@ const PlotlyGraph = ({
       ]}
       layout={{
         autosize: true, // Enable responsive sizing
-        height: 400,
         title: yLabel + " vs. " + xLabel,
         xaxis: { title: xLabel + " (" + xUnit + ")", rangeslider: {} },
         yaxis: { title: yLabel + " (" + yUnit + ")", fixedrange: true },
@@ -43,5 +42,3 @@ const PlotlyGraph = ({
     />
   );
 };
-
-export default PlotlyGraph;

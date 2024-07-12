@@ -15,7 +15,7 @@ export default function Home() {
               width: "100%",
               borderRadius: 1,
             }}
-            alt="The house from the offer."
+            alt="IMPRESS Mission graph"
             src="https://smallsat.umn.edu/sites/smallsat.umn.edu/files/files/media/impresssat.png"
           />
           <Box
@@ -65,7 +65,7 @@ export default function Home() {
             To capture fast time variations, these detectors will produce 4-12
             keV SXR spectra at a 1 Hz cadence and 8-100 keV HXR spectra at a 32
             Hz cadence. The payload is carried on a 3U CubeSat platform. IMPRESS
-            has a target launch date of late 2021 with a planned minimum mission
+            has a target launch date of late 2024 with a planned minimum mission
             life of at least 6 months.
           </Typography>
           <Typography sx={{ m: 4 }} variant="body1">
