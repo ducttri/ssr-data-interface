@@ -1,12 +1,23 @@
 "use client";
 
-import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
+import { Box, Grid, Paper, Typography } from "@mui/material";
 import GraphList from "@/components/HealthGraph/GraphsList";
 import useSWR from "swr";
 import PageContainer from "@/components/Container/PageContainer";
+import { NextResponse } from "next/server";
+import NotFound from "@/app/not-found";
 
-const fetcher = (url: string | URL | Request) =>
-  fetch(url).then((res) => res.json());
+const fetcher = async (url: string | URL | Request) => {
+  const res = await fetch(url);
+
+  if (res.status != 200) {
+    const error = new Error("An error occurred while fetching the data.");
+    throw error;
+  }
+
+  const json = await res.json();
+  return json.data;
+};
 
 export default function Page({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -15,7 +26,9 @@ export default function Page({ params }: { params: { id: string } }) {
     fetcher
   );
 
-  if (error) return <Box>{error}</Box>;
+  if (error) {
+    return NotFound();
+  }
 
   return (
     <PageContainer title="Health" description="Health Database">
