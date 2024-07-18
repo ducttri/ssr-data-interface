@@ -13,7 +13,7 @@ export default function Science() {
       <Typography variant="h3" gutterBottom>
         Science
       </Typography>
-        <Spectrogram></Spectrogram>
+        <Spectrogram/>
         <LineGraph xData={data.reversed_bins} yData={data.spectrum} xLabel={""} yLabel={""} xUnit={""} yUnit={""}></LineGraph>
     </PageContainer>
   );
