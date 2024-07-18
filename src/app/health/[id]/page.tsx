@@ -6,6 +6,7 @@ import useSWR from "swr";
 import PageContainer from "@/components/Container/PageContainer";
 import { NextResponse } from "next/server";
 import NotFound from "@/app/not-found";
+import { Selector } from "@/components/Graph/LineGraphSelector";
 
 const fetcher = async (url: string | URL | Request) => {
   const res = await fetch(url);
@@ -26,7 +27,7 @@ export default function Page({ params }: { params: { id: string } }) {
     fetcher
   );
 
-  if (error) {
+  if (!isLoading && !data) {
     return NotFound();
   }
 
@@ -37,9 +38,7 @@ export default function Page({ params }: { params: { id: string } }) {
       </Typography>
       <Box sx={{ width: "100%" }}>
         <Paper sx={{ width: "100%", mb: 2 }}>
-          <Grid container columns={2}>
-            {data && <GraphList data={data}></GraphList>}
-          </Grid>
+          {data && <Selector data={data} />}
         </Paper>
       </Box>
     </PageContainer>
