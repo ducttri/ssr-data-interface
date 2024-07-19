@@ -42,6 +42,7 @@
     "react-helmet-async": "^2.0.5",
     "react-plotly.js": "^2.6.0",
     "stream-buffers": "^3.0.2",
+    "styled-components": "^6.1.12",
     "swr": "^2.2.5"
   },
   "devDependencies": {

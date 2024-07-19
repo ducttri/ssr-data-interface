@@ -1,18 +1,19 @@
 import React from "react";
 import dynamic from "next/dynamic";
-import { baselightTheme } from "@/utils/theme/DefaultColors";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
-export const LineGraph = ({
+export const ThreeDSpectrogram = ({
   xData,
   yData,
+  zData,
   xLabel,
   yLabel,
-  title
+  title,
 }: {
   xData: any[];
   yData: any[];
+  zData: any[];
   xLabel: string;
   yLabel: string;
   title: string;
@@ -23,20 +24,19 @@ export const LineGraph = ({
         {
           x: xData,
           y: yData,
-          type: "scatter",
-          line: {
-            color: baselightTheme.palette.primary.main,
-          },
+          z: zData,
+          type: "heatmap",
         },
       ]}
       layout={{
         autosize: true, // Enable responsive sizing
         title: title,
-        xaxis: { title: xLabel, rangeslider: {} },
-        yaxis: { title: yLabel, fixedrange: true },
+        xaxis: { title: xLabel },
+        yaxis: { title: yLabel },
       }}
+      config={{ responsive: true }}
       useResizeHandler={true} // Important: This tells Plotly to re-render on resize
-      style={{ width: "100%", height: "100%", aspectRatio: '4/3'}} // Ensure the div containing the plot is fully responsive
+      style={{ width: "100%", height: "100%", aspectRatio: "4/3" }} // Ensure the div containing the plot is fully responsive
     />
   );
 };

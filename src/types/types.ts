@@ -88,6 +88,44 @@ export interface RawHealthData {
   };
 }
 
+export type RawHealthType =
+  | "timestamp"
+  | "c1.arm_temp"
+  | "c1.counts"
+  | "c1.dead_time"
+  | "c1.real_time"
+  | "c1.sipm_operating_voltage"
+  | "c1.sipm_target_voltage"
+  | "c1.sipm_temp"
+  | "m1.arm_temp"
+  | "m1.counts"
+  | "m1.dead_time"
+  | "m1.real_time"
+  | "m1.sipm_operating_voltage"
+  | "m1.sipm_target_voltage"
+  | "m1.sipm_temp"
+  | "m5.arm_temp"
+  | "m5.counts"
+  | "m5.dead_time"
+  | "m5.real_time"
+  | "m5.sipm_operating_voltage"
+  | "m5.sipm_target_voltage"
+  | "m5.sipm_temp"
+  | "x1.arm_temp"
+  | "x1.counts"
+  | "x1.dead_time"
+  | "x1.real_time"
+  | "x1.sipm_operating_voltage"
+  | "x1.sipm_target_voltage"
+  | "x1.sipm_temp"
+  | "x123.accumulation_time"
+  | "x123.board_temp"
+  | "x123.det_high_voltage"
+  | "x123.det_temp"
+  | "x123.fast_counts"
+  | "x123.real_time"
+  | "x123.slow_counts";
+
 export interface RawHealthDataType {
   unit: string;
   value: number[];
