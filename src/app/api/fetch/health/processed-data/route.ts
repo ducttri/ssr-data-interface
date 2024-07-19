@@ -13,6 +13,13 @@ export async function GET() {
       .find({}, { projection: { processed_data: 1 } })
       .toArray()) as unknown as HealthJSONData[];
 
+    if (data === undefined || data.length == 0) {
+      return NextResponse.json({
+        status: 404,
+        statusText: "NOT OK",
+      });
+    }
+    
     return NextResponse.json({
       status: 200,
       statusText: "OK",
@@ -20,7 +27,7 @@ export async function GET() {
     });
   } catch (e) {
     console.error("Failed to fetch data: " + e);
-    
+
     return NextResponse.json({
       status: 500,
       statusText: "Internal Server Error",

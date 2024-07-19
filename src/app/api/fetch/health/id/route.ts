@@ -6,14 +6,12 @@ export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id") || "";
 
   if (id == "") {
-
     return NextResponse.json({
       status: 400,
       statusText: "Bad Request",
       error: "Missing ID",
     });
   } else if (!ObjectId.isValid(id)) {
-
     return NextResponse.json({
       status: 400,
       statusText: "Bad Request",
@@ -30,8 +28,11 @@ export async function GET(req: NextRequest) {
     const data = await datacollection.findOne({
       _id: new ObjectId(id),
     });
-
-    return NextResponse.json(data);
+    return NextResponse.json({
+      status: 200,
+      statusText: "OK",
+      data: data,
+    });
   } catch (e) {
     console.error("Failed to fetch data: " + e);
 
