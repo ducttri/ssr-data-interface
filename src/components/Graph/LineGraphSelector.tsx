@@ -16,12 +16,16 @@ import {
   AccordionDetails,
   AccordionSummary,
 } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material/Select";
 import { useState } from "react";
 
 export const Selector = ({ data }: { data: HealthJSONData }) => {
-  const [xAxis, setXAxis] = useState<any[]>();
-  const [yAxis, setYAxis] = useState<any[]>();
+  const [xAxis, setXAxis] = useState<string>("");
+  const [yAxis, setYAxis] = useState<string>("");
 
+  const handleXAxisChange = (event: SelectChangeEvent) => {
+    setXAxis(event.target.value[0] + " - " + event.target.value[1]);
+  };
 
   return (
     <Box>
@@ -83,63 +87,105 @@ export const Selector = ({ data }: { data: HealthJSONData }) => {
                 <Select
                   labelId="demo-select-small-label"
                   id="demo-select-small"
+                  value={xAxis}
                   label="X-Axis"
+                  onChange={handleXAxisChange}
                 >
-                  <MenuItem
-                    value={0}
-                  >
-                    Time
-                  </MenuItem>
+                  <MenuItem value={["timestamp", "timestamp"]}>Time</MenuItem>
                   <ListSubheader>
                     <b>C1</b>
                   </ListSubheader>
-                  <MenuItem value={1}>DP5 board temperature</MenuItem>
-                  <MenuItem value={2}>Detector high voltage</MenuItem>
-                  <MenuItem value={3}>Detector head temperature</MenuItem>
-                  <MenuItem value={4}>Fast sharper # of counts</MenuItem>
-                  <MenuItem value={5}>Slow sharper $ of counts</MenuItem>
-                  <MenuItem value={6}>Accumulation Time</MenuItem>
-                  <MenuItem value={7}>Real Time</MenuItem>
+                  <MenuItem value={["c1", "arm_temp"]}>
+                    ARM processor temperature
+                  </MenuItem>
+                  <MenuItem value={["c1", "sipm_temp"]}>
+                    SiPM board temperature
+                  </MenuItem>
+                  <MenuItem value={["c1", "sipm_operating_voltage"]}>
+                    SiPM operating voltage
+                  </MenuItem>
+                  <MenuItem value={["c1", "sipm_target_voltage"]}>
+                    SiPM target voltage
+                  </MenuItem>
+                  <MenuItem value={["c1", "counts"]}>Counts</MenuItem>
+                  <MenuItem value={["c1", "dead_time"]}>Dead Time</MenuItem>
+                  <MenuItem value={["c1", "real_time"]}>Real Time</MenuItem>
                   <ListSubheader>
                     <b>M1</b>
                   </ListSubheader>
-                  <MenuItem value={11}>DP5 board temperature</MenuItem>
-                  <MenuItem value={12}>Detector high voltage</MenuItem>
-                  <MenuItem value={13}>Detector head temperature</MenuItem>
-                  <MenuItem value={14}>Fast sharper # of counts</MenuItem>
-                  <MenuItem value={15}>Slow sharper $ of counts</MenuItem>
-                  <MenuItem value={16}>Accumulation Time</MenuItem>
-                  <MenuItem value={17}>Real Time</MenuItem>
+                  <MenuItem value={["m1", "arm_temp"]}>
+                    ARM processor temperature
+                  </MenuItem>
+                  <MenuItem value={["m1", "sipm_temp"]}>
+                    SiPM board temperature
+                  </MenuItem>
+                  <MenuItem value={["m1", "sipm_operating_voltage"]}>
+                    SiPM operating voltage
+                  </MenuItem>
+                  <MenuItem value={["m1", "sipm_target_voltage"]}>
+                    SiPM target voltage
+                  </MenuItem>
+                  <MenuItem value={["m1", "counts"]}>Counts</MenuItem>
+                  <MenuItem value={["m1", "dead_time"]}>Dead Time</MenuItem>
+                  <MenuItem value={["m1", "real_time"]}>Real Time</MenuItem>
                   <ListSubheader>
                     <b>M5</b>
                   </ListSubheader>
-                  <MenuItem value={21}>DP5 board temperature</MenuItem>
-                  <MenuItem value={22}>Detector high voltage</MenuItem>
-                  <MenuItem value={23}>Detector head temperature</MenuItem>
-                  <MenuItem value={24}>Fast sharper # of counts</MenuItem>
-                  <MenuItem value={25}>Slow sharper $ of counts</MenuItem>
-                  <MenuItem value={26}>Accumulation Time</MenuItem>
-                  <MenuItem value={27}>Real Time</MenuItem>
+                  <MenuItem value={["m5", "arm_temp"]}>
+                    ARM processor temperature
+                  </MenuItem>
+                  <MenuItem value={["m5", "sipm_temp"]}>
+                    SiPM board temperature
+                  </MenuItem>
+                  <MenuItem value={["m5", "sipm_operating_voltage"]}>
+                    SiPM operating voltage
+                  </MenuItem>
+                  <MenuItem value={["m5", "sipm_target_voltage"]}>
+                    SiPM target voltage
+                  </MenuItem>
+                  <MenuItem value={["m5", "counts"]}>Counts</MenuItem>
+                  <MenuItem value={["m5", "dead_time"]}>Dead Time</MenuItem>
+                  <MenuItem value={["m5", "real_time"]}>Real Time</MenuItem>
                   <ListSubheader>
                     <b>X1</b>
                   </ListSubheader>
-                  <MenuItem value={31}>DP5 board temperature</MenuItem>
-                  <MenuItem value={32}>Detector high voltage</MenuItem>
-                  <MenuItem value={33}>Detector head temperature</MenuItem>
-                  <MenuItem value={34}>Fast sharper # of counts</MenuItem>
-                  <MenuItem value={35}>Slow sharper $ of counts</MenuItem>
-                  <MenuItem value={36}>Accumulation Time</MenuItem>
-                  <MenuItem value={37}>Real Time</MenuItem>
+                  <MenuItem value={["x1", "arm_temp"]}>
+                    ARM processor temperature
+                  </MenuItem>
+                  <MenuItem value={["x1", "sipm_temp"]}>
+                    SiPM board temperature
+                  </MenuItem>
+                  <MenuItem value={["x1", "sipm_operating_voltage"]}>
+                    SiPM operating voltage
+                  </MenuItem>
+                  <MenuItem value={["x1", "sipm_target_voltage"]}>
+                    SiPM target voltage
+                  </MenuItem>
+                  <MenuItem value={["x1", "counts"]}>Counts</MenuItem>
+                  <MenuItem value={["x1", "dead_time"]}>Dead Time</MenuItem>
+                  <MenuItem value={["x1", "real_time"]}>Real Time</MenuItem>
                   <ListSubheader>
                     <b>X123</b>
                   </ListSubheader>
-                  <MenuItem value={31}>ARM processor temperature</MenuItem>
-                  <MenuItem value={32}>SiPM board temperature</MenuItem>
-                  <MenuItem value={33}>SiPM operating voltage</MenuItem>
-                  <MenuItem value={34}>SiPM target voltage</MenuItem>
-                  <MenuItem value={35}>Counts</MenuItem>
-                  <MenuItem value={36}>Dead Time</MenuItem>
-                  <MenuItem value={37}>Real Time</MenuItem>
+                  <MenuItem value={["x123", "board_temp"]}>
+                    DP5 board temperature
+                  </MenuItem>
+                  <MenuItem value={["x123", "det_high_voltage"]}>
+                    Detector high voltage
+                  </MenuItem>
+                  <MenuItem value={["x123", "det_temp"]}>
+                    Detector head temperature
+                  </MenuItem>
+                  <MenuItem value={["x123", "fast_counts"]}>
+                    Fast sharper # of counts
+                  </MenuItem>
+                  <MenuItem value={["x123", "slow_counts"]}>
+                    Slow sharper $ of counts
+                  </MenuItem>
+                  <MenuItem value={["x123", "accumulation_time"]}>
+                    Accumulation Time
+                  </MenuItem>
+                  <MenuItem value={["x123", "real_time"]}>Real Time</MenuItem>
                 </Select>
               </FormControl>
               <FormControl
@@ -150,59 +196,103 @@ export const Selector = ({ data }: { data: HealthJSONData }) => {
                 <Select
                   labelId="demo-select-small-label"
                   id="demo-select-small"
-                  label="Y-Axis"
+                  label="X-Axis"
                 >
-                  <MenuItem value={0}>Time</MenuItem>
+                  <MenuItem value={["timestamp", "timestamp"]}>Time</MenuItem>
                   <ListSubheader>
                     <b>C1</b>
                   </ListSubheader>
-                  <MenuItem value={1}>DP5 board temperature</MenuItem>
-                  <MenuItem value={2}>Detector high voltage</MenuItem>
-                  <MenuItem value={3}>Detector head temperature</MenuItem>
-                  <MenuItem value={4}>Fast sharper # of counts</MenuItem>
-                  <MenuItem value={5}>Slow sharper $ of counts</MenuItem>
-                  <MenuItem value={6}>Accumulation Time</MenuItem>
-                  <MenuItem value={7}>Real Time</MenuItem>
+                  <MenuItem value={["c1", "arm_temp"]}>
+                    ARM processor temperature
+                  </MenuItem>
+                  <MenuItem value={["c1", "sipm_temp"]}>
+                    SiPM board temperature
+                  </MenuItem>
+                  <MenuItem value={["c1", "sipm_operating_voltage"]}>
+                    SiPM operating voltage
+                  </MenuItem>
+                  <MenuItem value={["c1", "sipm_target_voltage"]}>
+                    SiPM target voltage
+                  </MenuItem>
+                  <MenuItem value={["c1", "counts"]}>Counts</MenuItem>
+                  <MenuItem value={["c1", "dead_time"]}>Dead Time</MenuItem>
+                  <MenuItem value={["c1", "real_time"]}>Real Time</MenuItem>
                   <ListSubheader>
                     <b>M1</b>
                   </ListSubheader>
-                  <MenuItem value={11}>DP5 board temperature</MenuItem>
-                  <MenuItem value={12}>Detector high voltage</MenuItem>
-                  <MenuItem value={13}>Detector head temperature</MenuItem>
-                  <MenuItem value={14}>Fast sharper # of counts</MenuItem>
-                  <MenuItem value={15}>Slow sharper $ of counts</MenuItem>
-                  <MenuItem value={16}>Accumulation Time</MenuItem>
-                  <MenuItem value={17}>Real Time</MenuItem>
+                  <MenuItem value={["m1", "arm_temp"]}>
+                    ARM processor temperature
+                  </MenuItem>
+                  <MenuItem value={["m1", "sipm_temp"]}>
+                    SiPM board temperature
+                  </MenuItem>
+                  <MenuItem value={["m1", "sipm_operating_voltage"]}>
+                    SiPM operating voltage
+                  </MenuItem>
+                  <MenuItem value={["m1", "sipm_target_voltage"]}>
+                    SiPM target voltage
+                  </MenuItem>
+                  <MenuItem value={["m1", "counts"]}>Counts</MenuItem>
+                  <MenuItem value={["m1", "dead_time"]}>Dead Time</MenuItem>
+                  <MenuItem value={["m1", "real_time"]}>Real Time</MenuItem>
                   <ListSubheader>
                     <b>M5</b>
                   </ListSubheader>
-                  <MenuItem value={21}>DP5 board temperature</MenuItem>
-                  <MenuItem value={22}>Detector high voltage</MenuItem>
-                  <MenuItem value={23}>Detector head temperature</MenuItem>
-                  <MenuItem value={24}>Fast sharper # of counts</MenuItem>
-                  <MenuItem value={25}>Slow sharper $ of counts</MenuItem>
-                  <MenuItem value={26}>Accumulation Time</MenuItem>
-                  <MenuItem value={27}>Real Time</MenuItem>
+                  <MenuItem value={["m5", "arm_temp"]}>
+                    ARM processor temperature
+                  </MenuItem>
+                  <MenuItem value={["m5", "sipm_temp"]}>
+                    SiPM board temperature
+                  </MenuItem>
+                  <MenuItem value={["m5", "sipm_operating_voltage"]}>
+                    SiPM operating voltage
+                  </MenuItem>
+                  <MenuItem value={["m5", "sipm_target_voltage"]}>
+                    SiPM target voltage
+                  </MenuItem>
+                  <MenuItem value={["m5", "counts"]}>Counts</MenuItem>
+                  <MenuItem value={["m5", "dead_time"]}>Dead Time</MenuItem>
+                  <MenuItem value={["m5", "real_time"]}>Real Time</MenuItem>
                   <ListSubheader>
                     <b>X1</b>
                   </ListSubheader>
-                  <MenuItem value={31}>DP5 board temperature</MenuItem>
-                  <MenuItem value={32}>Detector high voltage</MenuItem>
-                  <MenuItem value={33}>Detector head temperature</MenuItem>
-                  <MenuItem value={34}>Fast sharper # of counts</MenuItem>
-                  <MenuItem value={35}>Slow sharper $ of counts</MenuItem>
-                  <MenuItem value={36}>Accumulation Time</MenuItem>
-                  <MenuItem value={37}>Real Time</MenuItem>
+                  <MenuItem value={["x1", "arm_temp"]}>
+                    ARM processor temperature
+                  </MenuItem>
+                  <MenuItem value={["x1", "sipm_temp"]}>
+                    SiPM board temperature
+                  </MenuItem>
+                  <MenuItem value={["x1", "sipm_operating_voltage"]}>
+                    SiPM operating voltage
+                  </MenuItem>
+                  <MenuItem value={["x1", "sipm_target_voltage"]}>
+                    SiPM target voltage
+                  </MenuItem>
+                  <MenuItem value={["x1", "counts"]}>Counts</MenuItem>
+                  <MenuItem value={["x1", "dead_time"]}>Dead Time</MenuItem>
+                  <MenuItem value={["x1", "real_time"]}>Real Time</MenuItem>
                   <ListSubheader>
                     <b>X123</b>
                   </ListSubheader>
-                  <MenuItem value={31}>ARM processor temperature</MenuItem>
-                  <MenuItem value={32}>SiPM board temperature</MenuItem>
-                  <MenuItem value={33}>SiPM operating voltage</MenuItem>
-                  <MenuItem value={34}>SiPM target voltage</MenuItem>
-                  <MenuItem value={35}>Counts</MenuItem>
-                  <MenuItem value={36}>Dead Time</MenuItem>
-                  <MenuItem value={37}>Real Time</MenuItem>
+                  <MenuItem value={["x123", "board_temp"]}>
+                    DP5 board temperature
+                  </MenuItem>
+                  <MenuItem value={["x123", "det_high_voltage"]}>
+                    Detector high voltage
+                  </MenuItem>
+                  <MenuItem value={["x123", "det_temp"]}>
+                    Detector head temperature
+                  </MenuItem>
+                  <MenuItem value={["x123", "fast_counts"]}>
+                    Fast sharper # of counts
+                  </MenuItem>
+                  <MenuItem value={["x123", "slow_counts"]}>
+                    Slow sharper $ of counts
+                  </MenuItem>
+                  <MenuItem value={["x123", "accumulation_time"]}>
+                    Accumulation Time
+                  </MenuItem>
+                  <MenuItem value={["x123", "real_time"]}>Real Time</MenuItem>
                 </Select>
               </FormControl>
             </Stack>
