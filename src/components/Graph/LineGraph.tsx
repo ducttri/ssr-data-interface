@@ -9,7 +9,7 @@ export const LineGraph = ({
   yData,
   xLabel,
   yLabel,
-  title
+  title,
 }: {
   xData: any[];
   yData: any[];
@@ -34,9 +34,13 @@ export const LineGraph = ({
         title: title,
         xaxis: { title: xLabel, rangeslider: {} },
         yaxis: { title: yLabel, fixedrange: true },
+        font: {
+          family:
+            "'__Plus_Jakarta_Sans_a182b8','__Plus_Jakarta_Sans_Fallback_a182b8',Helvetica,Arial,sans-serif",
+        },
       }}
       useResizeHandler={true} // Important: This tells Plotly to re-render on resize
-      style={{ width: "100%", height: "100%", aspectRatio: '4/3'}} // Ensure the div containing the plot is fully responsive
+      style={{ width: "100%", height: "100%", aspectRatio: "4/3" }} // Ensure the div containing the plot is fully responsive
     />
   );
 };

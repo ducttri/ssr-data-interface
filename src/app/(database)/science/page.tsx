@@ -4,7 +4,7 @@ import PageContainer from "@/components/Container/PageContainer";
 import { Typography, Paper } from "@mui/material";
 import { ThreeDSpectrogram } from "@/components/Graph/ThreeDSpectrogram";
 import { StepGraph } from "@/components/Graph/StepGraph";
-import data from '../../../public/dump.json'
+import data from '../../../../public/dump.json'
 
 
 export default function Science() {

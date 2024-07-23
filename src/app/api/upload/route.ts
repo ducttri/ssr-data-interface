@@ -73,13 +73,15 @@ export async function POST(request: NextRequest) {
     const dataForm = await request.formData();
     const data: JSON = JSON.parse((dataForm.get("data") as string) || "{}");
     const uri = process.env.MONGODB_URI as string;
+    const dbName = process.env.MONGODB_DATABASE as string;
+    const dbCollection = process.env.MONGODB_HEALTH as string;
     const client = new MongoClient(uri);
 
     try {
-      const database = client.db("HealthData");
-      const datacollection = database.collection("SampleHealthData");
+      const database = client.db(dbName);
+      const datacollection = database.collection(dbCollection);
       const result = await datacollection.insertOne(data);
-      
+
       return NextResponse.json({
         status: 200,
         statusText: "Succesfully upload data",

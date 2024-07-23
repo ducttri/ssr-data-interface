@@ -7,6 +7,7 @@ import {
   IconSearch,
   IconDatabase,
   IconHeartRateMonitor,
+  IconAnalyze,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -45,9 +46,15 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Quicklook",
+    title: "Quick Look",
     icon: IconSearch,
     href: "/quicklook",
+  },
+  {
+    id: uniqueId(),
+    title: "Simulate",
+    icon: IconAnalyze,
+    href: "/simulate",
   },
 ];
 
