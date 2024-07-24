@@ -8,6 +8,7 @@ import {
   IconDatabase,
   IconHeartRateMonitor,
   IconAnalyze,
+  IconLockOpen,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -55,6 +56,12 @@ const Menuitems = [
     title: "Simulate",
     icon: IconAnalyze,
     href: "/simulate",
+  },
+  {
+    id: uniqueId(),
+    title: "Decoder",
+    icon: IconLockOpen,
+    href: "/decoder",
   },
 ];
 

@@ -18,7 +18,7 @@ export default function Simulate() {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `${outputFilename}.bin.gz`;
+          a.download = `${outputFilename}.gz`;
           document.body.appendChild(a);
           a.click();
           window.URL.revokeObjectURL(url);
@@ -67,7 +67,7 @@ export default function Simulate() {
             onChange={(event) => setOutputFilename(event.target.value)}
           />
           <Button variant="outlined" size="medium" onClick={handleDownload}>
-            Simulate
+            Simulate & Download
           </Button>
         </Box>
       </Paper>

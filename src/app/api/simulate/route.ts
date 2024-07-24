@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as zlib from "zlib";
 import { WritableStreamBuffer } from "stream-buffers";
 import { NextRequest, NextResponse } from "next/server";
+import archiver from "archiver";
 
 const rng = () => Math.random();
 
@@ -77,27 +78,44 @@ export async function GET(req: NextRequest) {
   const outputFilename =
     req.nextUrl.searchParams.get("outputFilename") || "output";
 
-  console.log(numPackets);
-  console.log(outputFilename);
-
-  // Create a WritableStreamBuffer to hold the raw binary data
-  const writableStreamBuffer = new WritableStreamBuffer({
-    initialSize: 100 * 1024, // Start at 100 kilobytes.
-    incrementAmount: 10 * 1024, // Grow by 10 kilobytes each time buffer overflows.
+  const binStreamBuffer = new WritableStreamBuffer({
+    initialSize: 100 * 1024,
+    incrementAmount: 10 * 1024,
   });
 
   let ts = Math.floor(Date.now() / 1000);
 
   for (let i = 0; i < numPackets; i++) {
     const healthData = simulate_health(ts);
-    writableStreamBuffer.write(Buffer.from(JSON.stringify(healthData) + "\n"));
+    binStreamBuffer.write(Buffer.from(JSON.stringify(healthData) + "\n"));
     ts += 1;
   }
 
   // Retrieve the binary data from the buffer
-  const binaryData = writableStreamBuffer.getContents() as Buffer;
+  const binaryData = binStreamBuffer.getContents() as Buffer;
+
+  const archiveStreamBuffer = new WritableStreamBuffer();
+
+  const archive = archiver("zip", {
+    zlib: { level: 9 }, // Sets the compression level.
+  });
+
+  archive.pipe(archiveStreamBuffer);
+
+  // Append the .bin file to the archive
+  archive.append(binaryData, { name: `${outputFilename}.bin` });
+
+  // Finalize the archive
+  await archive.finalize();
+
   try {
-    const compressedData = await gzipPromise(binaryData);
+    const archiveData = archiveStreamBuffer.getContents();
+
+    if (!archiveData) {
+      throw new Error("Failed to create archive");
+    }
+
+    const compressedData = await gzipPromise(archiveData);
 
     return new NextResponse(compressedData, {
       status: 200,
