@@ -2,7 +2,7 @@
 
 import PageContainer from "@/components/Container/PageContainer";
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Simulate() {
   const [numPackets, setNumPackets] = useState<number>(1000);
@@ -18,7 +18,7 @@ export default function Simulate() {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `${outputFilename}.gz`;
+          a.download = `${outputFilename}.bin.gz`;
           document.body.appendChild(a);
           a.click();
           window.URL.revokeObjectURL(url);
