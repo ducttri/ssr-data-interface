@@ -57,7 +57,7 @@ export const Selector = ({ data }: { data: HealthJSONData }) => {
       </Stack>
 
       <Box sx={{ p: 2 }}>
-        <Accordion>
+        <Accordion defaultExpanded>
           <AccordionSummary id="panel1-header">
             <Typography>Overview</Typography>
           </AccordionSummary>

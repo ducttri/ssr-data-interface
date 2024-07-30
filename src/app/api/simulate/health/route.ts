@@ -9,7 +9,7 @@ function simulate_health(
   return new Promise((resolve, reject) => {
     const scriptPath = path.resolve(
       __dirname,
-      "../../../../../lib/umn-detector-code/python/umndet/tools/simulate_health.py"
+      "../../../../../../lib/umn-detector-code/python/umndet/tools/simulate_health.py"
     );
     exec(
       `python ${scriptPath} ${numPackets} ${outputFilename}`,

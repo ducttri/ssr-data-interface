@@ -11,7 +11,7 @@ export default function Simulate() {
   const handleDownload = async () => {
     try {
       await fetch(
-        `/api/simulate?numPackets=${numPackets}&outputFilename=${outputFilename}`
+        `/api/simulate/health?numPackets=${numPackets}&outputFilename=${outputFilename}`
       )
         .then((response) => response.blob())
         .then((blob) => {

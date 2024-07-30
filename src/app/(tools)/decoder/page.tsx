@@ -53,62 +53,57 @@ export default function QuickLook() {
     const files = event.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      const iszipped: boolean = file.name.endsWith(".json.gz") ? true : false;
+      const csrfResp = await fetch("/csrf-token");
+      const { csrfToken } = await csrfResp.json();
       let json: JSON;
 
-      if (!iszipped) {
-        const reader = new FileReader();
-
-        reader.onload = async (e: ProgressEvent<FileReader>) => {
-          if (e.target?.result) {
-            try {
-              json = JSON.parse(e.target.result as string);
-              const valid = await jsonValidator(
-                json,
-                HealthJSONDataSchema as JSONSchemaType<any>
-              );
-
-              if (valid) {
-                setData(json as unknown as HealthJSONData);
-                setSuccess(true);
-                setOpen(true);
-              } else {
-                setSuccess(false);
-                setOpen(true);
-              }
-            } catch (error) {
-              console.error("Error parsing JSON:", error);
-            }
-          }
+      try {
+        const data = new FormData();
+        data.set("file", file);
+        const fetchArgs = {
+          method: "POST",
+          headers: {},
+          body: data,
         };
+        if (csrfToken)
+          fetchArgs.headers = {
+            "X-CSRF-Token": csrfToken,
+          };
+        const res = await fetch("/api/decode/health", fetchArgs);
+        if (!res.ok) throw new Error(await res.text());
+        const returndata = await res.json();
+        json = returndata.data;
+        const valid = await jsonValidator(
+          json,
+          HealthJSONDataSchema as JSONSchemaType<any>
+        );
 
-        reader.readAsText(file);
-      } else {
-        try {
-          const data = new FormData();
-          data.set("file", file);
-          const res = await fetch("/api/decompress", {
-            method: "POST",
-            body: data,
-          });
-          if (!res.ok) throw new Error(await res.text());
-          const returndata = await res.json();
-          json = returndata.data;
+        if (valid) {
           setData(json as unknown as HealthJSONData);
-        } catch (e: any) {
-          console.error(e);
+          setSuccess(true);
+          setOpen(true);
+        } else {
+          setSuccess(false);
+          setOpen(true);
         }
+      } catch (e: any) {
+        console.error(e);
       }
     }
   };
 
   return (
-    <PageContainer title="Decoder" description="Decoder">
+    <PageContainer
+      title="Decoder / Quick Look"
+      description="Decoder / Quick Look"
+    >
       <Grid container columns={16}>
-        <Grid item xs={3}>
+        <Grid item xs={16}>
           <Typography variant="h3" gutterBottom>
-            Decoder
+            Decoder / Quick Look
           </Typography>
+        </Grid>
+        <Grid item xs={3}>
           <Button
             color="primary"
             component="label"

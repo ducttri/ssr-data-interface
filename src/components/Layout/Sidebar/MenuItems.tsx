@@ -47,12 +47,6 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Quick Look",
-    icon: IconSearch,
-    href: "/quicklook",
-  },
-  {
-    id: uniqueId(),
     title: "Simulate",
     icon: IconAnalyze,
     href: "/simulate",
