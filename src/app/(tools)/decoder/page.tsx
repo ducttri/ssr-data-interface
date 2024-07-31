@@ -12,11 +12,11 @@ import {
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import GraphList from "@/components/HealthGraph/GraphsList";
-import { HealthJSONData } from "@/types/types";
+import { HealthJSON, HealthJSONData } from "@/types/types";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
 import { IconUpload } from "@tabler/icons-react";
 import PageContainer from "@/components/Container/PageContainer";
-import { HealthJSONDataSchema } from "@/types/jsonSchema";
+import { HealthJSONDataSchema, HealthJSONSchema } from "@/types/jsonSchema";
 import { JSONSchemaType } from "ajv";
 
 const VisuallyHiddenInput = styled("input")({
@@ -32,7 +32,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 export default function QuickLook() {
-  const [data, setData] = useState<HealthJSONData | null>(null);
+  const [data, setData] = useState<HealthJSON | null>(null);
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState(true);
 
@@ -75,11 +75,11 @@ export default function QuickLook() {
         json = returndata.data;
         const valid = await jsonValidator(
           json,
-          HealthJSONDataSchema as JSONSchemaType<any>
+          HealthJSONSchema as JSONSchemaType<any>
         );
 
         if (valid) {
-          setData(json as unknown as HealthJSONData);
+          setData(json as unknown as HealthJSON);
           setSuccess(true);
           setOpen(true);
         } else {

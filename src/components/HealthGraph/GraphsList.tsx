@@ -1,21 +1,22 @@
 "use client";
 
-import { HealthJSONData } from "@/types/types";
+import { HealthJSON } from "@/types/types";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Grid, Tab } from "@mui/material";
 import { useState } from "react";
 import { LineGraph } from "../Graph/LineGraph";
 
-type detect = "c1" | "m1" | "m5" | "x1" | "x123"
+type detect = "c1" | "m1" | "m5" | "x1" | "x123";
 
-export default function GraphList({ data }: { data: HealthJSONData }) {
+export default function GraphList({ data }: { data: HealthJSON }) {
   const [detector, setDetector] = useState<detect>("c1");
 
-  const utcDates: string[] = data.raw_data.timestamp.map(
-    (timestamp: number) => {
-      return new Date(timestamp * 1000).toISOString();
-    }
-  );
+  const utcDates: string[] =
+    data.raw_data
+      .find((field) => field.field == "Time stamp")
+      ?.value.map((timestamp: number) => {
+        return new Date(timestamp * 1000).toISOString();
+      }) || [];
 
   const handleDetectorChange = (
     event: React.SyntheticEvent,
@@ -48,112 +49,23 @@ export default function GraphList({ data }: { data: HealthJSONData }) {
             </TabList>
           </Box>
 
-          {detector == "x123" ? (
-            <Grid container columns={2}>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data.x123.board_temp.value}
-                  xLabel={"Time"}
-                  yLabel={`DP5 board temperature (${data.raw_data.x123.board_temp.unit})`}
-                  title="DP5 board temperaturevs. Time"
-                />
-              </Grid>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data.x123.det_high_voltage.value}
-                  xLabel={"Time"}
-                  yLabel={`Detector high voltage (${data.raw_data.x123.det_high_voltage.unit})`}
-                  title="Detector high voltage vs. Time"
-                />
-              </Grid>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data.x123.det_temp.value}
-                  xLabel={"Time"}
-                  yLabel={`Detector head temperature (${data.raw_data.x123.det_temp.unit})`}
-                  title="Detector head temperature vs. Time"
-                />
-              </Grid>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data.x123.fast_counts.value}
-                  xLabel={"Time"}
-                  yLabel={`Fast sharper # of counts (${data.raw_data.x123.fast_counts.unit})`}
-                  title="Fast sharper # of counts vs. Time"
-                />
-              </Grid>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data.x123.slow_counts.value}
-                  xLabel={"Time"}
-                  yLabel={`Slow sharper $ of counts (${data.raw_data.x123.slow_counts.unit})`}
-                  title="Slow sharper $ of counts vs. Time"
-                />
-              </Grid>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data.x123.accumulation_time.value}
-                  xLabel={"Time"}
-                  yLabel={`Accumulation Time (${data.raw_data.x123.accumulation_time.unit})`}
-                  title="Accumulation Time"
-                />
-              </Grid>
-            </Grid>
-          ) : (
-            <Grid container columns={2}>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data[detector].arm_temp.value}
-                  xLabel={"Time"}
-                  yLabel={`ARM processor temperature (${data.raw_data[detector].arm_temp.unit})`}
-                  title="ARM processor temperature vs. Time"
-                />
-              </Grid>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data[detector].sipm_temp.value}
-                  xLabel={"Time"}
-                  yLabel={`SiPM board temperature (${data.raw_data[detector].sipm_temp.unit})`}
-                  title="SiPM board temperature vs. Time"
-                />
-              </Grid>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data[detector].sipm_operating_voltage.value}
-                  xLabel="Time"
-                  yLabel={`SiPM operating voltage ${data.raw_data[detector].sipm_operating_voltage.unit}`}
-                  title="SiPM operating voltage vs. Time"
-                />
-              </Grid>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data[detector].sipm_target_voltage.value}
-                  xLabel={"Time"}
-                  yLabel={`SiPM target voltage (${data.raw_data[detector].sipm_target_voltage.unit})`}
-                  title="SiPM target voltage vs. Time"
-                />
-              </Grid>
-              <Grid item xs={1} id="parent-container">
-                <LineGraph
-                  xData={utcDates}
-                  yData={data.raw_data[detector].dead_time.value}
-                  xLabel={"Time"}
-                  yLabel={`Dead Time (${data.raw_data[detector].dead_time.unit})`}
-                  title="Dead Time vs. Time"
-                />
-              </Grid>
-            </Grid>
-          )}
+          <Grid container columns={2}>
+            {data.raw_data
+              .filter((type) => type.type == detector.toString())
+              .map((item) => {
+                return (
+                  <Grid item xs={1} id="parent-container">
+                    <LineGraph
+                      xData={utcDates}
+                      yData={item.value}
+                      xLabel={"Time"}
+                      yLabel={`${item.field} (${item.unit})`}
+                      title={`${item.field} vs. Time`}
+                    />
+                  </Grid>
+                );
+              })}
+          </Grid>
         </TabContext>
       </Box>
     </Grid>

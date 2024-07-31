@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
     const compressedData = await decode_buffer(fileBuffer);
 
     const jsonData = JSON.parse(compressedData.toString());
+    console.log(jsonData);
 
     return NextResponse.json({ success: true, data: jsonData });
   } catch (e) {
