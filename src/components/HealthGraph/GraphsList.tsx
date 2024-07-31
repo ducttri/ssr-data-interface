@@ -49,12 +49,12 @@ export default function GraphList({ data }: { data: HealthJSON }) {
             </TabList>
           </Box>
 
-          <Grid container columns={2}>
+          <Grid container spacing={{ xs: 2, md: 3 }} columns={{sm: 1, md: 2}}>
             {data.raw_data
               .filter((type) => type.type == detector.toString())
               .map((item) => {
                 return (
-                  <Grid item xs={1} id="parent-container">
+                  <Grid item xs={1} key={`${detector}_${item.field}`}>
                     <LineGraph
                       xData={utcDates}
                       yData={item.value}

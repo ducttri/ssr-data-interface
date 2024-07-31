@@ -12,6 +12,7 @@ import {
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import GraphList from "@/components/HealthGraph/GraphsList";
+import { GraphsWrapper } from "@/components/HealthGraph/GraphsWrapper";
 import { HealthJSON, HealthJSONData } from "@/types/types";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
 import { IconUpload } from "@tabler/icons-react";
@@ -97,61 +98,56 @@ export default function QuickLook() {
       title="Decoder / Quick Look"
       description="Decoder / Quick Look"
     >
-      <Grid container columns={16}>
-        <Grid item xs={16}>
-          <Typography variant="h3" gutterBottom>
-            Decoder / Quick Look
-          </Typography>
-        </Grid>
-        <Grid item xs={3}>
-          <Button
-            color="primary"
-            component="label"
-            variant="contained"
-            startIcon={<IconUpload />}
+      <Typography variant="h3" gutterBottom>
+        Decoder / Quick Look
+      </Typography>
+
+      <Button
+        color="primary"
+        component="label"
+        variant="contained"
+        startIcon={<IconUpload />}
+      >
+        Upload file
+        <VisuallyHiddenInput
+          type="file"
+          onChange={handleFileChange}
+          accept="application/json,application/gzip"
+        />
+      </Button>
+
+      <Box sx={{ pt: 2 }} flex={'true'}>
+        {data && <GraphsWrapper data={data}></GraphsWrapper>}
+      </Box>
+
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        {success ? (
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}
           >
-            Upload file
-            <VisuallyHiddenInput
-              type="file"
-              onChange={handleFileChange}
-              accept="application/json,application/gzip"
-            />
-          </Button>
-        </Grid>
-        <Grid container columns={2}>
-          <Box sx={{ pt: 2 }}>
-            {data && <GraphList data={data}></GraphList>}
-          </Box>
-        </Grid>
-        <Snackbar
-          open={open}
-          autoHideDuration={6000}
-          onClose={handleClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          {success ? (
-            <Alert
-              onClose={handleClose}
-              severity="success"
-              variant="filled"
-              sx={{ width: "100%" }}
-            >
-              <AlertTitle>Success</AlertTitle>
-              JSON parsed.
-            </Alert>
-          ) : (
-            <Alert
-              onClose={handleClose}
-              severity="error"
-              variant="filled"
-              sx={{ width: "100%" }}
-            >
-              <AlertTitle>Error</AlertTitle>
-              Invalid JSON Format.
-            </Alert>
-          )}
-        </Snackbar>
-      </Grid>
+            <AlertTitle>Success</AlertTitle>
+            JSON parsed.
+          </Alert>
+        ) : (
+          <Alert
+            onClose={handleClose}
+            severity="error"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            <AlertTitle>Error</AlertTitle>
+            Invalid JSON Format.
+          </Alert>
+        )}
+      </Snackbar>
     </PageContainer>
   );
 }
