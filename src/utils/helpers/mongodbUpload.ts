@@ -1,7 +1,9 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
 import { MongoClient } from "mongodb";
-import { NextRequest, NextResponse } from "next/server";
+
+const audience = process.env.KINDE_AUDIENCE as string;
+const issuer = "https://ssrdatainterface.kinde.com";
 
 const client = jwksClient({
   jwksUri: "https://ssrdatainterface.kinde.com/.well-known/jwks.json",
@@ -47,10 +49,7 @@ const verifyRole = (roles: JwtPayload[]): boolean => {
   }
 };
 
-export async function POST(request: NextRequest) {
-  const audience = process.env.KINDE_AUDIENCE as string;
-  const issuer = "https://ssrdatainterface.kinde.com";
-  const token = request.headers.get("authorization") || "";
+export const verifyAccess = async (token: string): Promise<boolean> => {
   let valid = false;
 
   await verifyAccessToken(token, audience, issuer)
@@ -58,45 +57,31 @@ export async function POST(request: NextRequest) {
       console.log("Token is valid:", decoded);
       if (verifyRole(decoded.roles)) {
         valid = true;
-      } else {
-        return NextResponse.json({
-          status: 403,
-          statusText: "User doesn't have permission",
-        });
-      }
+      } 
     })
     .catch((err) => {
       console.error("Token verification failed:", err);
     });
 
-  if (valid) {
-    const dataForm = await request.formData();
-    const data: JSON = JSON.parse((dataForm.get("data") as string) || "{}");
-    const uri = process.env.MONGODB_URI as string;
-    const dbName = process.env.MONGODB_DATABASE as string;
-    const dbCollection = process.env.MONGODB_HEALTH as string;
-    const client = new MongoClient(uri);
+  return valid;
+};
 
-    try {
-      const database = client.db(dbName);
-      const datacollection = database.collection(dbCollection);
-      const result = await datacollection.insertOne(data);
+export const uploadData = async (data: JSON): Promise<{success: boolean, id: string}> => {
+  const uri = process.env.MONGODB_URI as string;
+  const dbName = process.env.MONGODB_DATABASE as string;
+  const dbCollection = process.env.MONGODB_HEALTH as string;
+  const client = new MongoClient(uri);
 
-      return NextResponse.json({
-        status: 200,
-        statusText: "Succesfully upload data",
-      });
-    } catch (e) {
-      console.error("Failed to upload data: " + e);
-      return NextResponse.json({
-        status: 503,
-        statusText: "Unsuccesfully upload data",
-      });
-    }
-  } else {
-    return NextResponse.json({
-      status: 503,
-      statusText: "Failed to verify token",
-    });
+  try {
+    const database = client.db(dbName);
+    const datacollection = database.collection(dbCollection);
+    const result = await datacollection.insertOne(data);
+
+    return {success: true, id: result.insertedId.toString()};
+  } catch (e) {
+    console.error("Failed to upload data: " + e);
+    return {success: false, id: 'INVALID'};
   }
-}
+};
+
+

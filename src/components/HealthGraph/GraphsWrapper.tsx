@@ -76,7 +76,7 @@ export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
           <Typography>Overview</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          {/* <GraphList data={data}></GraphList> */}
+          <GraphList data={data}></GraphList>
         </AccordionDetails>
       </Accordion>
 

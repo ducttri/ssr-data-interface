@@ -47,7 +47,7 @@ export default function Simulate() {
           <Grid
             container
             spacing={{ xs: 1, md: 3 }}
-            columns={{ xs: 1, sm: 3, md: 3 }}
+            columns={{ xs: 1, sm: 2, md: 4 }}
             flex="true"
           >
             <Grid item xs={1}>
@@ -76,8 +76,23 @@ export default function Simulate() {
               />
             </Grid>
             <Grid item xs={1}>
-              <Button variant="outlined" size="medium" onClick={handleDownload} fullWidth>
+              <Button
+                variant="outlined"
+                size="medium"
+                onClick={handleDownload}
+                fullWidth
+              >
                 Simulate & Download
+              </Button>
+            </Grid>
+            <Grid item xs={1}>
+              <Button
+                variant="outlined"
+                size="medium"
+                onClick={handleDownload}
+                fullWidth
+              >
+                Simulate & Add
               </Button>
             </Grid>
           </Grid>

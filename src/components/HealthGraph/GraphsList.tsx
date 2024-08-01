@@ -2,14 +2,12 @@
 
 import { HealthJSON } from "@/types/types";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Box, Grid, Tab } from "@mui/material";
+import { Box, Grid, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import { LineGraph } from "../Graph/LineGraph";
 
-type detect = "c1" | "m1" | "m5" | "x1" | "x123";
-
 export default function GraphList({ data }: { data: HealthJSON }) {
-  const [detector, setDetector] = useState<detect>("c1");
+  const [detector, setDetector] = useState<string>("c1");
 
   const utcDates: string[] =
     data.raw_data
@@ -22,34 +20,36 @@ export default function GraphList({ data }: { data: HealthJSON }) {
     event: React.SyntheticEvent,
     newValue: string
   ) => {
-    setDetector(newValue as detect);
+    setDetector(newValue);
   };
 
   return (
     <Grid>
       <Box
         sx={{
-          width: "100%",
           typography: "body1",
           borderRadius: 1,
           boxShadow: 1,
         }}
       >
         <TabContext value={detector}>
-          <Box>
-            <TabList
+          <Box sx={{ maxWidth: { xs: 320, sm: 600 } }}>
+            <Tabs
               onChange={handleDetectorChange}
               aria-label="lab API tabs example"
+              variant="scrollable"
+              scrollButtons="auto"
+              value={detector}
             >
               <Tab label="C1" value="c1" />
               <Tab label="M1" value="m1" />
               <Tab label="M5" value="m5" />
               <Tab label="X1" value="x1" />
               <Tab label="X123" value="x123" />
-            </TabList>
+            </Tabs>
           </Box>
 
-          <Grid container spacing={{ xs: 2, md: 3 }} columns={{sm: 1, md: 2}}>
+          <Grid container spacing={{ xs: 2, md: 3 }} columns={{ sm: 1, md: 2 }}>
             {data.raw_data
               .filter((type) => type.type == detector.toString())
               .map((item) => {

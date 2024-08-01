@@ -116,7 +116,7 @@ export default function QuickLook() {
         />
       </Button>
 
-      <Box sx={{ pt: 2 }} flex={'true'}>
+      <Box sx={{ pt: 2 }} flex={"true"}>
         {data && <GraphsWrapper data={data}></GraphsWrapper>}
       </Box>
 
