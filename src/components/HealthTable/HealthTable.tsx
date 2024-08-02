@@ -38,7 +38,7 @@ const fetcher = (url: string | URL | Request) =>
       })
     );
 
-preload("/api/fetch/health/processed-data", fetcher);
+preload(process.env.URL + "/api/fetch/health/processed-data", fetcher);
 
 export default function HealthTable() {
   const [order, setOrder] = React.useState<Order>("asc");

@@ -1,7 +1,7 @@
 import { decode_buffer } from "@/utils/helpers/jsonDecoder";
 import { uploadData, verifyAccess } from "@/utils/helpers/mongodbUpload";
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
+import fs, { writeFileSync } from "fs";
 import path from "path";
 
 export async function POST(request: NextRequest) {
@@ -28,28 +28,35 @@ export async function POST(request: NextRequest) {
       const status = await uploadData(jsonData);
 
       if (status.success) {
-        const uploadPath = path.join(
-          __dirname,
-          `../../../../../database/health_data/${status.id}`
-        );
-
-        fs.writeFile(uploadPath, fileBuffer, (err) => {
-          if (err) {
-            return NextResponse.json({
-              status: 503,
-              statusText: "Unsuccesfully upload data",
-            });
-          }
-          return NextResponse.json({
-            status: 200,
-            statusText: "Succesfully upload data",
-          });
+        writeFileSync("test.txt", "My name is John", {
+          flag: "w",
         });
-      } else {
         return NextResponse.json({
           status: 200,
           statusText: "Succesfully upload data",
         });
+        //   const uploadPath = path.join(
+        //     __dirname,
+        //     `test.txt`
+        //   );
+
+        //   fs.writeFile('test.txt', "test", (err) => {
+        //     if (err) {
+        //       return NextResponse.json({
+        //         status: 503,
+        //         statusText: "Unsuccesfully upload data",
+        //       });
+        //     }
+        //     return NextResponse.json({
+        //       status: 200,
+        //       statusText: "Succesfully upload data",
+        //     });
+        //   });
+        // } else {
+        //   return NextResponse.json({
+        //     status: 200,
+        //     statusText: "Succesfully upload data",
+        //   });
       }
     } catch (e) {
       console.error("Failed to parse data: " + e);
