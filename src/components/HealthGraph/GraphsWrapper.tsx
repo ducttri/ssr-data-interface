@@ -22,17 +22,17 @@ import { useState } from "react";
 import { timeStamp } from "console";
 
 export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
-  const [xAxis, setXAxis] = useState<string>("Time stamp_general");
-  const [yAxis, setYAxis] = useState<string>("Time stamp_general");
+  const [xAxis, setXAxis] = useState<string[]>(["Time stamp", "general"]);
+  const [yAxis, setYAxis] = useState<string[]>(["Time stamp", "general"]);
   const timestamp: number[] =
     data.raw_data.find((field) => field.field == "Time stamp")?.value || [];
 
   const handleXAxisChange = (event: SelectChangeEvent) => {
-    setXAxis(event.target.value);
+    setXAxis(event.target.value.split("_"));
   };
 
   const handleYAxisChange = (event: SelectChangeEvent) => {
-    setYAxis(event.target.value);
+    setYAxis(event.target.value.split("_"));
   };
 
   return (
@@ -57,7 +57,7 @@ export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
         <Grid item xs={1}>
           <Typography gutterBottom variant="body1" component="div">
             <b>End Time: </b>{" "}
-            {new Date(timestamp.length - 1 * 1000).toUTCString()}
+            {new Date(timestamp[timestamp.length - 1] * 1000).toUTCString()}
           </Typography>
         </Grid>
         <Grid item xs={1}>
@@ -85,238 +85,263 @@ export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
           <Typography>Graphing</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ pt: 1 }}
+          <Grid
+            container
+            spacing={{ xs: 2, md: 2 }}
+            columns={{ xs: 1, sm: 2, md: 2 }}
+            flex="true"
           >
-            <Grid
-              container
-              spacing={{ xs: 2, md: 2 }}
-              columns={{ xs: 1, sm: 2, md: 2 }}
-              flex="true"
-            >
-              <Grid item xs={1}>
-                <FormControl size="small" fullWidth>
-                  <InputLabel id="demo-select-small-label">
-                    {"X-Axis"}
-                  </InputLabel>
-                  <Select
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    value={xAxis}
-                    label="X-Axis"
-                    onChange={handleXAxisChange}
-                  >
-                    <ListSubheader>
-                      <b>General</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "general")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                    <ListSubheader>
-                      <b>C1</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "c1")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                    <ListSubheader>
-                      <b>M1</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "m1")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                    <ListSubheader>
-                      <b>M5</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "m5")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                    <ListSubheader>
-                      <b>X1</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "x1")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                    <ListSubheader>
-                      <b>X123</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "x123")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={1}>
-                <FormControl size="small" fullWidth>
-                  <InputLabel id="demo-select-small-label">
-                    {"Y-Axis"}
-                  </InputLabel>
-                  <Select
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    value={yAxis}
-                    label="Y-Axis"
-                    onChange={handleYAxisChange}
-                  >
-                    <ListSubheader>
-                      <b>General</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "general")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                    <ListSubheader>
-                      <b>C1</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "c1")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                    <ListSubheader>
-                      <b>M1</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "m1")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                    <ListSubheader>
-                      <b>M5</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "m5")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                    <ListSubheader>
-                      <b>X1</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "x1")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                    <ListSubheader>
-                      <b>X123</b>
-                    </ListSubheader>
-                    {data.raw_data
-                      .filter((field) => field.type == "x123")
-                      .map((field) => {
-                        return (
-                          <MenuItem
-                            value={`${field.field}_${field.type}`}
-                            key={`${field.field}_${field.type}`}
-                          >
-                            {field.field}
-                          </MenuItem>
-                        );
-                      })}
-                  </Select>
-                </FormControl>
-              </Grid>
+            <Grid item xs={1}>
+              <FormControl size="small" fullWidth>
+                <InputLabel id="demo-select-small-label">{"X-Axis"}</InputLabel>
+                <Select
+                  labelId="demo-select-small-label"
+                  id="demo-select-small"
+                  value={xAxis[0] + "_" + xAxis[1]}
+                  label="X-Axis"
+                  onChange={handleXAxisChange}
+                >
+                  <ListSubheader>
+                    <b>General</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "general")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                  <ListSubheader>
+                    <b>C1</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "c1")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                  <ListSubheader>
+                    <b>M1</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "m1")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                  <ListSubheader>
+                    <b>M5</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "m5")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                  <ListSubheader>
+                    <b>X1</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "x1")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                  <ListSubheader>
+                    <b>X123</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "x123")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                </Select>
+              </FormControl>
             </Grid>
+            <Grid item xs={1}>
+              <FormControl size="small" fullWidth>
+                <InputLabel id="demo-select-small-label">{"Y-Axis"}</InputLabel>
+                <Select
+                  labelId="demo-select-small-label"
+                  id="demo-select-small"
+                  value={yAxis[0] + "_" + yAxis[1]}
+                  label="Y-Axis"
+                  onChange={handleYAxisChange}
+                >
+                  <ListSubheader>
+                    <b>General</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "general")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                  <ListSubheader>
+                    <b>C1</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "c1")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                  <ListSubheader>
+                    <b>M1</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "m1")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                  <ListSubheader>
+                    <b>M5</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "m5")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                  <ListSubheader>
+                    <b>X1</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "x1")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                  <ListSubheader>
+                    <b>X123</b>
+                  </ListSubheader>
+                  {data.raw_data
+                    .filter((field) => field.type == "x123")
+                    .map((field) => {
+                      return (
+                        <MenuItem
+                          value={`${field.field}_${field.type}`}
+                          key={`${field.field}_${field.type}`}
+                        >
+                          {field.field}
+                        </MenuItem>
+                      );
+                    })}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
 
-            {/* <LineGraph
-                xData={y}
-                yData={item.value}
-                xLabel={"Time"}
-                yLabel={`${item.field} (${item.unit})`}
-                title={`${item.field} vs. Time`}
-              /> */}
-          </Stack>
+          <LineGraph
+            xData={
+              xAxis[0] == "Timestamp"
+                ? data.raw_data.find(
+                    (field) => field.field == xAxis[0] && field.type == xAxis[1]
+                  )?.value || []
+                : data.raw_data.find(
+                    (field) => field.field == xAxis[0] && field.type == xAxis[1]
+                  )?.value || []
+            }
+            yData={
+              data.raw_data.find(
+                (field) => field.field == yAxis[0] && field.type == yAxis[1]
+              )?.value || []
+            }
+            xLabel={`${
+              data.raw_data.find(
+                (field) => field.field == xAxis[0] && field.type == xAxis[1]
+              )?.field || ""
+            } (${
+              data.raw_data.find(
+                (field) => field.field == xAxis[0] && field.type == xAxis[1]
+              )?.unit || ""
+            })`}
+            yLabel={`${
+              data.raw_data.find(
+                (field) => field.field == yAxis[0] && field.type == yAxis[1]
+              )?.field || ""
+            } (${
+              data.raw_data.find(
+                (field) => field.field == yAxis[0] && field.type == yAxis[1]
+              )?.unit || ""
+            })`}
+            title={`${
+              data.raw_data.find(
+                (field) => field.field == xAxis[0] && field.type == xAxis[1]
+              )?.field || ""
+            } vs. ${
+              data.raw_data.find(
+                (field) => field.field == yAxis[0] && field.type == yAxis[1]
+              )?.field || ""
+            }`}
+          />
         </AccordionDetails>
       </Accordion>
     </Box>

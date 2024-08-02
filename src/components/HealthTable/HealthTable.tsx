@@ -115,7 +115,7 @@ export default function HealthTable() {
       const params = new URLSearchParams({
         selectedData: JSON.stringify(selectedData),
       });
-      await fetch(`/api/download?${params.toString()}`)
+      await fetch(`/api/download/health?${params.toString()}`)
         .then((response) => response.blob())
         .then((blob) => {
           const url = window.URL.createObjectURL(blob);

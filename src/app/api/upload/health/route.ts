@@ -28,35 +28,14 @@ export async function POST(request: NextRequest) {
       const status = await uploadData(jsonData);
 
       if (status.success) {
-        writeFileSync("test.txt", "My name is John", {
+        const filePath = process.env.WORKINGDIR + `/database/health/${status.id}.bin.gz`;
+        writeFileSync(filePath, fileBuffer, {
           flag: "w",
         });
         return NextResponse.json({
           status: 200,
           statusText: "Succesfully upload data",
         });
-        //   const uploadPath = path.join(
-        //     __dirname,
-        //     `test.txt`
-        //   );
-
-        //   fs.writeFile('test.txt', "test", (err) => {
-        //     if (err) {
-        //       return NextResponse.json({
-        //         status: 503,
-        //         statusText: "Unsuccesfully upload data",
-        //       });
-        //     }
-        //     return NextResponse.json({
-        //       status: 200,
-        //       statusText: "Succesfully upload data",
-        //     });
-        //   });
-        // } else {
-        //   return NextResponse.json({
-        //     status: 200,
-        //     statusText: "Succesfully upload data",
-        //   });
       }
     } catch (e) {
       console.error("Failed to parse data: " + e);
