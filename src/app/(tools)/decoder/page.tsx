@@ -1,12 +1,21 @@
 "use client";
 
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Alert,
   AlertTitle,
   Box,
   Button,
   Grid,
+  Paper,
   Snackbar,
+  Step,
+  StepLabel,
+  Stepper,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
@@ -32,10 +41,56 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
+function Step1() {
+  const [alignment, setAlignment] = useState("web");
+
+  const handleChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string
+  ) => {
+    setAlignment(newAlignment);
+  };
+
+  return (
+    <ToggleButtonGroup
+      color="primary"
+      value={alignment}
+      exclusive
+      onChange={handleChange}
+      aria-label="Platform"
+    >
+      <ToggleButton value="health">Health</ToggleButton>
+      <ToggleButton value="science">Science</ToggleButton>
+    </ToggleButtonGroup>
+  );
+}
+
 export default function QuickLook() {
   const [data, setData] = useState<HealthJSON | null>(null);
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState(true);
+  const [activeStep, setActiveStep] = useState(0);
+  const steps = ["Select Data Type", "Upload Files", "Label Files"];
+  const [alignment, setAlignment] = useState("health");
+  
+  const handleChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string
+  ) => {
+    setAlignment(newAlignment);
+  };
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleReset = () => {
+    setActiveStep(0);
+  };
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
@@ -101,23 +156,106 @@ export default function QuickLook() {
       <Typography variant="h3" gutterBottom>
         Decoder / Quick Look
       </Typography>
+      <Box sx={{ p: 2 }}>
+        <Stepper activeStep={activeStep}>
+          {steps.map((label, index) => {
+            const stepProps: { completed?: boolean } = {};
+            return (
+              <Step key={label} {...stepProps}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
 
-      <Button
-        color="primary"
-        component="label"
-        variant="contained"
-        startIcon={<IconUpload />}
-      >
-        Upload file
-        <VisuallyHiddenInput
-          type="file"
-          onChange={handleFileChange}
-          accept="application/json,application/gzip"
-        />
-      </Button>
+        {activeStep === steps.length ? (
+          <React.Fragment>
+            <Typography sx={{ mt: 2, mb: 1 }}>
+              All steps completed - you&apos;re finished
+            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+              <Box sx={{ flex: "1 1 auto" }} />
+              <Button onClick={handleReset}>Reset</Button>
+            </Box>
+          </React.Fragment>
+        ) : activeStep === 0 ? (
+          <React.Fragment>
+            <Box sx={{ p: 2 }}>
+              <ToggleButtonGroup
+                color="primary"
+                value={alignment}
+                exclusive
+                onChange={handleChange}
+                aria-label="Platform"
+              >
+                <ToggleButton value="health">Health</ToggleButton>
+                <ToggleButton value="science">Science</ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
 
-      <Box sx={{ pt: 2 }} flex={"true"}>
-        {data && <GraphsWrapper data={data}></GraphsWrapper>}
+            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+              <Button
+                color="inherit"
+                disabled={activeStep === 0}
+                onClick={handleBack}
+                sx={{ mr: 1 }}
+              >
+                Back
+              </Button>
+              <Box sx={{ flex: "1 1 auto" }} />
+              <Button onClick={handleNext}>
+                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              </Button>
+            </Box>
+          </React.Fragment>
+        ) : activeStep === 1 ? (
+          <React.Fragment>
+            <Box sx={{ p: 2 }}>
+              <ToggleButtonGroup
+                color="primary"
+                value={alignment}
+                exclusive
+                onChange={handleChange}
+                aria-label="Platform"
+              >
+                <ToggleButton value="health">Health</ToggleButton>
+                <ToggleButton value="science">Science</ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+
+            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+              <Button
+                color="inherit"
+                onClick={handleBack}
+                sx={{ mr: 1 }}
+              >
+                Back
+              </Button>
+              <Box sx={{ flex: "1 1 auto" }} />
+              <Button onClick={handleNext}>
+                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              </Button>
+            </Box>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
+            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+              <Button
+                color="inherit"
+                disabled={activeStep === 0}
+                onClick={handleBack}
+                sx={{ mr: 1 }}
+              >
+                Back
+              </Button>
+              <Box sx={{ flex: "1 1 auto" }} />
+              <Button onClick={handleNext}>
+                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              </Button>
+            </Box>
+          </React.Fragment>
+        )}
       </Box>
 
       <Snackbar

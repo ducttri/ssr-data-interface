@@ -36,7 +36,7 @@ export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
   };
 
   return (
-    <Box flex={"true"}>
+    <Box flex={"true"} sx={{ p: 2 }}>
       <Grid
         container
         spacing={{ xs: 2, md: 2 }}
@@ -93,13 +93,13 @@ export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
           >
             <Grid item xs={1}>
               <FormControl size="small" fullWidth>
-                <InputLabel id="demo-select-small-label">{"X-Axis"}</InputLabel>
+                <InputLabel id="demo-select-small-label">{"Y-Axis"}</InputLabel>
                 <Select
                   labelId="demo-select-small-label"
                   id="demo-select-small"
-                  value={xAxis[0] + "_" + xAxis[1]}
-                  label="X-Axis"
-                  onChange={handleXAxisChange}
+                  value={yAxis[0] + "_" + yAxis[1]}
+                  label="Y-Axis"
+                  onChange={handleYAxisChange}
                 >
                   <ListSubheader>
                     <b>General</b>
@@ -196,13 +196,13 @@ export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
             </Grid>
             <Grid item xs={1}>
               <FormControl size="small" fullWidth>
-                <InputLabel id="demo-select-small-label">{"Y-Axis"}</InputLabel>
+                <InputLabel id="demo-select-small-label">{"X-Axis"}</InputLabel>
                 <Select
                   labelId="demo-select-small-label"
                   id="demo-select-small"
-                  value={yAxis[0] + "_" + yAxis[1]}
-                  label="Y-Axis"
-                  onChange={handleYAxisChange}
+                  value={xAxis[0] + "_" + xAxis[1]}
+                  label="X-Axis"
+                  onChange={handleXAxisChange}
                 >
                   <ListSubheader>
                     <b>General</b>

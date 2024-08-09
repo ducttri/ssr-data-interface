@@ -11,7 +11,7 @@ export function simulate_health(
       "../../../../../../lib/umn-detector-code/python/umndet/tools/simulate_health.py"
     );
     exec(
-      `python ${scriptPath} ${numPackets} ${outputFilename}`,
+      `python3 ${scriptPath} ${numPackets} ${outputFilename}`,
       { encoding: "buffer" },
       (error, stdout, stderr) => {
         if (error) {

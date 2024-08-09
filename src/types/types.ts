@@ -44,6 +44,7 @@ interface RawHealthJSON {
   field: string;
   unit: string;
   value: number[];
+  data_type: string;
 }
 
 

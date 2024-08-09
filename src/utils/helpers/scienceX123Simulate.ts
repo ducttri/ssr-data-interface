@@ -1,14 +1,19 @@
 import * as path from "path";
 import { exec } from "child_process";
 
-export function decode_buffer(file: Buffer): Promise<Buffer> {
-  return new Promise(async (resolve, reject) => {
+export function simulate_science_x123(
+  outputFilename: string,
+  numFiles: number,
+  secondsPerFile: number,
+  time: number
+): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
     const scriptPath = path.resolve(
       __dirname,
-      "../../../../../../lib/umn-detector-code/python/umndet/tools/decode_health.py"
+      "../../../../../../lib/umn-detector-code/python/umndet/tools/simulate_x123_slices.py"
     );
-    const pythonProcess = exec(
-      `python3 ${scriptPath}`,
+    exec(
+      `python3 ${scriptPath} ${outputFilename} ${numFiles} ${secondsPerFile} ${time}`,
       { encoding: "buffer" },
       (error, stdout, stderr) => {
         if (error) {
@@ -22,9 +27,5 @@ export function decode_buffer(file: Buffer): Promise<Buffer> {
         resolve(stdout);
       }
     );
-
-    pythonProcess.stdin?.write(file);
-    pythonProcess.stdin?.end();
   });
 }
-

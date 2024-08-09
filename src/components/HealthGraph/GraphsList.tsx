@@ -2,7 +2,7 @@
 
 import { HealthJSON } from "@/types/types";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Box, Grid, Tab, Tabs } from "@mui/material";
+import { Box, Grid, Paper, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import { LineGraph } from "../Graph/LineGraph";
 
@@ -49,19 +49,26 @@ export default function GraphList({ data }: { data: HealthJSON }) {
             </Tabs>
           </Box>
 
-          <Grid container spacing={{ xs: 2, md: 3 }} columns={{ sm: 1, md: 2 }}>
+          <Grid
+            container
+            spacing={{ xs: 2, md: 2 }}
+            columns={{ sm: 1, md: 2 }}
+            sx={{ p: 2 }}
+          >
             {data.raw_data
               .filter((type) => type.type == detector.toString())
               .map((item) => {
                 return (
                   <Grid item xs={1} key={`${detector}_${item.field}`}>
-                    <LineGraph
-                      xData={utcDates}
-                      yData={item.value}
-                      xLabel={"Time"}
-                      yLabel={`${item.field} (${item.unit})`}
-                      title={`${item.field} vs. Time`}
-                    />
+                    <Paper>
+                      <LineGraph
+                        xData={utcDates}
+                        yData={item.value}
+                        xLabel={"Time"}
+                        yLabel={`${item.field} (${item.unit})`}
+                        title={`${item.field} vs. Time`}
+                      />
+                    </Paper>
                   </Grid>
                 );
               })}

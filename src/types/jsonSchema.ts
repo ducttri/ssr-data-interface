@@ -202,6 +202,9 @@ export const HealthJSONSchema: JSONSchemaType<HealthJSON> = {
           unit: {
             type: "string",
           },
+          data_type: {
+            type: "string",
+          },
           value: {
             type: "array",
             items: {
@@ -209,7 +212,7 @@ export const HealthJSONSchema: JSONSchemaType<HealthJSON> = {
             },
           },
         },
-        required: ["type", "field", "unit", "value"],
+        required: ["type", "field", "unit", "value", "data_type"],
       },
     },
   },
