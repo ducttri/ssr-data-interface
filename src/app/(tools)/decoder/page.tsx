@@ -8,14 +8,27 @@ import {
   AlertTitle,
   Box,
   Button,
+  Chip,
+  FormControl,
   Grid,
+  IconButton,
+  MenuItem,
   Paper,
+  Select,
+  SelectChangeEvent,
   Snackbar,
+  Stack,
   Step,
   StepLabel,
   Stepper,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
   ToggleButton,
   ToggleButtonGroup,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
@@ -24,7 +37,7 @@ import GraphList from "@/components/HealthGraph/GraphsList";
 import { GraphsWrapper } from "@/components/HealthGraph/GraphsWrapper";
 import { HealthJSON, HealthJSONData } from "@/types/types";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
-import { IconUpload } from "@tabler/icons-react";
+import { IconUpload, IconTrash, IconPlus } from "@tabler/icons-react";
 import PageContainer from "@/components/Container/PageContainer";
 import { HealthJSONDataSchema, HealthJSONSchema } from "@/types/jsonSchema";
 import { JSONSchemaType } from "ajv";
@@ -41,28 +54,42 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-function Step1() {
-  const [alignment, setAlignment] = useState("web");
+function identifyFile(name: string): detector {
+  if (name.includes("x123")) {
+    return "x123";
+  } else if (name.includes("c1")) {
+    return "c1";
+  } else if (name.includes("m1")) {
+    return "m1";
+  } else if (name.includes("m5")) {
+    return "m5";
+  } else if (name.includes("x1")) {
+    return "x1";
+  } else return "empty";
+}
 
-  const handleChange = (
-    event: React.MouseEvent<HTMLElement>,
-    newAlignment: string
-  ) => {
-    setAlignment(newAlignment);
-  };
+type detector = "health" | "c1" | "m1" | "m5" | "x1" | "x123" | "empty";
 
-  return (
-    <ToggleButtonGroup
-      color="primary"
-      value={alignment}
-      exclusive
-      onChange={handleChange}
-      aria-label="Platform"
-    >
-      <ToggleButton value="health">Health</ToggleButton>
-      <ToggleButton value="science">Science</ToggleButton>
-    </ToggleButtonGroup>
-  );
+interface FileData {
+  name: string;
+  size: number;
+  lastmodified: number;
+  type: detector;
+}
+
+function createFileData(
+  name: string,
+  size: number,
+  lastmodified: number,
+  isHealth: boolean
+): FileData {
+  if (isHealth) {
+    const type: detector = "health";
+    return { name, size, lastmodified, type };
+  } else {
+    const type = identifyFile(name);
+    return { name, size, lastmodified, type };
+  }
 }
 
 export default function QuickLook() {
@@ -72,12 +99,18 @@ export default function QuickLook() {
   const [activeStep, setActiveStep] = useState(0);
   const steps = ["Select Data Type", "Upload Files", "Label Files"];
   const [alignment, setAlignment] = useState("health");
-  
+  const [files, setFiles] = useState<FileList | null>();
+  const [rows, setRows] = useState<FileData[]>();
+
   const handleChange = (
     event: React.MouseEvent<HTMLElement>,
     newAlignment: string
   ) => {
-    setAlignment(newAlignment);
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+      setFiles(null);
+      setRows([]);
+    }
   };
 
   const handleNext = () => {
@@ -103,9 +136,68 @@ export default function QuickLook() {
     setOpen(false);
   };
 
+  const handleDeletion = (index: number) => {
+    setRows((prevRows) => {
+      if (prevRows) {
+        const newRows = prevRows.slice();
+        newRows.splice(index, 1);
+        return newRows;
+      }
+    });
+  };
+
+  const handleTypeDeletion = (index: number) => {
+    setRows((prevRows) => {
+      if (prevRows) {
+        const newRows = prevRows.slice();
+        newRows[index].type = "empty";
+        return newRows;
+      }
+    });
+  };
+
+  const handleTypeChange = (index: number, event: SelectChangeEvent) => {
+    setRows((prevRows) => {
+      if (prevRows) {
+        const newRows = prevRows.slice();
+        newRows[index].type = event.target.value as detector;
+        return newRows;
+      }
+    });
+  };
+
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setFiles(event.target.files);
+    if (event.target.files != null) {
+      let rows: FileData[] = [];
+      for (let i = 0; i < event.target.files.length; i++) {
+        const file = event.target.files[i];
+        rows.push(
+          createFileData(
+            file.name,
+            file.size,
+            file.lastModified,
+            alignment == "health"
+          )
+        );
+      }
+      if (alignment == "health") {
+        setRows(rows);
+      } else {
+        setRows((prevrows) => {
+          if (prevrows) {
+            return prevrows.concat(rows);
+          } else {
+            return rows;
+          }
+        });
+      }
+    }
+  };
+
+  const handleGenerate = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const file = files[0];
@@ -211,24 +303,154 @@ export default function QuickLook() {
         ) : activeStep === 1 ? (
           <React.Fragment>
             <Box sx={{ p: 2 }}>
-              <ToggleButtonGroup
+              <Button
                 color="primary"
-                value={alignment}
-                exclusive
-                onChange={handleChange}
-                aria-label="Platform"
+                component="label"
+                variant="contained"
+                startIcon={<IconUpload />}
               >
-                <ToggleButton value="health">Health</ToggleButton>
-                <ToggleButton value="science">Science</ToggleButton>
-              </ToggleButtonGroup>
+                Upload file
+                <VisuallyHiddenInput
+                  type="file"
+                  onChange={handleFileChange}
+                  accept="application/gzip"
+                  multiple={alignment == "science"}
+                />
+              </Button>
+              <Table
+                sx={{ minWidth: 650 }}
+                size="small"
+                aria-label="a dense table"
+              >
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell align="right">Size</TableCell>
+                    <TableCell align="right">Last Modified</TableCell>
+                    <TableCell align="right">Delete</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows &&
+                    rows.map((row, index) => (
+                      <TableRow
+                        key={row.name}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell component="th" scope="row">
+                          {row.name}
+                        </TableCell>
+                        <TableCell align="right">{`${(row.size / 1000).toFixed(
+                          1
+                        )} KB`}</TableCell>
+                        <TableCell align="right">
+                          {new Date(row.lastmodified).toUTCString()}
+                        </TableCell>
+                        <TableCell align="right">
+                          <Tooltip title="Delete File">
+                            <IconButton
+                              aria-controls={open ? "basic-menu" : undefined}
+                              aria-haspopup="true"
+                              aria-expanded={open ? "true" : undefined}
+                              key={index}
+                              size="small"
+                              onClick={() => {
+                                handleDeletion(index);
+                              }}
+                            >
+                              <IconTrash />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
             </Box>
 
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-              <Button
-                color="inherit"
-                onClick={handleBack}
-                sx={{ mr: 1 }}
+              <Button color="inherit" onClick={handleBack} sx={{ mr: 1 }}>
+                Back
+              </Button>
+              <Box sx={{ flex: "1 1 auto" }} />
+              <Button onClick={handleNext} disabled={files == null}>
+                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              </Button>
+            </Box>
+          </React.Fragment>
+        ) : activeStep === 2 ? (
+          <React.Fragment>
+            <Box sx={{ p: 2 }}>
+              <Table
+                sx={{ minWidth: 650 }}
+                size="small"
+                aria-label="a dense table"
               >
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell align="right">Type</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows &&
+                    rows.map((row, index) => (
+                      <TableRow
+                        key={row.name}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell component="th" scope="row">
+                          {row.name}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.type == "health" ? (
+                            <FormControl
+                              sx={{ m: 1, minWidth: 120 }}
+                              disabled
+                              size="small"
+                            >
+                              <Select value={row.type}>
+                                <MenuItem disabled value="health">
+                                  Health
+                                </MenuItem>
+                              </Select>
+                            </FormControl>
+                          ) : (
+                            <FormControl
+                              sx={{ minWidth: 120 }}
+                              size="small"
+                              onChange={(event) => {
+                                handleTypeChange(
+                                  index,
+                                  event as SelectChangeEvent
+                                );
+                              }}
+                            >
+                              <Select value={row.type}>
+                                <MenuItem disabled value="empty">
+                                  <em>None</em>
+                                </MenuItem>
+                                <MenuItem value={"c1"}>C1</MenuItem>
+                                <MenuItem value={"m1"}>M1</MenuItem>
+                                <MenuItem value={"m5"}>M5</MenuItem>
+                                <MenuItem value={"x1"}>X1</MenuItem>
+                                <MenuItem value={"x123"}>X123</MenuItem>
+                              </Select>
+                            </FormControl>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </Box>
+
+            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+              <Button color="inherit" onClick={handleBack} sx={{ mr: 1 }}>
                 Back
               </Button>
               <Box sx={{ flex: "1 1 auto" }} />
