@@ -16,6 +16,7 @@ import {
   Paper,
   Select,
   SelectChangeEvent,
+  Skeleton,
   Snackbar,
   Stack,
   Step,
@@ -102,7 +103,7 @@ export default function QuickLook() {
   const [files, setFiles] = useState<FileList | null>();
   const [rows, setRows] = useState<FileData[]>();
 
-  const handleChange = (
+  const handleDecoderTypeChange = (
     event: React.MouseEvent<HTMLElement>,
     newAlignment: string
   ) => {
@@ -123,6 +124,9 @@ export default function QuickLook() {
 
   const handleReset = () => {
     setActiveStep(0);
+    setFiles(null);
+    setRows([]);
+    setData(null);
   };
 
   const handleClose = (
@@ -141,16 +145,6 @@ export default function QuickLook() {
       if (prevRows) {
         const newRows = prevRows.slice();
         newRows.splice(index, 1);
-        return newRows;
-      }
-    });
-  };
-
-  const handleTypeDeletion = (index: number) => {
-    setRows((prevRows) => {
-      if (prevRows) {
-        const newRows = prevRows.slice();
-        newRows[index].type = "empty";
         return newRows;
       }
     });
@@ -197,8 +191,7 @@ export default function QuickLook() {
     }
   };
 
-  const handleGenerate = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+  const handleGenerate = async () => {
     if (files && files.length > 0) {
       const file = files[0];
       const csrfResp = await fetch("/csrf-token");
@@ -263,7 +256,11 @@ export default function QuickLook() {
         {activeStep === steps.length ? (
           <React.Fragment>
             <Typography sx={{ mt: 2, mb: 1 }}>
-              All steps completed - you&apos;re finished
+              {alignment == "health" && data ? (
+                <GraphsWrapper data={data}></GraphsWrapper>
+              ) : (
+                <Skeleton variant="rectangular" width='100%' height={600} />
+              )}
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
               <Box sx={{ flex: "1 1 auto" }} />
@@ -277,7 +274,7 @@ export default function QuickLook() {
                 color="primary"
                 value={alignment}
                 exclusive
-                onChange={handleChange}
+                onChange={handleDecoderTypeChange}
                 aria-label="Platform"
               >
                 <ToggleButton value="health">Health</ToggleButton>
@@ -420,17 +417,13 @@ export default function QuickLook() {
                               </Select>
                             </FormControl>
                           ) : (
-                            <FormControl
-                              sx={{ minWidth: 120 }}
-                              size="small"
-                              onChange={(event) => {
-                                handleTypeChange(
-                                  index,
-                                  event as SelectChangeEvent
-                                );
-                              }}
-                            >
-                              <Select value={row.type}>
+                            <FormControl sx={{ minWidth: 120 }} size="small">
+                              <Select
+                                value={row.type}
+                                onChange={(event: SelectChangeEvent) => {
+                                  handleTypeChange(index, event);
+                                }}
+                              >
                                 <MenuItem disabled value="empty">
                                   <em>None</em>
                                 </MenuItem>
@@ -454,8 +447,13 @@ export default function QuickLook() {
                 Back
               </Button>
               <Box sx={{ flex: "1 1 auto" }} />
-              <Button onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              <Button
+                onClick={() => {
+                  handleNext();
+                  handleGenerate();
+                }}
+              >
+                {activeStep === steps.length - 1 ? "Decode" : "Next"}
               </Button>
             </Box>
           </React.Fragment>
@@ -473,7 +471,7 @@ export default function QuickLook() {
               </Button>
               <Box sx={{ flex: "1 1 auto" }} />
               <Button onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                {activeStep === steps.length - 1 ? "Decode" : "Next"}
               </Button>
             </Box>
           </React.Fragment>
