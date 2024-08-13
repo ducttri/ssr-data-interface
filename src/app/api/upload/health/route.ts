@@ -1,4 +1,4 @@
-import { decode_buffer } from "@/utils/helpers/jsonDecoder";
+import { decode_health } from "@/utils/helpers/healthDecoder";
 import { uploadData, verifyAccess } from "@/utils/helpers/mongodbUpload";
 import { NextRequest, NextResponse } from "next/server";
 import fs, { writeFileSync } from "fs";
@@ -23,12 +23,13 @@ export async function POST(request: NextRequest) {
     try {
       const arrayBuffer = await file.arrayBuffer();
       const fileBuffer = Buffer.from(arrayBuffer);
-      const compressedData = await decode_buffer(fileBuffer);
+      const compressedData = await decode_health(fileBuffer);
       const jsonData = JSON.parse(compressedData.toString());
       const status = await uploadData(jsonData);
 
       if (status.success) {
-        const filePath = process.env.WORKINGDIR + `/database/health/${status.id}.bin.gz`;
+        const filePath =
+          process.env.WORKINGDIR + `/database/health/${status.id}.bin.gz`;
         writeFileSync(filePath, fileBuffer, {
           flag: "w",
         });
