@@ -38,7 +38,7 @@ const fetcher = (url: string | URL | Request) =>
       })
     );
 
-preload("/api/fetch/health/processed-data", fetcher);
+preload(process.env.URL + "/api/fetch/health/processed-data", fetcher);
 
 export default function HealthTable() {
   const [order, setOrder] = React.useState<Order>("asc");
@@ -115,7 +115,7 @@ export default function HealthTable() {
       const params = new URLSearchParams({
         selectedData: JSON.stringify(selectedData),
       });
-      await fetch(`/api/download?${params.toString()}`)
+      await fetch(`/api/download/health?${params.toString()}`)
         .then((response) => response.blob())
         .then((blob) => {
           const url = window.URL.createObjectURL(blob);

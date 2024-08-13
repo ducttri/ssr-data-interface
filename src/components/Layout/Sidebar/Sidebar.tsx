@@ -59,7 +59,7 @@ const Sidebar = ({
               {/* Sidebar Items */}
               {/* ------------------------------------------- */}
               <SidebarItems />
-              <Upgrade />
+              {/* <Upgrade /> */}
             </Box>
           </Box>
         </Drawer>
@@ -90,7 +90,7 @@ const Sidebar = ({
       {/* Sidebar For Mobile */}
       {/* ------------------------------------------- */}
       <SidebarItems />
-      <Upgrade />
+      {/* <Upgrade /> */}
     </Drawer>
   );
 };

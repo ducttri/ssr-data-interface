@@ -3,6 +3,7 @@ import archiver from "archiver";
 import { MongoClient, ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import { WritableStreamBuffer } from "stream-buffers";
+import fs from "fs";
 
 export const maxDuration = 60;
 
@@ -10,7 +11,7 @@ export async function GET(req: NextRequest) {
   const selectedData = JSON.parse(
     req.nextUrl.searchParams.get("selectedData") || "[]"
   );
-  const uri = process.env.MONGODB_URI as string;
+  const uri: string = process.env.MONGODB_URI as string;
   const client = new MongoClient(uri);
   const dbName = process.env.MONGODB_DATABASE as string;
   const dbCollection = process.env.MONGODB_HEALTH as string;
@@ -19,36 +20,18 @@ export async function GET(req: NextRequest) {
   let datas: HealthJSONData[] = [];
 
   try {
-    await Promise.all(
-      selectedData.map(async (id: string) => {
-        try {
-          const cursor = await datacollection.findOne({
-            _id: new ObjectId(id),
-          });
-
-          if (cursor) {
-            datas.push(cursor as unknown as HealthJSONData);
-          }
-        } catch (e) {
-          console.error("Failed to fetch data: " + e);
-
-          return NextResponse.json({
-            status: 500,
-            statusText: "Internal Server Error",
-            error: `Error fetching document with id ${id}`,
-          });
-        }
-      })
-    );
-
     const archive = archiver("zip", { zlib: { level: 9 } });
     const writableStreamBuffer = new WritableStreamBuffer();
 
     archive.pipe(writableStreamBuffer);
-    datas.forEach((jsonObject: HealthJSONData, index: number) => {
-      const jsonString = JSON.stringify(jsonObject, null, 2);
-
-      archive.append(jsonString, { name: `${selectedData[index]}.json` });
+    selectedData.map((id: string) => {
+      //   const jsonString = JSON.stringify(jsonObject, null, 2);
+      const filePath = process.env.WORKINGDIR + `/database/health/${id}.bin.gz`;
+      if (fs.existsSync(filePath)) {
+        archive.append(fs.createReadStream(filePath), {
+          name: `${id}.bin.gz`,
+        });
+      }
     });
 
     await new Promise<void>((resolve, reject) => {
@@ -61,7 +44,7 @@ export async function GET(req: NextRequest) {
       status: 200,
       statusText: "OK",
       headers: {
-        "content-disposition": `attachment; filename="jsons.zip"`,
+        "content-disposition": `attachment; filename="data.zip"`,
         "content-type": "application/zip",
       },
     });

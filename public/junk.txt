@@ -1,0 +1,57 @@
+<Button
+        color="primary"
+        component="label"
+        variant="contained"
+        startIcon={<IconUpload />}
+      >
+        Upload File
+      </Button>
+
+      <Accordion>
+        <AccordionSummary id="panel1-header">
+          <Typography>Health</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Button
+            color="primary"
+            component="label"
+            variant="contained"
+            startIcon={<IconUpload />}
+          >
+            Upload File
+            <VisuallyHiddenInput
+              type="file"
+              onChange={handleFileChange}
+              accept="application/gzip"
+            />
+          </Button>
+          <Box sx={{ pt: 2 }} flex={"true"}>
+            {data && <GraphsWrapper data={data}></GraphsWrapper>}
+          </Box>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion defaultExpanded>
+        <AccordionSummary id="panel1-header">
+          <Typography>Science</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Button
+            color="primary"
+            component="label"
+            variant="contained"
+            startIcon={<IconUpload />}
+          >
+            Upload File
+            <VisuallyHiddenInput
+              type="file"
+              onChange={handleFileChange}
+              accept="application/gzip"
+              multiple
+            />
+          </Button>
+          <Box sx={{ pt: 2 }} flex={"true"}>
+            {/* {data && <GraphsWrapper data={data}></GraphsWrapper>} */}
+          </Box>
+        </AccordionDetails>
+      </Accordion>

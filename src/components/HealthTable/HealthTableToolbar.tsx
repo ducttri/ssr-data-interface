@@ -79,12 +79,12 @@ export default function HealthTableToolbar(props: HealthTableToolbarProps) {
     setOpenError(false);
   };
 
-  const handleAPICall = async (jsonData: HealthJSONData) => {
+  const handleAPICall = async (file: File) => {
     const csrfResp = await fetch("/csrf-token");
     const { csrfToken } = await csrfResp.json();
     try {
       const dataForm = new FormData();
-      dataForm.set("data", JSON.stringify(jsonData));
+      dataForm.set("file", file);
       const fetchArgs = {
         method: "POST",
         headers: {},
@@ -95,7 +95,7 @@ export default function HealthTableToolbar(props: HealthTableToolbarProps) {
           "X-CSRF-Token": csrfToken,
           Authorization: getToken(),
         };
-      const res = await fetch(`/api/upload`, fetchArgs);
+      const res = await fetch(`/api/upload/health`, fetchArgs);
       const data = await res.json();
       if (data.status == 200) {
         setErrorMessage("Succesfully upload data.");
@@ -107,7 +107,6 @@ export default function HealthTableToolbar(props: HealthTableToolbarProps) {
         setSuccess(false);
         setOpenError(true);
       }
-      // console.log(data);
     } catch (err) {
       console.log(err);
     }
@@ -119,31 +118,7 @@ export default function HealthTableToolbar(props: HealthTableToolbarProps) {
     const files = event.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-
-      let json: JSON;
-
-      const reader = new FileReader();
-      reader.onload = async (e: ProgressEvent<FileReader>) => {
-        if (e.target?.result) {
-          try {
-            json = JSON.parse(e.target.result as string);
-            const valid = await jsonValidator(
-              json,
-              HealthJSONDataSchema as JSONSchemaType<any>
-            );
-            if (valid) {
-              handleAPICall(json as unknown as HealthJSONData);
-            } else {
-              setErrorMessage("Failed to upload.");
-              setSuccess(false);
-              setOpenError(true);
-            }
-          } catch (error) {
-            console.error("Error parsing JSON:", error);
-          }
-        }
-      };
-      reader.readAsText(file);
+      handleAPICall(file);
     }
   };
 
@@ -223,7 +198,7 @@ export default function HealthTableToolbar(props: HealthTableToolbarProps) {
                 <VisuallyHiddenInput
                   type="file"
                   onChange={handleFileChange}
-                  accept="application/json,application/gzip"
+                  accept="application/gzip"
                 />
               </Button>
               <Snackbar

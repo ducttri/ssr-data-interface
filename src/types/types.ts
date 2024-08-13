@@ -1,3 +1,54 @@
+export interface HealthJSON {
+  _id: string;
+  processed_data: ProcessedHealthJSON;
+  raw_data: RawHealthJSON[];
+}
+
+interface ProcessedHealthJSON {
+  start_time: number;
+  c1: {
+    arm_temp: ProcessedHealthJSONType;
+    sipm_temp: ProcessedHealthJSONType;
+    sipm_operating_voltage: ProcessedHealthJSONType;
+  };
+  m1: {
+    arm_temp: ProcessedHealthJSONType;
+    sipm_temp: ProcessedHealthJSONType;
+    sipm_operating_voltage: ProcessedHealthJSONType;
+  };
+  m5: {
+    arm_temp: ProcessedHealthJSONType;
+    sipm_temp: ProcessedHealthJSONType;
+    sipm_operating_voltage: ProcessedHealthJSONType;
+  };
+  x1: {
+    arm_temp: ProcessedHealthJSONType;
+    sipm_temp: ProcessedHealthJSONType;
+    sipm_operating_voltage: ProcessedHealthJSONType;
+  };
+  x123: {
+    board_temp: ProcessedHealthJSONType;
+    det_high_voltage: ProcessedHealthJSONType;
+    det_temp: ProcessedHealthJSONType;
+  };
+}
+
+interface ProcessedHealthJSONType {
+  avg: number;
+  min: number;
+  max: number;
+}
+
+interface RawHealthJSON {
+  type: string;
+  field: string;
+  unit: string;
+  value: number[];
+  data_type: string;
+}
+
+
+//////////////////////////////////////////
 export interface HealthJSONData {
   _id: string;
   processed_data: ProcessedHealthData;
@@ -33,7 +84,7 @@ export interface ProcessedHealthData {
   };
 }
 
-export interface ProcessedHealthDataType {
+interface ProcessedHealthDataType {
   avg: number;
   min: number;
   max: number;
@@ -87,6 +138,14 @@ export interface RawHealthData {
     sipm_temp: RawHealthDataType;
   };
 }
+
+export type RawHealthType =
+  | "timestamp"
+  | "c1"
+  | "m1"
+  | "m5"
+  | "x1"
+  | "x123";
 
 export interface RawHealthDataType {
   unit: string;

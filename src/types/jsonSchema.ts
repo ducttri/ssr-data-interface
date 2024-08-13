@@ -1,5 +1,5 @@
 import { JSONSchemaType } from "ajv";
-import { HealthJSONData } from "./types";
+import { HealthJSON, HealthJSONData } from "./types";
 
 export const HealthJSONDataSchema: JSONSchemaType<HealthJSONData> = {
   type: "object",
@@ -116,6 +116,122 @@ export const HealthJSONDataSchema: JSONSchemaType<HealthJSONData> = {
         },
       },
       required: ["unit", "value"],
+    },
+  },
+};
+
+export const HealthJSONSchema: JSONSchemaType<HealthJSON> = {
+  type: "object",
+  properties: {
+    _id: {
+      type: "string",
+    },
+    processed_data: {
+      type: "object",
+      properties: {
+        start_time: {
+          type: "number",
+        },
+        c1: {
+          type: "object",
+          properties: {
+            arm_temp: { $ref: "#/definitions/ProcessedHealthJSONType" },
+            sipm_temp: { $ref: "#/definitions/ProcessedHealthJSONType" },
+            sipm_operating_voltage: {
+              $ref: "#/definitions/ProcessedHealthJSONType",
+            },
+          },
+          required: ["arm_temp", "sipm_temp", "sipm_operating_voltage"],
+        },
+        m1: {
+          type: "object",
+          properties: {
+            arm_temp: { $ref: "#/definitions/ProcessedHealthJSONType" },
+            sipm_temp: { $ref: "#/definitions/ProcessedHealthJSONType" },
+            sipm_operating_voltage: {
+              $ref: "#/definitions/ProcessedHealthJSONType",
+            },
+          },
+          required: ["arm_temp", "sipm_temp", "sipm_operating_voltage"],
+        },
+        m5: {
+          type: "object",
+          properties: {
+            arm_temp: { $ref: "#/definitions/ProcessedHealthJSONType" },
+            sipm_temp: { $ref: "#/definitions/ProcessedHealthJSONType" },
+            sipm_operating_voltage: {
+              $ref: "#/definitions/ProcessedHealthJSONType",
+            },
+          },
+          required: ["arm_temp", "sipm_temp", "sipm_operating_voltage"],
+        },
+        x1: {
+          type: "object",
+          properties: {
+            arm_temp: { $ref: "#/definitions/ProcessedHealthJSONType" },
+            sipm_temp: { $ref: "#/definitions/ProcessedHealthJSONType" },
+            sipm_operating_voltage: {
+              $ref: "#/definitions/ProcessedHealthJSONType",
+            },
+          },
+          required: ["arm_temp", "sipm_temp", "sipm_operating_voltage"],
+        },
+        x123: {
+          type: "object",
+          properties: {
+            board_temp: { $ref: "#/definitions/ProcessedHealthJSONType" },
+            det_high_voltage: { $ref: "#/definitions/ProcessedHealthJSONType" },
+            det_temp: { $ref: "#/definitions/ProcessedHealthJSONType" },
+          },
+          required: ["board_temp", "det_high_voltage", "det_temp"],
+        },
+      },
+      required: ["start_time", "c1", "m1", "m5", "x1", "x123"],
+    },
+    raw_data: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          type: {
+            type: "string",
+          },
+          field: {
+            type: "string",
+          },
+          unit: {
+            type: "string",
+          },
+          data_type: {
+            type: "string",
+          },
+          value: {
+            type: "array",
+            items: {
+              type: "number",
+            },
+          },
+        },
+        required: ["type", "field", "unit", "value", "data_type"],
+      },
+    },
+  },
+  required: ["processed_data", "raw_data"],
+  definitions: {
+    ProcessedHealthJSONType: {
+      type: "object",
+      properties: {
+        avg: {
+          type: "number",
+        },
+        min: {
+          type: "number",
+        },
+        max: {
+          type: "number",
+        },
+      },
+      required: ["avg", "min", "max"],
     },
   },
 };
