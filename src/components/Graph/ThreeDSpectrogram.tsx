@@ -1,6 +1,7 @@
 import React from "react";
-import Plot from "react-plotly.js";
-import { baselightTheme } from "@/utils/theme/DefaultColors";
+import dynamic from "next/dynamic";
+
+const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 interface ThreeDSpectrogramProps {
   xData: any[];

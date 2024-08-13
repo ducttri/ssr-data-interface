@@ -5,7 +5,8 @@ export function simulate_science_hafx(
   outputFilename: string,
   numFiles: number,
   secondsPerFile: number,
-  time: number
+  time: number,
+  channel: string
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const scriptPath = path.resolve(
@@ -13,7 +14,7 @@ export function simulate_science_hafx(
       "../../../../../../lib/umn-detector-code/python/umndet/tools/simulate_slices.py"
     );
     exec(
-      `python3 ${scriptPath} ${outputFilename} ${numFiles} ${secondsPerFile} ${time}`,
+      `python3 ${scriptPath} ${outputFilename} ${numFiles} ${secondsPerFile} ${time} ${channel}`,
       { encoding: "buffer" },
       (error, stdout, stderr) => {
         if (error) {

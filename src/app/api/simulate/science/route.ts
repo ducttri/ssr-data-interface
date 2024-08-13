@@ -33,7 +33,8 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i
+          time + secondsPerFile * i,
+          "c1"
         );
         archive.append(stdout, { name: `sim-hafx-c1-hist_${time}_0.bin.gz` });
       } else {
@@ -41,7 +42,8 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i
+          time + secondsPerFile * i,
+          "c1"
         );
         archive.append(stdout, {
           name: `sim-hafx-c1-hist_${time}_0.bin.gz`,
@@ -51,7 +53,8 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i
+          time + secondsPerFile * i,
+          "m1"
         );
         archive.append(stdout, {
           name: `sim-hafx-m1-hist_${time}_0.bin.gz`,
@@ -61,7 +64,8 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i
+          time + secondsPerFile * i,
+          "m5"
         );
         archive.append(stdout, {
           name: `sim-hafx-m5-hist_${time}_0.bin.gz`,
@@ -71,7 +75,8 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i
+          time + secondsPerFile * i,
+          "x1"
         );
         archive.append(stdout, {
           name: `sim-hafx-x1-hist_${time}_0.bin.gz`,
