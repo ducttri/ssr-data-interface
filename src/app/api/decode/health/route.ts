@@ -1,4 +1,4 @@
-import { decode_buffer } from "@/utils/helpers/jsonDecoder";
+import { decode_health } from "@/utils/helpers/healthDecoder";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const fileBuffer = Buffer.from(arrayBuffer);
-    const compressedData = await decode_buffer(fileBuffer);
+    const compressedData = await decode_health(fileBuffer);
     const jsonData = JSON.parse(compressedData.toString());
 
     return NextResponse.json({

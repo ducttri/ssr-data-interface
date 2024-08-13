@@ -192,43 +192,87 @@ export default function QuickLook() {
   };
 
   const handleGenerate = async () => {
-    if (files && files.length > 0) {
-      const file = files[0];
-      const csrfResp = await fetch("/csrf-token");
-      const { csrfToken } = await csrfResp.json();
-      let json: JSON;
+    if (alignment == "health") {
+      if (files && files.length > 0) {
+        const file = files[0];
+        const csrfResp = await fetch("/csrf-token");
+        const { csrfToken } = await csrfResp.json();
+        let json: JSON;
 
-      try {
-        const data = new FormData();
-        data.set("file", file);
-        const fetchArgs = {
-          method: "POST",
-          headers: {},
-          body: data,
-        };
-        if (csrfToken)
-          fetchArgs.headers = {
-            "X-CSRF-Token": csrfToken,
+        try {
+          const data = new FormData();
+          data.set("file", file);
+          const fetchArgs = {
+            method: "POST",
+            headers: {},
+            body: data,
           };
-        const res = await fetch("/api/decode/health", fetchArgs);
-        if (!res.ok) throw new Error(await res.text());
-        const returndata = await res.json();
-        json = returndata.data;
-        const valid = await jsonValidator(
-          json,
-          HealthJSONSchema as JSONSchemaType<any>
-        );
+          if (csrfToken)
+            fetchArgs.headers = {
+              "X-CSRF-Token": csrfToken,
+            };
+          const res = await fetch("/api/decode/health", fetchArgs);
+          if (!res.ok) throw new Error(await res.text());
+          const returndata = await res.json();
+          json = returndata.data;
+          const valid = await jsonValidator(
+            json,
+            HealthJSONSchema as JSONSchemaType<any>
+          );
 
-        if (valid) {
-          setData(json as unknown as HealthJSON);
-          setSuccess(true);
-          setOpen(true);
-        } else {
-          setSuccess(false);
-          setOpen(true);
+          if (valid) {
+            setData(json as unknown as HealthJSON);
+            setSuccess(true);
+            setOpen(true);
+          } else {
+            setSuccess(false);
+            setOpen(true);
+          }
+        } catch (e: any) {
+          console.error(e);
         }
-      } catch (e: any) {
-        console.error(e);
+      }
+    } else {
+      if (files && files.length > 0 && rows) {
+        const csrfResp = await fetch("/csrf-token");
+        const { csrfToken } = await csrfResp.json();
+        let json: JSON;
+
+        try {
+          const data = new FormData();
+          for (let i = 0; i < files.length; i++) {
+            data.append("files", files[i]); 
+          }
+          data.set("filesData", JSON.stringify(rows));
+          const fetchArgs = {
+            method: "POST",
+            headers: {},
+            body: data,
+          };
+          if (csrfToken)
+            fetchArgs.headers = {
+              "X-CSRF-Token": csrfToken,
+            };
+          const res = await fetch("/api/decode/science", fetchArgs);
+          if (!res.ok) throw new Error(await res.text());
+          const returndata = await res.json();
+          json = returndata.data;
+          const valid = await jsonValidator(
+            json,
+            HealthJSONSchema as JSONSchemaType<any>
+          );
+
+          if (valid) {
+            // setData(json as unknown as HealthJSON);
+            setSuccess(true);
+            setOpen(true);
+          } else {
+            setSuccess(false);
+            setOpen(true);
+          }
+        } catch (e: any) {
+          console.error(e);
+        }
       }
     }
   };
@@ -259,7 +303,7 @@ export default function QuickLook() {
               {alignment == "health" && data ? (
                 <GraphsWrapper data={data}></GraphsWrapper>
               ) : (
-                <Skeleton variant="rectangular" width='100%' height={600} />
+                <Skeleton variant="rectangular" width="100%" height={600} />
               )}
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>

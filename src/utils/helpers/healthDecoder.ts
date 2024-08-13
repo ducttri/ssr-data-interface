@@ -1,7 +1,7 @@
 import * as path from "path";
 import { exec } from "child_process";
 
-export function decode_buffer(file: Buffer): Promise<Buffer> {
+export function decode_health(file: Buffer): Promise<Buffer> {
   return new Promise(async (resolve, reject) => {
     const scriptPath = path.resolve(
       __dirname,
@@ -27,4 +27,3 @@ export function decode_buffer(file: Buffer): Promise<Buffer> {
     pythonProcess.stdin?.end();
   });
 }
-
