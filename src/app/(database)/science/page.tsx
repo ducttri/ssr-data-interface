@@ -11,6 +11,8 @@ export default function Science() {
   const utcDates: string[] = data.timestamp.map((timestamp: number) => {
     return new Date(timestamp * 1000).toISOString();
   });
+
+  console.log(data);
   return (
     <PageContainer title="Science" description="Science Database">
       <Typography variant="h3" gutterBottom>

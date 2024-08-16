@@ -34,13 +34,12 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import GraphList from "@/components/HealthGraph/GraphsList";
-import { GraphsWrapper } from "@/components/HealthGraph/GraphsWrapper";
-import { HealthJSON, HealthJSONData } from "@/types/types";
+import { GraphsWrapper } from "@/components/GraphWrapper/GraphsWrapper";
+import { DataJSON, HealthJSON } from "@/types/types";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
 import { IconUpload, IconTrash, IconPlus } from "@tabler/icons-react";
 import PageContainer from "@/components/Container/PageContainer";
-import { HealthJSONDataSchema, HealthJSONSchema } from "@/types/jsonSchema";
+import { DataJSONSchema } from "@/types/jsonSchema";
 import { JSONSchemaType } from "ajv";
 
 const VisuallyHiddenInput = styled("input")({
@@ -94,7 +93,7 @@ function createFileData(
 }
 
 export default function QuickLook() {
-  const [data, setData] = useState<HealthJSON | null>(null);
+  const [data, setData] = useState<DataJSON | null>(null);
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
@@ -217,11 +216,11 @@ export default function QuickLook() {
           json = returndata.data;
           const valid = await jsonValidator(
             json,
-            HealthJSONSchema as JSONSchemaType<any>
+            DataJSONSchema as JSONSchemaType<any>
           );
 
           if (valid) {
-            setData(json as unknown as HealthJSON);
+            setData(json as unknown as DataJSON);
             setSuccess(true);
             setOpen(true);
           } else {
@@ -243,6 +242,8 @@ export default function QuickLook() {
           for (let i = 0; i < files.length; i++) {
             data.append("files", files[i]); 
           }
+
+          // console.log(data.getAll("files"));
           data.set("filesData", JSON.stringify(rows));
           const fetchArgs = {
             method: "POST",
@@ -257,13 +258,14 @@ export default function QuickLook() {
           if (!res.ok) throw new Error(await res.text());
           const returndata = await res.json();
           json = returndata.data;
+          console.log(json);
           const valid = await jsonValidator(
             json,
-            HealthJSONSchema as JSONSchemaType<any>
+            DataJSONSchema as JSONSchemaType<any>
           );
 
           if (valid) {
-            // setData(json as unknown as HealthJSON);
+            setData(json as unknown as DataJSON);
             setSuccess(true);
             setOpen(true);
           } else {
@@ -300,7 +302,7 @@ export default function QuickLook() {
         {activeStep === steps.length ? (
           <React.Fragment>
             <Typography sx={{ mt: 2, mb: 1 }}>
-              {alignment == "health" && data ? (
+              {data ? (
                 <GraphsWrapper data={data}></GraphsWrapper>
               ) : (
                 <Skeleton variant="rectangular" width="100%" height={600} />

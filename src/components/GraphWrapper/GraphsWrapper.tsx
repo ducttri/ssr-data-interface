@@ -1,7 +1,7 @@
 import React from "react";
-import { HealthJSON } from "@/types/types";
+import { DataJSON } from "@/types/types";
 import { LineGraph } from "../Graph/LineGraph";
-import GraphList from "@/components/GraphWrapper/GraphsList";
+import GraphList from "./GraphList";
 import {
   Box,
   Divider,
@@ -21,7 +21,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { useState } from "react";
 import { timeStamp } from "console";
 
-export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
+export const GraphsWrapper = ({ data }: { data: DataJSON }) => {
   const [xAxis, setXAxis] = useState<string[]>(["Time stamp", "general"]);
   const [yAxis, setYAxis] = useState<string[]>(["Time stamp", "general"]);
   const timestamp: number[] =
@@ -37,40 +37,6 @@ export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
 
   return (
     <Box flex={"true"} sx={{ p: 2 }}>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 2 }}
-        columns={{ xs: 1, sm: 2, md: 4 }}
-        flex="true"
-      >
-        <Grid item xs={1}>
-          <Typography gutterBottom variant="body1" component="div">
-            <b>UID: </b> {data._id ? data._id : "Not on the database"}
-          </Typography>
-        </Grid>
-        <Grid item xs={1}>
-          <Typography gutterBottom variant="body1" component="div">
-            <b>Begin Time: </b>
-            {new Date(data.processed_data.start_time * 1000).toUTCString()}
-          </Typography>
-        </Grid>
-        <Grid item xs={1}>
-          <Typography gutterBottom variant="body1" component="div">
-            <b>End Time: </b>{" "}
-            {new Date(timestamp[timestamp.length - 1] * 1000).toUTCString()}
-          </Typography>
-        </Grid>
-        <Grid item xs={1}>
-          <Typography gutterBottom variant="body1" component="div">
-            <b>Duration</b>:{" "}
-            {timestamp[timestamp.length - 1] -
-              data.processed_data.start_time +
-              1}{" "}
-            s
-          </Typography>
-        </Grid>
-      </Grid>
-
       <Accordion defaultExpanded>
         <AccordionSummary id="panel1-header">
           <Typography>Overview</Typography>

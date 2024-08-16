@@ -1,6 +1,6 @@
 "use client";
 
-import { FilterHealthData, HealthJSONData } from "@/types/types";
+import { FilterHealthData } from "@/types/types";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -21,11 +21,8 @@ import * as React from "react";
 import dayjs from "dayjs";
 import { styled } from "@mui/material/styles";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { jsonValidator } from "@/utils/helpers/jsonValidator";
 import { IconCloudUpload, IconCloudDownload } from "@tabler/icons-react";
 import HealthTableFilter from "./HealthTableFilter";
-import { HealthJSONDataSchema } from "@/types/jsonSchema";
-import { JSONSchemaType } from "ajv";
 
 dayjs.extend(utc);
 

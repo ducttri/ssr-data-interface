@@ -1,12 +1,11 @@
 "use client";
 
 import { Box, Grid, Paper, Typography } from "@mui/material";
-import GraphList from "@/components/HealthGraph/GraphsList";
 import useSWR from "swr";
 import PageContainer from "@/components/Container/PageContainer";
 import { NextResponse } from "next/server";
 import NotFound from "@/app/not-found";
-import { GraphsWrapper } from "@/components/HealthGraph/GraphsWrapper";
+import { GraphsWrapper } from "@/components/GraphWrapper/GraphsWrapper";
 
 const fetcher = async (url: string | URL | Request) => {
   const res = await fetch(url);

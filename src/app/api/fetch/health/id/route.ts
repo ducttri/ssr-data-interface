@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { MongoClient, ObjectId } from "mongodb";
-import { HealthJSONData } from "@/types/types";
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id") || "";

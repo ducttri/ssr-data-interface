@@ -1,6 +1,6 @@
-import { HealthJSONData, RowHealthData } from "@/types/types";
+import { HealthJSON, RowHealthData } from "@/types/types";
 
-export function createData(id: number, data: HealthJSONData): RowHealthData {
+export function createData(id: number, data: HealthJSON): RowHealthData {
   return {
     id: id,
     uid: data._id,
