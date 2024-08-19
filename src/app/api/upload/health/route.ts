@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     try {
       const arrayBuffer = await file.arrayBuffer();
       const fileBuffer = Buffer.from(arrayBuffer);
-      const compressedData = await decode_health(fileBuffer);
+      const compressedData = await decode_health([file]);
       const jsonData = JSON.parse(compressedData.toString());
       const status = await uploadData(jsonData);
 
