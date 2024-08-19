@@ -27,6 +27,7 @@ export class LineGraph extends React.Component<LineGraphProps> {
             x: xData,
             y: yData,
             type: "scatter",
+            // mode: "markers",
             line: {
               color: baselightTheme.palette.primary.main,
             },
@@ -44,6 +45,7 @@ export class LineGraph extends React.Component<LineGraphProps> {
         }}
         useResizeHandler={true} // Important: This tells Plotly to re-render on resize
         style={{ width: "100%", height: "100%", aspectRatio: "4/3" }} // Ensure the div containing the plot is fully responsive
+        config={{editable: true}}
       />
     );
   }

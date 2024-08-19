@@ -99,7 +99,7 @@ export default function QuickLook() {
   const [activeStep, setActiveStep] = useState(0);
   const steps = ["Select Data Type", "Upload Files", "Label Files"];
   const [alignment, setAlignment] = useState("health");
-  const [files, setFiles] = useState<FileList | null>();
+  const [files, setFiles] = useState<File[]>([]);
   const [rows, setRows] = useState<FileData[]>();
 
   const handleDecoderTypeChange = (
@@ -108,7 +108,7 @@ export default function QuickLook() {
   ) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
-      setFiles(null);
+      setFiles([]);
       setRows([]);
     }
   };
@@ -123,7 +123,7 @@ export default function QuickLook() {
 
   const handleReset = () => {
     setActiveStep(0);
-    setFiles(null);
+    setFiles([]);
     setRows([]);
     setData(null);
   };
@@ -162,7 +162,14 @@ export default function QuickLook() {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setFiles(event.target.files);
+    setFiles((oldFiles) => {
+      if (event.target.files) {
+        const newFiles = Array.from(event.target.files);
+        return oldFiles.concat(newFiles);
+      } else {
+        return oldFiles
+      }
+    });
     if (event.target.files != null) {
       let rows: FileData[] = [];
       for (let i = 0; i < event.target.files.length; i++) {
@@ -191,90 +198,49 @@ export default function QuickLook() {
   };
 
   const handleGenerate = async () => {
-    if (alignment == "health") {
-      if (files && files.length > 0) {
-        const file = files[0];
-        const csrfResp = await fetch("/csrf-token");
-        const { csrfToken } = await csrfResp.json();
-        let json: JSON;
+    if (files && files.length > 0 && rows) {
+      const csrfResp = await fetch("/csrf-token");
+      const { csrfToken } = await csrfResp.json();
+      let json: JSON;
 
-        try {
-          const data = new FormData();
-          data.set("file", file);
-          const fetchArgs = {
-            method: "POST",
-            headers: {},
-            body: data,
-          };
-          if (csrfToken)
-            fetchArgs.headers = {
-              "X-CSRF-Token": csrfToken,
-            };
-          const res = await fetch("/api/decode/health", fetchArgs);
-          if (!res.ok) throw new Error(await res.text());
-          const returndata = await res.json();
-          json = returndata.data;
-          const valid = await jsonValidator(
-            json,
-            DataJSONSchema as JSONSchemaType<any>
-          );
-
-          if (valid) {
-            setData(json as unknown as DataJSON);
-            setSuccess(true);
-            setOpen(true);
-          } else {
-            setSuccess(false);
-            setOpen(true);
-          }
-        } catch (e: any) {
-          console.error(e);
+      try {
+        const data = new FormData();
+        for (let i = 0; i < files.length; i++) {
+          data.append("files", files[i]);
         }
-      }
-    } else {
-      if (files && files.length > 0 && rows) {
-        const csrfResp = await fetch("/csrf-token");
-        const { csrfToken } = await csrfResp.json();
-        let json: JSON;
 
-        try {
-          const data = new FormData();
-          for (let i = 0; i < files.length; i++) {
-            data.append("files", files[i]); 
-          }
-
-          // console.log(data.getAll("files"));
-          data.set("filesData", JSON.stringify(rows));
-          const fetchArgs = {
-            method: "POST",
-            headers: {},
-            body: data,
+        const fetchArgs = {
+          method: "POST",
+          headers: {},
+          body: data,
+        };
+        if (csrfToken)
+          fetchArgs.headers = {
+            "X-CSRF-Token": csrfToken,
           };
-          if (csrfToken)
-            fetchArgs.headers = {
-              "X-CSRF-Token": csrfToken,
-            };
-          const res = await fetch("/api/decode/science", fetchArgs);
-          if (!res.ok) throw new Error(await res.text());
-          const returndata = await res.json();
-          json = returndata.data;
-          console.log(json);
-          const valid = await jsonValidator(
-            json,
-            DataJSONSchema as JSONSchemaType<any>
-          );
+        const res =
+          alignment == "health"
+            ? await fetch("/api/decode/health", fetchArgs)
+            : await fetch("/api/decode/science", fetchArgs);
+        if (!res.ok) throw new Error(await res.text());
+        const returndata = await res.json();
+        json = returndata.data;
+        console.log(json);
+        const valid = await jsonValidator(
+          json,
+          DataJSONSchema as JSONSchemaType<any>
+        );
 
-          if (valid) {
-            setData(json as unknown as DataJSON);
-            setSuccess(true);
-            setOpen(true);
-          } else {
-            setSuccess(false);
-            setOpen(true);
-          }
-        } catch (e: any) {
-          console.error(e);
+        if (valid) {
+          setData(json as unknown as DataJSON);
+          setSuccess(true);
+          setOpen(true);
+        } else {
+          setSuccess(false);
+          setOpen(true);
         }
+      } catch (e: any) {
+        console.error(e);
       }
     }
   };
@@ -357,7 +323,7 @@ export default function QuickLook() {
                   type="file"
                   onChange={handleFileChange}
                   accept="application/gzip"
-                  multiple={alignment == "science"}
+                  multiple
                 />
               </Button>
               <Table
@@ -418,7 +384,7 @@ export default function QuickLook() {
                 Back
               </Button>
               <Box sx={{ flex: "1 1 auto" }} />
-              <Button onClick={handleNext} disabled={files == null}>
+              <Button onClick={handleNext} disabled={files == undefined}>
                 {activeStep === steps.length - 1 ? "Finish" : "Next"}
               </Button>
             </Box>

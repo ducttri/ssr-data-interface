@@ -17,7 +17,7 @@ interface hafxFieldName {
   dead_time: "Dead Time";
   anode_current: "Anode Current";
   histogram: "Histogram";
-  timestamp: "timestamp";
+  timestamp: "Timestamp";
   buffer_number: "Buffer Number";
   missed_pps: "Missed PPS";
   datatype: "Data Type";
@@ -30,7 +30,7 @@ const typeName: hafxFieldName = {
   dead_time: "Dead Time",
   anode_current: "Anode Current",
   histogram: "Histogram",
-  timestamp: "timestamp",
+  timestamp: "Timestamp",
   buffer_number: "Buffer Number",
   missed_pps: "Missed PPS",
   datatype: "Data Type",
@@ -172,19 +172,6 @@ function combine_json(HAFXJson: HAFXScienceDecodedJSON[]) {
         combined[typedKey].value = combined[typedKey].value.concat(
           item[typedKey].value
         );
-        // } else {
-        //   console.log(
-        //     `${item[typedKey].value.length} * ${item[typedKey].value[0].length}`
-        //   );
-
-        //   let tempArr = Array(item[typedKey].value[0].length).fill(0);
-        //   for (let i = 0; i < item[typedKey].value[0].length; i++) {
-        //     for (let j = 0; j < item[typedKey].value.length; j++) {
-        //       tempArr[i] += item[typedKey].value[j][i];
-        //     }
-        //   }
-        //   combined[typedKey].value.push(tempArr);
-        // }
       }
     }
   }
@@ -244,7 +231,7 @@ function removeDuplicateTimestamps(data: { raw_data: any[] }): {
   const seenTimestamps = new Set<string>();
 
   const filteredRawData = data.raw_data.filter((item) => {
-    if (item.field === "timestamp") {
+    if (item.field === "Timestamp") {
       const serializedTimestamp = JSON.stringify(item.value);
 
       if (seenTimestamps.has(serializedTimestamp)) {
@@ -263,7 +250,7 @@ function removeDuplicateTimestamps(data: { raw_data: any[] }): {
 
 function areTimestampsEqual(data: { raw_data: any[] }): boolean {
   const timestampArrays = data.raw_data
-    .filter((item) => item.field === "timestamp")
+    .filter((item) => item.field === "Timestamp")
     .map((item) => item.value);
 
   if (timestampArrays.length <= 1) return true;

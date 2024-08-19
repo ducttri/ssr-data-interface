@@ -22,10 +22,10 @@ import { useState } from "react";
 import { timeStamp } from "console";
 
 export const GraphsWrapper = ({ data }: { data: DataJSON }) => {
-  const [xAxis, setXAxis] = useState<string[]>(["Time stamp", "general"]);
-  const [yAxis, setYAxis] = useState<string[]>(["Time stamp", "general"]);
+  const [xAxis, setXAxis] = useState<string[]>(["Timestamp", "general"]);
+  const [yAxis, setYAxis] = useState<string[]>(["Timestamp", "general"]);
   const timestamp: number[] =
-    data.raw_data.find((field) => field.field == "Time stamp")?.value || [];
+    data.raw_data.find((field) => field.field == "Timestamp")?.value || [];
 
   const handleXAxisChange = (event: SelectChangeEvent) => {
     setXAxis(event.target.value.split("_"));
@@ -268,17 +268,31 @@ export const GraphsWrapper = ({ data }: { data: DataJSON }) => {
           <LineGraph
             xData={
               xAxis[0] == "Timestamp"
-                ? data.raw_data.find(
-                    (field) => field.field == xAxis[0] && field.type == xAxis[1]
-                  )?.value || []
+                ? data.raw_data
+                    .find(
+                      (field) =>
+                        field.field == "Timestamp" && field.type == "general"
+                    )
+                    ?.value.map((timestamp: number) => {
+                      return new Date(timestamp).toISOString();
+                    }) || []
                 : data.raw_data.find(
                     (field) => field.field == xAxis[0] && field.type == xAxis[1]
                   )?.value || []
             }
             yData={
-              data.raw_data.find(
-                (field) => field.field == yAxis[0] && field.type == yAxis[1]
-              )?.value || []
+              yAxis[0] == "Timestamp"
+                ? data.raw_data
+                    .find(
+                      (field) =>
+                        field.field == "Timestamp" && field.type == "general"
+                    )
+                    ?.value.map((timestamp: number) => {
+                      return new Date(timestamp).toISOString();
+                    }) || []
+                : data.raw_data.find(
+                    (field) => field.field == yAxis[0] && field.type == yAxis[1]
+                  )?.value || []
             }
             xLabel={`${
               data.raw_data.find(

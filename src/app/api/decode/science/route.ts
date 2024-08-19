@@ -14,9 +14,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    files.sort((a, b) => a.name.localeCompare(b.name));
     const jsonData = await decode_science(files);
-
-    console.log(jsonData);
 
     return NextResponse.json({
       success: true,

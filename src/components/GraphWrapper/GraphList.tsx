@@ -25,7 +25,7 @@ export default function GraphList({ data }: { data: DataJSON }) {
 
   const utcDates: string[] =
     data.raw_data
-      .find((field) => field.field == "timestamp" && field.type == "general")
+      .find((field) => field.field == "Timestamp" && field.type == "general")
       ?.value.map((timestamp: number) => {
         return new Date(timestamp).toISOString();
       }) || [];

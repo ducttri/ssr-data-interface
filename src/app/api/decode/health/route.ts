@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   const data = await request.formData();
-  const file: File | null = data.get("file") as unknown as File;
+  const files: File[] = data.getAll("files") as File[];
 
-  if (!file) {
+  if (!files) {
     return NextResponse.json({
       success: false,
       status: 400,
@@ -14,10 +14,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const arrayBuffer = await file.arrayBuffer();
-    const fileBuffer = Buffer.from(arrayBuffer);
-    const compressedData = await decode_health(fileBuffer);
-    const jsonData = JSON.parse(compressedData.toString());
+    files.sort((a, b) => a.name.localeCompare(b.name));
+    const jsonData = await decode_health(files);
 
     return NextResponse.json({
       success: true,
