@@ -120,7 +120,9 @@ export async function decode_science(files: File[]) {
     }
   }
 
-  return finalJson;
+
+
+  return sortDataJSON(finalJson as unknown as DataJSON, "Timestamp");
 }
 
 function python_decoder(file: Buffer, fileName: string): Promise<Buffer> {
@@ -264,4 +266,31 @@ function areTimestampsEqual(data: { raw_data: any[] }): boolean {
   }
 
   return true;
+}
+
+function sortDataJSON(data: DataJSON, fieldName: string) {
+  const pivotField = data.raw_data.find((field) => field.field === fieldName);
+
+  if (!pivotField) {
+    error(`Pivot ${fieldName} is not found.`);
+    return;
+  }
+
+  if (pivotField.value.length === 0) {
+    error(`Pivot ${fieldName} is empty.`);
+  }
+
+  const sortedData = pivotField.value
+    .map((pivotValue, index) => ({
+      index,
+      pivotValue,
+    }))
+    .sort((a, b) => a.pivotValue - b.pivotValue)
+    .map((pair) => pair.index);
+
+  data.raw_data.forEach((field) => {
+    field.value = sortedData.map((index) => field.value[index]);
+  });
+
+  return data;
 }
