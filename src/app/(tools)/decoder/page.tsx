@@ -54,18 +54,22 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-function identifyFile(name: string): detector {
-  if (name.includes("x123")) {
-    return "x123";
-  } else if (name.includes("c1")) {
-    return "c1";
-  } else if (name.includes("m1")) {
-    return "m1";
-  } else if (name.includes("m5")) {
-    return "m5";
-  } else if (name.includes("x1")) {
-    return "x1";
-  } else return "empty";
+function nameValidity(name: string): boolean {
+  const conditions = [
+    name.includes("x123"),
+    name.includes("c1"),
+    name.includes("m1"),
+    name.includes("m5"),
+    name.includes("x1"),
+  ];
+
+  const trueCount = conditions.filter((condition) => condition).length;
+
+  if (trueCount === 1) {
+    return true;
+  }
+
+  return false;
 }
 
 type detector = "health" | "c1" | "m1" | "m5" | "x1" | "x123" | "empty";
@@ -74,7 +78,6 @@ interface FileData {
   name: string;
   size: number;
   lastmodified: number;
-  type: detector;
   valid: boolean;
 }
 
@@ -83,15 +86,9 @@ function createFileData(
   size: number,
   lastmodified: number,
   isHealth: boolean,
-  valid: boolean
 ): FileData {
-  if (isHealth) {
-    const type: detector = "health";
-    return { name, size, lastmodified, type, valid };
-  } else {
-    const type = identifyFile(name);
-    return { name, size, lastmodified, type, valid };
-  }
+  const valid = nameValidity(name) || isHealth;
+  return { name, size, lastmodified, valid };
 }
 
 export default function QuickLook() {
@@ -171,22 +168,18 @@ export default function QuickLook() {
             file.name,
             file.size,
             file.lastModified,
-            alignment == "health",
-            true
+            alignment == "health"
           )
         );
       }
-      if (alignment == "health") {
-        setRows(rows);
-      } else {
-        setRows((prevrows) => {
-          if (prevrows) {
-            return prevrows.concat(rows);
-          } else {
-            return rows;
-          }
-        });
-      }
+
+      setRows((prevrows) => {
+        if (prevrows) {
+          return prevrows.concat(rows);
+        } else {
+          return rows;
+        }
+      });
     }
   };
 
@@ -377,7 +370,7 @@ export default function QuickLook() {
                 Back
               </Button>
               <Box sx={{ flex: "1 1 auto" }} />
-              <Button onClick={handleNext} disabled={files == undefined}>
+              <Button onClick={handleNext} disabled={files.length == 0}>
                 {activeStep === steps.length - 1 ? "Finish" : "Next"}
               </Button>
             </Box>
@@ -410,15 +403,9 @@ export default function QuickLook() {
                         </TableCell>
                         <TableCell align="right">
                           {row.valid == true ? (
-                            <Chip
-                              label="Valid"
-                              color="success"
-                            />
+                            <Chip label="Valid" color="success" />
                           ) : (
-                            <Chip
-                              label="Invalid"
-                              color="error"
-                            />
+                            <Chip label="Invalid" color="error" />
                           )}
                         </TableCell>
                       </TableRow>
@@ -437,6 +424,7 @@ export default function QuickLook() {
                   handleNext();
                   handleGenerate();
                 }}
+                disabled={rows && !(rows.every((row) => row.valid == true))}
               >
                 {activeStep === steps.length - 1 ? "Decode" : "Next"}
               </Button>
