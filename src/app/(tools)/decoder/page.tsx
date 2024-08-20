@@ -75,20 +75,22 @@ interface FileData {
   size: number;
   lastmodified: number;
   type: detector;
+  valid: boolean;
 }
 
 function createFileData(
   name: string,
   size: number,
   lastmodified: number,
-  isHealth: boolean
+  isHealth: boolean,
+  valid: boolean
 ): FileData {
   if (isHealth) {
     const type: detector = "health";
-    return { name, size, lastmodified, type };
+    return { name, size, lastmodified, type, valid };
   } else {
     const type = identifyFile(name);
-    return { name, size, lastmodified, type };
+    return { name, size, lastmodified, type, valid };
   }
 }
 
@@ -149,16 +151,6 @@ export default function QuickLook() {
     });
   };
 
-  const handleTypeChange = (index: number, event: SelectChangeEvent) => {
-    setRows((prevRows) => {
-      if (prevRows) {
-        const newRows = prevRows.slice();
-        newRows[index].type = event.target.value as detector;
-        return newRows;
-      }
-    });
-  };
-
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -167,7 +159,7 @@ export default function QuickLook() {
         const newFiles = Array.from(event.target.files);
         return oldFiles.concat(newFiles);
       } else {
-        return oldFiles
+        return oldFiles;
       }
     });
     if (event.target.files != null) {
@@ -179,7 +171,8 @@ export default function QuickLook() {
             file.name,
             file.size,
             file.lastModified,
-            alignment == "health"
+            alignment == "health",
+            true
           )
         );
       }
@@ -255,7 +248,7 @@ export default function QuickLook() {
       </Typography>
       <Box sx={{ p: 2 }}>
         <Stepper activeStep={activeStep}>
-          {steps.map((label, index) => {
+          {steps.map((label) => {
             const stepProps: { completed?: boolean } = {};
             return (
               <Step key={label} {...stepProps}>
@@ -400,12 +393,12 @@ export default function QuickLook() {
                 <TableHead>
                   <TableRow>
                     <TableCell>Name</TableCell>
-                    <TableCell align="right">Type</TableCell>
+                    <TableCell align="right">Valid File Name</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {rows &&
-                    rows.map((row, index) => (
+                    rows.map((row) => (
                       <TableRow
                         key={row.name}
                         sx={{
@@ -416,36 +409,16 @@ export default function QuickLook() {
                           {row.name}
                         </TableCell>
                         <TableCell align="right">
-                          {row.type == "health" ? (
-                            <FormControl
-                              sx={{ m: 1, minWidth: 120 }}
-                              disabled
-                              size="small"
-                            >
-                              <Select value={row.type}>
-                                <MenuItem disabled value="health">
-                                  Health
-                                </MenuItem>
-                              </Select>
-                            </FormControl>
+                          {row.valid == true ? (
+                            <Chip
+                              label="Valid"
+                              color="success"
+                            />
                           ) : (
-                            <FormControl sx={{ minWidth: 120 }} size="small">
-                              <Select
-                                value={row.type}
-                                onChange={(event: SelectChangeEvent) => {
-                                  handleTypeChange(index, event);
-                                }}
-                              >
-                                <MenuItem disabled value="empty">
-                                  <em>None</em>
-                                </MenuItem>
-                                <MenuItem value={"c1"}>C1</MenuItem>
-                                <MenuItem value={"m1"}>M1</MenuItem>
-                                <MenuItem value={"m5"}>M5</MenuItem>
-                                <MenuItem value={"x1"}>X1</MenuItem>
-                                <MenuItem value={"x123"}>X123</MenuItem>
-                              </Select>
-                            </FormControl>
+                            <Chip
+                              label="Invalid"
+                              color="error"
+                            />
                           )}
                         </TableCell>
                       </TableRow>

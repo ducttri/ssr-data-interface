@@ -1,6 +1,7 @@
 import * as path from "path";
 import { exec } from "child_process";
 import { DataJSON, ProcessedDataJSON, RawDataJSON } from "@/types/types";
+import { error } from "console";
 
 export async function decode_health(files: File[]) {
   const promises = files.map(async (file) => {
@@ -10,7 +11,9 @@ export async function decode_health(files: File[]) {
     return JSON.parse(compressedData.toString());
   });
 
-  const decodedJson = combineDataJSON(await Promise.all(promises));
+  const decodedJson = sortDataJSON(
+    combineDataJSON(await Promise.all(promises)), "Timestamp"
+  );
 
   return decodedJson;
 }
@@ -69,4 +72,31 @@ function combineDataJSON(dataArray: DataJSON[]) {
   });
 
   return combinedData;
+}
+
+function sortDataJSON(data: DataJSON, fieldName: string) {
+  const pivotField = data.raw_data.find((field) => field.field === fieldName);
+
+  if (!pivotField) {
+    error(`Pivot ${fieldName} is not found.`);
+    return;
+  }
+
+  if (pivotField.value.length === 0) {
+    error(`Pivot ${fieldName} is empty.`);
+  }
+
+  const sortedData = pivotField.value
+    .map((pivotValue, index) => ({
+      index,
+      pivotValue,
+    }))
+    .sort((a, b) => a.pivotValue - b.pivotValue)
+    .map((pair) => pair.index);
+
+  data.raw_data.forEach((field) => {
+    field.value = sortedData.map((index) => field.value[index]);
+  });
+
+  return data;
 }
