@@ -1,7 +1,7 @@
 import React from "react";
-import { HealthJSON } from "@/types/types";
+import { DataJSON } from "@/types/types";
 import { LineGraph } from "../Graph/LineGraph";
-import GraphList from "@/components/HealthGraph/GraphsList";
+import GraphList from "./GraphList";
 import {
   Box,
   Divider,
@@ -21,11 +21,11 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { useState } from "react";
 import { timeStamp } from "console";
 
-export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
-  const [xAxis, setXAxis] = useState<string[]>(["Time stamp", "general"]);
-  const [yAxis, setYAxis] = useState<string[]>(["Time stamp", "general"]);
+export const GraphsWrapper = ({ data }: { data: DataJSON }) => {
+  const [xAxis, setXAxis] = useState<string[]>(["Timestamp", "general"]);
+  const [yAxis, setYAxis] = useState<string[]>(["Timestamp", "general"]);
   const timestamp: number[] =
-    data.raw_data.find((field) => field.field == "Time stamp")?.value || [];
+    data.raw_data.find((field) => field.field == "Timestamp")?.value || [];
 
   const handleXAxisChange = (event: SelectChangeEvent) => {
     setXAxis(event.target.value.split("_"));
@@ -37,40 +37,6 @@ export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
 
   return (
     <Box flex={"true"} sx={{ p: 2 }}>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 2 }}
-        columns={{ xs: 1, sm: 2, md: 4 }}
-        flex="true"
-      >
-        <Grid item xs={1}>
-          <Typography gutterBottom variant="body1" component="div">
-            <b>UID: </b> {data._id ? data._id : "Not on the database"}
-          </Typography>
-        </Grid>
-        <Grid item xs={1}>
-          <Typography gutterBottom variant="body1" component="div">
-            <b>Begin Time: </b>
-            {new Date(data.processed_data.start_time * 1000).toUTCString()}
-          </Typography>
-        </Grid>
-        <Grid item xs={1}>
-          <Typography gutterBottom variant="body1" component="div">
-            <b>End Time: </b>{" "}
-            {new Date(timestamp[timestamp.length - 1] * 1000).toUTCString()}
-          </Typography>
-        </Grid>
-        <Grid item xs={1}>
-          <Typography gutterBottom variant="body1" component="div">
-            <b>Duration</b>:{" "}
-            {timestamp[timestamp.length - 1] -
-              data.processed_data.start_time +
-              1}{" "}
-            s
-          </Typography>
-        </Grid>
-      </Grid>
-
       <Accordion defaultExpanded>
         <AccordionSummary id="panel1-header">
           <Typography>Overview</Typography>
@@ -302,17 +268,31 @@ export const GraphsWrapper = ({ data }: { data: HealthJSON }) => {
           <LineGraph
             xData={
               xAxis[0] == "Timestamp"
-                ? data.raw_data.find(
-                    (field) => field.field == xAxis[0] && field.type == xAxis[1]
-                  )?.value || []
+                ? data.raw_data
+                    .find(
+                      (field) =>
+                        field.field == "Timestamp" && field.type == "general"
+                    )
+                    ?.value.map((timestamp: number) => {
+                      return new Date(timestamp).toISOString();
+                    }) || []
                 : data.raw_data.find(
                     (field) => field.field == xAxis[0] && field.type == xAxis[1]
                   )?.value || []
             }
             yData={
-              data.raw_data.find(
-                (field) => field.field == yAxis[0] && field.type == yAxis[1]
-              )?.value || []
+              yAxis[0] == "Timestamp"
+                ? data.raw_data
+                    .find(
+                      (field) =>
+                        field.field == "Timestamp" && field.type == "general"
+                    )
+                    ?.value.map((timestamp: number) => {
+                      return new Date(timestamp).toISOString();
+                    }) || []
+                : data.raw_data.find(
+                    (field) => field.field == yAxis[0] && field.type == yAxis[1]
+                  )?.value || []
             }
             xLabel={`${
               data.raw_data.find(

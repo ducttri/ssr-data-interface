@@ -22,15 +22,15 @@ export default function Simulate() {
   const [healthOutFile, setHealthOutFile] = useState<string>("output");
 
   const [hafxNumFiles, setHafxNumFiles] = useState<number>(5);
-  const [hafxSecFiles, setHafxSecFiles] = useState<number>(10);
+  const [hafxSecFiles, setHafxSecFiles] = useState<number>(30);
   const [hafxOutFiles, setHafxOutFiles] = useState<string>("output");
 
   const [x123NumFiles, setX123NumFiles] = useState<number>(5);
-  const [x123SecFiles, setX123SecFiles] = useState<number>(10);
+  const [x123SecFiles, setX123SecFiles] = useState<number>(30);
   const [x123OutFiles, setX123OutFiles] = useState<string>("output");
 
   const [scienceNumFiles, setScienceNumFiles] = useState<number>(5);
-  const [scienceSecFiles, setScienceSecFiles] = useState<number>(10);
+  const [scienceSecFiles, setScienceSecFiles] = useState<number>(30);
   const [scienceOutFiles, setScienceOutFiles] = useState<string>("output");
 
   const [openError, setOpenError] = useState(false);

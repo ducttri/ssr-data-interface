@@ -1,4 +1,3 @@
-import { HealthJSONData } from "@/types/types";
 import archiver from "archiver";
 import { MongoClient, ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,13 +10,6 @@ export async function GET(req: NextRequest) {
   const selectedData = JSON.parse(
     req.nextUrl.searchParams.get("selectedData") || "[]"
   );
-  const uri: string = process.env.MONGODB_URI as string;
-  const client = new MongoClient(uri);
-  const dbName = process.env.MONGODB_DATABASE as string;
-  const dbCollection = process.env.MONGODB_HEALTH as string;
-  const database = client.db(dbName);
-  const datacollection = database.collection(dbCollection);
-  let datas: HealthJSONData[] = [];
 
   try {
     const archive = archiver("zip", { zlib: { level: 9 } });
@@ -25,7 +17,6 @@ export async function GET(req: NextRequest) {
 
     archive.pipe(writableStreamBuffer);
     selectedData.map((id: string) => {
-      //   const jsonString = JSON.stringify(jsonObject, null, 2);
       const filePath = process.env.WORKINGDIR + `/database/health/${id}.bin.gz`;
       if (fs.existsSync(filePath)) {
         archive.append(fs.createReadStream(filePath), {

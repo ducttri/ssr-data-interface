@@ -34,13 +34,12 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import GraphList from "@/components/HealthGraph/GraphsList";
-import { GraphsWrapper } from "@/components/HealthGraph/GraphsWrapper";
-import { HealthJSON, HealthJSONData } from "@/types/types";
+import { GraphsWrapper } from "@/components/GraphWrapper/GraphsWrapper";
+import { DataJSON, HealthJSON } from "@/types/types";
 import { jsonValidator } from "@/utils/helpers/jsonValidator";
 import { IconUpload, IconTrash, IconPlus } from "@tabler/icons-react";
 import PageContainer from "@/components/Container/PageContainer";
-import { HealthJSONDataSchema, HealthJSONSchema } from "@/types/jsonSchema";
+import { DataJSONSchema } from "@/types/jsonSchema";
 import { JSONSchemaType } from "ajv";
 
 const VisuallyHiddenInput = styled("input")({
@@ -55,27 +54,27 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-function identifyFile(name: string): detector {
-  if (name.includes("x123")) {
-    return "x123";
-  } else if (name.includes("c1")) {
-    return "c1";
-  } else if (name.includes("m1")) {
-    return "m1";
-  } else if (name.includes("m5")) {
-    return "m5";
-  } else if (name.includes("x1")) {
-    return "x1";
-  } else return "empty";
-}
+function nameValidity(name: string): boolean {
+  const nameArgs = name.split("_");
 
-type detector = "health" | "c1" | "m1" | "m5" | "x1" | "x123" | "empty";
+  if (
+    nameArgs[0].includes("x123") ||
+    nameArgs[0].includes("c1") ||
+    nameArgs[0].includes("m1") ||
+    nameArgs[0].includes("m5") ||
+    nameArgs[0].includes("x1")
+  ) {
+    return true;
+  }
+
+  return false; 
+}
 
 interface FileData {
   name: string;
   size: number;
   lastmodified: number;
-  type: detector;
+  valid: boolean;
 }
 
 function createFileData(
@@ -84,23 +83,18 @@ function createFileData(
   lastmodified: number,
   isHealth: boolean
 ): FileData {
-  if (isHealth) {
-    const type: detector = "health";
-    return { name, size, lastmodified, type };
-  } else {
-    const type = identifyFile(name);
-    return { name, size, lastmodified, type };
-  }
+  const valid = nameValidity(name) || isHealth;
+  return { name, size, lastmodified, valid };
 }
 
 export default function QuickLook() {
-  const [data, setData] = useState<HealthJSON | null>(null);
+  const [data, setData] = useState<DataJSON | null>(null);
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
   const steps = ["Select Data Type", "Upload Files", "Label Files"];
   const [alignment, setAlignment] = useState("health");
-  const [files, setFiles] = useState<FileList | null>();
+  const [files, setFiles] = useState<File[]>([]);
   const [rows, setRows] = useState<FileData[]>();
 
   const handleDecoderTypeChange = (
@@ -109,7 +103,7 @@ export default function QuickLook() {
   ) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
-      setFiles(null);
+      setFiles([]);
       setRows([]);
     }
   };
@@ -124,7 +118,7 @@ export default function QuickLook() {
 
   const handleReset = () => {
     setActiveStep(0);
-    setFiles(null);
+    setFiles([]);
     setRows([]);
     setData(null);
   };
@@ -150,20 +144,17 @@ export default function QuickLook() {
     });
   };
 
-  const handleTypeChange = (index: number, event: SelectChangeEvent) => {
-    setRows((prevRows) => {
-      if (prevRows) {
-        const newRows = prevRows.slice();
-        newRows[index].type = event.target.value as detector;
-        return newRows;
-      }
-    });
-  };
-
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setFiles(event.target.files);
+    setFiles((oldFiles) => {
+      if (event.target.files) {
+        const newFiles = Array.from(event.target.files);
+        return oldFiles.concat(newFiles);
+      } else {
+        return oldFiles;
+      }
+    });
     if (event.target.files != null) {
       let rows: FileData[] = [];
       for (let i = 0; i < event.target.files.length; i++) {
@@ -177,30 +168,29 @@ export default function QuickLook() {
           )
         );
       }
-      if (alignment == "health") {
-        setRows(rows);
-      } else {
-        setRows((prevrows) => {
-          if (prevrows) {
-            return prevrows.concat(rows);
-          } else {
-            return rows;
-          }
-        });
-      }
+
+      setRows((prevrows) => {
+        if (prevrows) {
+          return prevrows.concat(rows);
+        } else {
+          return rows;
+        }
+      });
     }
   };
 
   const handleGenerate = async () => {
-    if (files && files.length > 0) {
-      const file = files[0];
+    if (files && files.length > 0 && rows) {
       const csrfResp = await fetch("/csrf-token");
       const { csrfToken } = await csrfResp.json();
       let json: JSON;
 
       try {
         const data = new FormData();
-        data.set("file", file);
+        for (let i = 0; i < files.length; i++) {
+          data.append("files", files[i]);
+        }
+
         const fetchArgs = {
           method: "POST",
           headers: {},
@@ -210,17 +200,21 @@ export default function QuickLook() {
           fetchArgs.headers = {
             "X-CSRF-Token": csrfToken,
           };
-        const res = await fetch("/api/decode/health", fetchArgs);
+        const res =
+          alignment == "health"
+            ? await fetch("/api/decode/health", fetchArgs)
+            : await fetch("/api/decode/science", fetchArgs);
         if (!res.ok) throw new Error(await res.text());
         const returndata = await res.json();
         json = returndata.data;
+        console.log(json);
         const valid = await jsonValidator(
           json,
-          HealthJSONSchema as JSONSchemaType<any>
+          DataJSONSchema as JSONSchemaType<any>
         );
 
         if (valid) {
-          setData(json as unknown as HealthJSON);
+          setData(json as unknown as DataJSON);
           setSuccess(true);
           setOpen(true);
         } else {
@@ -243,7 +237,7 @@ export default function QuickLook() {
       </Typography>
       <Box sx={{ p: 2 }}>
         <Stepper activeStep={activeStep}>
-          {steps.map((label, index) => {
+          {steps.map((label) => {
             const stepProps: { completed?: boolean } = {};
             return (
               <Step key={label} {...stepProps}>
@@ -256,10 +250,10 @@ export default function QuickLook() {
         {activeStep === steps.length ? (
           <React.Fragment>
             <Typography sx={{ mt: 2, mb: 1 }}>
-              {alignment == "health" && data ? (
+              {data ? (
                 <GraphsWrapper data={data}></GraphsWrapper>
               ) : (
-                <Skeleton variant="rectangular" width='100%' height={600} />
+                <Skeleton variant="rectangular" width="100%" height={600} />
               )}
             </Typography>
             <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
@@ -311,7 +305,7 @@ export default function QuickLook() {
                   type="file"
                   onChange={handleFileChange}
                   accept="application/gzip"
-                  multiple={alignment == "science"}
+                  multiple
                 />
               </Button>
               <Table
@@ -372,7 +366,7 @@ export default function QuickLook() {
                 Back
               </Button>
               <Box sx={{ flex: "1 1 auto" }} />
-              <Button onClick={handleNext} disabled={files == null}>
+              <Button onClick={handleNext} disabled={files.length == 0}>
                 {activeStep === steps.length - 1 ? "Finish" : "Next"}
               </Button>
             </Box>
@@ -388,12 +382,12 @@ export default function QuickLook() {
                 <TableHead>
                   <TableRow>
                     <TableCell>Name</TableCell>
-                    <TableCell align="right">Type</TableCell>
+                    <TableCell align="right">Valid File Name</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {rows &&
-                    rows.map((row, index) => (
+                    rows.map((row) => (
                       <TableRow
                         key={row.name}
                         sx={{
@@ -404,36 +398,10 @@ export default function QuickLook() {
                           {row.name}
                         </TableCell>
                         <TableCell align="right">
-                          {row.type == "health" ? (
-                            <FormControl
-                              sx={{ m: 1, minWidth: 120 }}
-                              disabled
-                              size="small"
-                            >
-                              <Select value={row.type}>
-                                <MenuItem disabled value="health">
-                                  Health
-                                </MenuItem>
-                              </Select>
-                            </FormControl>
+                          {row.valid == true ? (
+                            <Chip label="Valid" color="success" />
                           ) : (
-                            <FormControl sx={{ minWidth: 120 }} size="small">
-                              <Select
-                                value={row.type}
-                                onChange={(event: SelectChangeEvent) => {
-                                  handleTypeChange(index, event);
-                                }}
-                              >
-                                <MenuItem disabled value="empty">
-                                  <em>None</em>
-                                </MenuItem>
-                                <MenuItem value={"c1"}>C1</MenuItem>
-                                <MenuItem value={"m1"}>M1</MenuItem>
-                                <MenuItem value={"m5"}>M5</MenuItem>
-                                <MenuItem value={"x1"}>X1</MenuItem>
-                                <MenuItem value={"x123"}>X123</MenuItem>
-                              </Select>
-                            </FormControl>
+                            <Chip label="Invalid" color="error" />
                           )}
                         </TableCell>
                       </TableRow>
@@ -452,6 +420,7 @@ export default function QuickLook() {
                   handleNext();
                   handleGenerate();
                 }}
+                disabled={rows && !rows.every((row) => row.valid == true)}
               >
                 {activeStep === steps.length - 1 ? "Decode" : "Next"}
               </Button>

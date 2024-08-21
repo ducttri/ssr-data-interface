@@ -1,4 +1,4 @@
-import { decode_health } from "@/utils/helpers/healthDecoder";
+import { decode_science } from "@/utils/helpers/scienceHAFXDecoder";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -14,8 +14,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // files.sort((a, b) => a.name.localeCompare(b.name));
-    const jsonData = await decode_health(files);
+    files.sort((a, b) => a.name.localeCompare(b.name));
+    const jsonData = await decode_science(files);
 
     return NextResponse.json({
       success: true,
@@ -33,3 +33,4 @@ export async function POST(request: NextRequest) {
     });
   }
 }
+``;

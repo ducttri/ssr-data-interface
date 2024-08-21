@@ -3,6 +3,7 @@ import { simulate_science_hafx } from "@/utils/helpers/scienceHAFXSimulate";
 import { WritableStreamBuffer } from "stream-buffers";
 import archiver from "archiver";
 import { simulate_science_x123 } from "@/utils/helpers/scienceX123Simulate";
+import { formatDate } from "@/utils/helpers/formatDate";
 
 export async function GET(req: NextRequest) {
   const numPackets = Number(req.nextUrl.searchParams.get("numPackets") || "0");
@@ -20,6 +21,8 @@ export async function GET(req: NextRequest) {
     archive.pipe(writableStreamBuffer);
 
     for (let i = 0; i <= numPackets; i++) {
+      const date: Date = new Date(time * 1000);
+      const formattedDate: string = formatDate(date);
       if (detector == "x123") {
         const stdout = await simulate_science_x123(
           outputFilename,
@@ -27,7 +30,9 @@ export async function GET(req: NextRequest) {
           secondsPerFile,
           time + secondsPerFile * i
         );
-        archive.append(stdout, { name: `sim-x123-hist_${time}_0.bin.gz` });
+        archive.append(stdout, {
+          name: `sim-x123-hist_${formattedDate}_0.bin.gz`,
+        });
       } else if (detector == "hafx") {
         const stdout = await simulate_science_hafx(
           outputFilename,
@@ -36,7 +41,9 @@ export async function GET(req: NextRequest) {
           time + secondsPerFile * i,
           "c1"
         );
-        archive.append(stdout, { name: `sim-hafx-c1-hist_${time}_0.bin.gz` });
+        archive.append(stdout, {
+          name: `sim-hafx-c1-hist_${formattedDate}_0.bin.gz`,
+        });
       } else {
         let stdout = await simulate_science_hafx(
           outputFilename,
@@ -46,7 +53,7 @@ export async function GET(req: NextRequest) {
           "c1"
         );
         archive.append(stdout, {
-          name: `sim-hafx-c1-hist_${time}_0.bin.gz`,
+          name: `sim-hafx-c1-hist_${formattedDate}_0.bin.gz`,
         });
 
         stdout = await simulate_science_hafx(
@@ -57,7 +64,7 @@ export async function GET(req: NextRequest) {
           "m1"
         );
         archive.append(stdout, {
-          name: `sim-hafx-m1-hist_${time}_0.bin.gz`,
+          name: `sim-hafx-m1-hist_${formattedDate}_0.bin.gz`,
         });
 
         stdout = await simulate_science_hafx(
@@ -68,7 +75,7 @@ export async function GET(req: NextRequest) {
           "m5"
         );
         archive.append(stdout, {
-          name: `sim-hafx-m5-hist_${time}_0.bin.gz`,
+          name: `sim-hafx-m5-hist_${formattedDate}_0.bin.gz`,
         });
 
         stdout = await simulate_science_hafx(
@@ -79,7 +86,7 @@ export async function GET(req: NextRequest) {
           "x1"
         );
         archive.append(stdout, {
-          name: `sim-hafx-x1-hist_${time}_0.bin.gz`,
+          name: `sim-hafx-x1-hist_${formattedDate}_0.bin.gz`,
         });
 
         stdout = await simulate_science_x123(
@@ -88,7 +95,9 @@ export async function GET(req: NextRequest) {
           secondsPerFile,
           time + secondsPerFile * i
         );
-        archive.append(stdout, { name: `sim-x123-hist_${time}_0.bin.gz` });
+        archive.append(stdout, {
+          name: `sim-x123-hist_${formattedDate}_0.bin.gz`,
+        });
       }
       time += secondsPerFile * i;
     }

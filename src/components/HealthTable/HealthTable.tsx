@@ -14,7 +14,7 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
-import { FilterHealthData, HealthJSONData, RowHealthData } from "@/types/types";
+import { FilterHealthData, HealthJSON, RowHealthData } from "@/types/types";
 import { Button, CircularProgress, LinearProgress, Tab } from "@mui/material";
 import { TabContext, TabList } from "@mui/lab";
 import { useCallback, useEffect } from "react";
@@ -33,7 +33,7 @@ const fetcher = (url: string | URL | Request) =>
   fetch(url)
     .then((res) => res.json())
     .then((datas) =>
-      datas.data.map((data: HealthJSONData, index: number) => {
+      datas.data.map((data: HealthJSON, index: number) => {
         return createData(index, data);
       })
     );

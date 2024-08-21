@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { MongoClient } from "mongodb";
-import { HealthJSONData } from "@/types/types";
+import { HealthJSON } from "@/types/types";
 
 export async function GET() {
   const uri = process.env.MONGODB_URI as string;
@@ -13,7 +13,7 @@ export async function GET() {
     const datacollection = database.collection(dbCollection);
     const data = (await datacollection
       .find({}, { projection: { processed_data: 1 } })
-      .toArray()) as unknown as HealthJSONData[];
+      .toArray()) as unknown as HealthJSON[];
 
     if (data === undefined || data.length == 0) {
       return NextResponse.json({
