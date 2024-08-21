@@ -55,24 +55,20 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 function nameValidity(name: string): boolean {
-  const conditions = [
-    name.includes("x123"),
-    name.includes("c1"),
-    name.includes("m1"),
-    name.includes("m5"),
-    name.includes("x1"),
-  ];
+  const nameArgs = name.split("_");
 
-  const trueCount = conditions.filter((condition) => condition).length;
-
-  if (trueCount === 1) {
+  if (
+    nameArgs[0].includes("x123") ||
+    nameArgs[0].includes("c1") ||
+    nameArgs[0].includes("m1") ||
+    nameArgs[0].includes("m5") ||
+    nameArgs[0].includes("x1")
+  ) {
     return true;
   }
 
-  return false;
+  return false; 
 }
-
-type detector = "health" | "c1" | "m1" | "m5" | "x1" | "x123" | "empty";
 
 interface FileData {
   name: string;
@@ -85,7 +81,7 @@ function createFileData(
   name: string,
   size: number,
   lastmodified: number,
-  isHealth: boolean,
+  isHealth: boolean
 ): FileData {
   const valid = nameValidity(name) || isHealth;
   return { name, size, lastmodified, valid };
@@ -424,7 +420,7 @@ export default function QuickLook() {
                   handleNext();
                   handleGenerate();
                 }}
-                disabled={rows && !(rows.every((row) => row.valid == true))}
+                disabled={rows && !rows.every((row) => row.valid == true)}
               >
                 {activeStep === steps.length - 1 ? "Decode" : "Next"}
               </Button>
