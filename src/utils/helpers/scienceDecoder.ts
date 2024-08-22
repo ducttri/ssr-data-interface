@@ -83,7 +83,11 @@ export async function decode_science(files: File[]) {
     }
   });
 
-  let finalJson;
+  let finalJson: DataJSON = {
+    _id: "",
+    processed_data: [],
+    raw_data: [],
+  };
 
   for (const key in fileList) {
     if (Object.prototype.hasOwnProperty.call(fileList, key)) {
@@ -98,31 +102,48 @@ export async function decode_science(files: File[]) {
         });
 
         const decodedJson = decode(combine_json(await Promise.all(promises)));
-        if (finalJson == undefined) {
-          finalJson = decodedJson as DataJSON;
-        } else {
-          finalJson = combineDataJSON(
-            finalJson as DataJSON,
-            decodedJson as DataJSON
-          );
-        }
+        finalJson = combineDataJSON(finalJson, decodedJson);
       }
     }
   }
+  // if (finalJson != undefined) {
+  //   const data = removeDuplicateTimestamps(finalJson);
+  //   if (areTimestampsEqual(data)) {
+  //     return data;
+  //   } else {
+  //     error("Files timestamp are not consistent");
+  //     return undefined;
+  //   }
+  // }
 
-  if (finalJson != undefined) {
-    const data = removeDuplicateTimestamps(finalJson);
-    if (areTimestampsEqual(data)) {
-      return data;
-    } else {
-      error("Files timestamp are not consistent");
-      return undefined;
-    }
-  }
+  return sortDataJSON(finalJson, "Timestamp");
+}
 
+function hafx_python_decoder(file: Buffer, fileName: string): Promise<Buffer> {
+  return new Promise(async (resolve, reject) => {
+    const scriptPath = path.resolve(
+      __dirname,
+      `../../../../../../lib/umn-detector-code/python/umndet/tools/decode_science_hafx.py`
+    );
+    const pythonProcess = exec(
+      `python3 ${scriptPath} ${fileName}`,
+      { encoding: "buffer" },
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(`Error executing Python script: ${error}`);
+          return;
+        }
+        if (stderr.length > 0) {
+          reject(`Python script error: ${stderr.toString()}`);
+          return;
+        }
+        resolve(stdout);
+      }
+    );
 
-
-  return sortDataJSON(finalJson as unknown as DataJSON, "Timestamp");
+    pythonProcess.stdin?.write(file);
+    pythonProcess.stdin?.end();
+  });
 }
 
 function python_decoder(file: Buffer, fileName: string): Promise<Buffer> {
@@ -178,7 +199,6 @@ function combine_json(HAFXJson: HAFXScienceDecodedJSON[]) {
     }
   }
 
-  // combined.histogram.value.sort((a, b) => a - b);
   let output = combined.histogram.value[0].map((_: any, colIndex: number) =>
     combined.histogram.value.map((row) => row[colIndex])
   );
@@ -189,8 +209,11 @@ function combine_json(HAFXJson: HAFXScienceDecodedJSON[]) {
 }
 
 function decode(HAFXJson: HAFXScienceDecodedJSON) {
-  let rawdata: RawDataJSON[] = [];
-  let processed_data: ProcessedDataJSON[] = [];
+  let exportJSON: DataJSON = {
+    _id: "",
+    processed_data: [],
+    raw_data: [],
+  };
 
   for (const key in typeKey) {
     if (Object.prototype.hasOwnProperty.call(HAFXJson, key)) {
@@ -204,26 +227,18 @@ function decode(HAFXJson: HAFXScienceDecodedJSON) {
         data_type: typedKey == "histogram" ? "spectrogram" : "linear",
       };
 
-      rawdata.push(new_raw);
+      exportJSON.raw_data.push(new_raw);
     }
   }
 
-  const json = { raw_data: rawdata, processed_data: processed_data };
-
-  return json;
+  return exportJSON;
 }
 
 function combineDataJSON(data1: DataJSON, data2: DataJSON) {
-  const combinedProcessedData: ProcessedDataJSON[] = [
-    ...data1.processed_data,
-    ...data2.processed_data,
-  ];
-
-  const combinedRawData: RawDataJSON[] = [...data1.raw_data, ...data2.raw_data];
-
   return {
-    processed_data: combinedProcessedData,
-    raw_data: combinedRawData,
+    _id: "",
+    processed_data: [...data1.processed_data, ...data2.processed_data],
+    raw_data: [...data1.raw_data, ...data2.raw_data],
   };
 }
 

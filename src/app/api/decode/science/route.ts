@@ -1,4 +1,4 @@
-import { decode_science } from "@/utils/helpers/scienceHAFXDecoder";
+import { decode_science } from "@/utils/helpers/scienceDecoder";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
