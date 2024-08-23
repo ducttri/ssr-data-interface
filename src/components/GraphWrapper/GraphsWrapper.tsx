@@ -25,7 +25,7 @@ export const GraphsWrapper = ({ data }: { data: DataJSON }) => {
   const [xAxis, setXAxis] = useState<string[]>(["Timestamp", "general"]);
   const [yAxis, setYAxis] = useState<string[]>(["Timestamp", "general"]);
   const timestamp: number[] =
-    data.raw_data.find((field) => field.field == "Timestamp")?.value || [];
+    data.raw_data.find((field) => field.field == "Timestamp")?.value as number[] || [];
 
   const handleXAxisChange = (event: SelectChangeEvent) => {
     setXAxis(event.target.value.split("_"));
@@ -273,8 +273,10 @@ export const GraphsWrapper = ({ data }: { data: DataJSON }) => {
                       (field) =>
                         field.field == "Timestamp" && field.type == "general"
                     )
-                    ?.value.map((timestamp: number) => {
-                      return new Date(timestamp).toISOString();
+                    ?.value.map((timestamp) => {
+                      if (timestamp) {
+                        return new Date(timestamp as number).toISOString();
+                      }
                     }) || []
                 : data.raw_data.find(
                     (field) => field.field == xAxis[0] && field.type == xAxis[1]
@@ -287,8 +289,10 @@ export const GraphsWrapper = ({ data }: { data: DataJSON }) => {
                       (field) =>
                         field.field == "Timestamp" && field.type == "general"
                     )
-                    ?.value.map((timestamp: number) => {
-                      return new Date(timestamp).toISOString();
+                    ?.value.map((timestamp) => {
+                      if (timestamp) {
+                        return new Date(timestamp as number).toISOString();
+                      }
                     }) || []
                 : data.raw_data.find(
                     (field) => field.field == yAxis[0] && field.type == yAxis[1]

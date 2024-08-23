@@ -26,9 +26,13 @@ export default function GraphList({ data }: { data: DataJSON }) {
   const utcDates: string[] =
     data.raw_data
       .find((field) => field.field == "Timestamp" && field.type == "general")
-      ?.value.map((timestamp: number) => {
-        return new Date(timestamp).toISOString();
-      }) || [];
+      ?.value.map((timestamp) => {
+        if (timestamp) {
+          return new Date(timestamp as number).toISOString()
+        } else {
+          return "";
+        }
+      }) || [""] as string[];
 
   const handleDetectorChange = (
     event: React.SyntheticEvent,
@@ -90,7 +94,7 @@ export default function GraphList({ data }: { data: DataJSON }) {
                       </Paper>
                     </Grid>
                   );
-                } else {
+                } else if (item.data_type == "spectrogram") {
                   return (
                     <Grid item xs={1} key={`${detector}_${item.field}`}>
                       <Paper>

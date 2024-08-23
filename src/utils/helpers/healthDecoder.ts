@@ -12,7 +12,7 @@ export async function decode_health(files: File[]) {
   });
 
   const decodedJson = sortDataJSON(
-    combineDataJSON(await Promise.all(promises)), "Timestamp"
+    combineDataJSON(await Promise.all(promises))
   );
 
   return decodedJson;
@@ -74,29 +74,23 @@ function combineDataJSON(dataArray: DataJSON[]) {
   return combinedData;
 }
 
-function sortDataJSON(data: DataJSON, fieldName: string) {
-  const pivotField = data.raw_data.find((field) => field.field === fieldName);
+function sortDataJSON(data: DataJSON) {
+  const pivotField = data.raw_data.find((field) => field.field === "Timestamp");
 
-  if (!pivotField) {
-    error(`Pivot ${fieldName} is not found.`);
-    return;
+  if (pivotField) {
+    const time = pivotField.value as number[];
+    const sortedData = time
+      .map((pivotValue, index) => ({
+        index,
+        pivotValue,
+      }))
+      .sort((a, b) => a.pivotValue - b.pivotValue)
+      .map((pair) => pair.index);
+
+    data.raw_data.forEach((field) => {
+      field.value = sortedData.map((index) => field.value[index]);
+    });
   }
-
-  if (pivotField.value.length === 0) {
-    error(`Pivot ${fieldName} is empty.`);
-  }
-
-  const sortedData = pivotField.value
-    .map((pivotValue, index) => ({
-      index,
-      pivotValue,
-    }))
-    .sort((a, b) => a.pivotValue - b.pivotValue)
-    .map((pair) => pair.index);
-
-  data.raw_data.forEach((field) => {
-    field.value = sortedData.map((index) => field.value[index]);
-  });
 
   return data;
 }

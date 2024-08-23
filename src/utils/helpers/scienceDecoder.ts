@@ -110,7 +110,7 @@ export async function decode_science(files: File[]) {
         const decodedJson = decodeHAFX(
           combineHAFXjson(await Promise.all(promises))
         );
-        finalJson = combineDataJSON(finalJson, decodedJson);
+        finalJson = combineHAFXDataJSON(finalJson, decodedJson);
       } else if (fileArray.length != 0 && typedKey == "x123") {
         const promises = fileArray.map(async (file) => {
           const arrayBuffer = await file.arrayBuffer();
@@ -118,7 +118,7 @@ export async function decode_science(files: File[]) {
           const compressedData = await x123_python_decoder(buffer);
           return JSON.parse(compressedData.toString());
         });
-        finalJson = combineDataJSON(
+        finalJson = combineX123DataJSON(
           finalJson,
           decodeX123(combineX123json(await Promise.all(promises)))
         );
@@ -293,8 +293,8 @@ function decodeX123(X123Json: x123RawData[]) {
     statusArr.push(X123Json[i].status_b64);
   }
   const timestamp: RawDataJSON = {
-    type: "Timestamp",
-    field: "general",
+    type: "general",
+    field: "Timestamp",
     unit: "",
     value: timestampArr,
     data_type: "linear",
@@ -325,11 +325,43 @@ function decodeX123(X123Json: x123RawData[]) {
   return jsonData;
 }
 
-function combineDataJSON(data1: DataJSON, data2: DataJSON) {
+function combineHAFXDataJSON(data1: DataJSON, data2: DataJSON) {
   return {
     _id: "",
     processed_data: [...data1.processed_data, ...data2.processed_data],
     raw_data: [...data1.raw_data, ...data2.raw_data],
+  };
+}
+
+function combineX123DataJSON(data: DataJSON, x123Data: DataJSON) {
+  const dataTime = data.raw_data.find((field) => field.field === "Timestamp")
+    ?.value as number[];
+  const x123Time = x123Data.raw_data.find((field) => field.field === "Timestamp")
+    ?.value as number[];
+
+  const newData: (RawDataJSON | undefined)[] = x123Data.raw_data.map((row) => {
+    if (row.field !== "Timestamp") {
+      const newValue = dataTime.map((time) => {
+        const x123index = x123Time.indexOf(time);
+        return x123index !== -1 ? row.value[x123index] : null;
+      });
+      return {
+        type: row.type,
+        field: row.field,
+        unit: row.unit,
+        value: newValue,
+        data_type: row.data_type,
+      };
+    }
+  });
+
+  const filteredData: RawDataJSON[] = newData.filter(
+    (item): item is RawDataJSON => item !== undefined
+  );
+  return {
+    _id: "",
+    processed_data: [...data.processed_data, ...x123Data.processed_data],
+    raw_data: [...data.raw_data, ...filteredData],
   };
 }
 

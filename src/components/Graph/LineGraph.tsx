@@ -31,6 +31,7 @@ export class LineGraph extends React.Component<LineGraphProps> {
             line: {
               color: baselightTheme.palette.primary.main,
             },
+            connectgaps: true,
           },
         ]}
         layout={{
