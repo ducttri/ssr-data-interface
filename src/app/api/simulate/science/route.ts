@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i
+          time
         );
         archive.append(stdout, {
           name: `sim-x123-hist_${formattedDate}_0.bin.gz`,
@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i,
+          time,
           "c1"
         );
         archive.append(stdout, {
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i,
+          time,
           "c1"
         );
         archive.append(stdout, {
@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i,
+          time,
           "m1"
         );
         archive.append(stdout, {
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i,
+          time,
           "m5"
         );
         archive.append(stdout, {
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i,
+          time,
           "x1"
         );
         archive.append(stdout, {
@@ -93,13 +93,13 @@ export async function GET(req: NextRequest) {
           outputFilename,
           numPackets,
           secondsPerFile,
-          time + secondsPerFile * i
+          time
         );
         archive.append(stdout, {
           name: `sim-x123-hist_${formattedDate}_0.bin.gz`,
         });
       }
-      time += secondsPerFile * i;
+      time += secondsPerFile;
     }
 
     await new Promise<void>((resolve, reject) => {

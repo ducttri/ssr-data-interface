@@ -214,6 +214,6 @@ export interface RawDataJSON {
   type: string; // detector or general information such as health
   field: string; // field name such SIPM Operating Voltage
   unit: string; // unit such as Voltage
-  value: any[]; // Array of value
+  value: (number | string | null | number[])[]; // Array of value
   data_type: string; // Is this a 1D, 2D, 3D ...
 }

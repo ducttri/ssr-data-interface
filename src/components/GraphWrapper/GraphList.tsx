@@ -80,7 +80,11 @@ export default function GraphList({ data }: { data: DataJSON }) {
                           xData={utcDates}
                           yData={item.value}
                           xLabel={"Time"}
-                          yLabel={`${item.field} (${item.unit})`}
+                          yLabel={
+                            item.unit
+                              ? `${item.field} (${item.unit})`
+                              : `${item.field}`
+                          }
                           title={`${item.field} vs. Time`}
                         />
                       </Paper>

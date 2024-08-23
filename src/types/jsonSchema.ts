@@ -176,13 +176,24 @@ export const DataJSONSchema: JSONSchemaType<DataJSON> = {
             description: "Unit such as Voltage",
           },
           value: {
-            oneOf: [
-              { type: "array", items: { type: "number" } }, // Allows array of any type
-              {
-                type: "array",
-                items: { type: "array", items: { type: "number" } },
-              },
-            ],
+            // oneOf: [
+            //   { type: "array", items: { type: ["number", "null"] } }, // Allows array of any type
+            //   // { type: "array", items: { type: ["number", "null"] } }, // Allows array of any type
+            //   { type: "array", items: { type: "string" } }, // Allows array of any type
+            //   {
+            //     type: "array",
+            //     items: { type: "array", items: { type: "number" } },
+            //   },
+            // ],
+            type: "array",
+            items: {
+              oneOf: [
+                { type: "number" },
+                { type: "string" },
+                { type: "null", nullable: true },
+                { type: "array", items: { type: "number" } },
+              ],
+            },
             description: "Array of values",
           },
           data_type: {

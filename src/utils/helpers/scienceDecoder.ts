@@ -8,6 +8,12 @@ import {
 } from "@/types/types";
 import { error } from "console";
 
+interface x123RawData {
+  timestamp: number;
+  histogram: number[];
+  status_b64: string;
+}
+
 type detector = "c1" | "m1" | "m5" | "x1" | "x123" | "empty";
 
 interface hafxFieldName {
@@ -93,30 +99,40 @@ export async function decode_science(files: File[]) {
     if (Object.prototype.hasOwnProperty.call(fileList, key)) {
       const typedKey = key as keyof detectorList;
       const fileArray: File[] = fileList[typedKey];
-      if (fileArray.length != 0) {
+      if (fileArray.length != 0 && typedKey != "x123") {
         const promises = fileArray.map(async (file) => {
           const arrayBuffer = await file.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
-          const compressedData = await python_decoder(buffer, file.name);
+          const compressedData = await hafx_python_decoder(buffer, file.name);
           return JSON.parse(compressedData.toString());
         });
 
-        const decodedJson = decode(combine_json(await Promise.all(promises)));
+        const decodedJson = decodeHAFX(
+          combineHAFXjson(await Promise.all(promises))
+        );
         finalJson = combineDataJSON(finalJson, decodedJson);
+      } else if (fileArray.length != 0 && typedKey == "x123") {
+        const promises = fileArray.map(async (file) => {
+          const arrayBuffer = await file.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+          const compressedData = await x123_python_decoder(buffer);
+          return JSON.parse(compressedData.toString());
+        });
+        finalJson = combineDataJSON(
+          finalJson,
+          decodeX123(combineX123json(await Promise.all(promises)))
+        );
       }
     }
   }
-  // if (finalJson != undefined) {
-  //   const data = removeDuplicateTimestamps(finalJson);
-  //   if (areTimestampsEqual(data)) {
-  //     return data;
-  //   } else {
-  //     error("Files timestamp are not consistent");
-  //     return undefined;
-  //   }
-  // }
 
-  return sortDataJSON(finalJson, "Timestamp");
+  const data = removeDuplicateTimestamps(finalJson);
+  if (areTimestampsEqual(data)) {
+    return data;
+  } else {
+    error("Files timestamp are not consistent");
+    return undefined;
+  }
 }
 
 function hafx_python_decoder(file: Buffer, fileName: string): Promise<Buffer> {
@@ -146,14 +162,14 @@ function hafx_python_decoder(file: Buffer, fileName: string): Promise<Buffer> {
   });
 }
 
-function python_decoder(file: Buffer, fileName: string): Promise<Buffer> {
+function x123_python_decoder(file: Buffer): Promise<Buffer> {
   return new Promise(async (resolve, reject) => {
     const scriptPath = path.resolve(
       __dirname,
-      `../../../../../../lib/umn-detector-code/python/umndet/tools/decode_science_hafx.py`
+      `../../../../../../lib/umn-detector-code/python/umndet/tools/decode_science_x123.py`
     );
     const pythonProcess = exec(
-      `python3 ${scriptPath} ${fileName}`,
+      `python3 ${scriptPath}`,
       { encoding: "buffer" },
       (error, stdout, stderr) => {
         if (error) {
@@ -173,7 +189,7 @@ function python_decoder(file: Buffer, fileName: string): Promise<Buffer> {
   });
 }
 
-function combine_json(HAFXJson: HAFXScienceDecodedJSON[]) {
+function combineHAFXjson(HAFXJson: HAFXScienceDecodedJSON[]) {
   let combined: HAFXScienceDecodedJSON = {
     ch: { unit: "", value: [] },
     buffer_number: { unit: "", value: [] },
@@ -199,6 +215,26 @@ function combine_json(HAFXJson: HAFXScienceDecodedJSON[]) {
     }
   }
 
+  const pivotField = combined.timestamp;
+
+  const sortedData = pivotField.value
+    .map((pivotValue, index) => ({
+      index,
+      pivotValue,
+    }))
+    .sort((a, b) => a.pivotValue - b.pivotValue)
+    .map((pair) => pair.index);
+
+  for (const key in combined) {
+    if (Object.prototype.hasOwnProperty.call(combined, key)) {
+      const typedKey = key as keyof HAFXScienceDecodedJSON;
+
+      combined[typedKey].value = sortedData.map(
+        (index) => combined[typedKey].value[index]
+      );
+    }
+  }
+
   let output = combined.histogram.value[0].map((_: any, colIndex: number) =>
     combined.histogram.value.map((row) => row[colIndex])
   );
@@ -208,7 +244,19 @@ function combine_json(HAFXJson: HAFXScienceDecodedJSON[]) {
   return combined;
 }
 
-function decode(HAFXJson: HAFXScienceDecodedJSON) {
+function combineX123json(X123HJson: JSON[][]): x123RawData[] {
+  let returnJson: JSON[] = [];
+
+  for (let i = 0; i < X123HJson.length; i++) {
+    for (let j = 0; j < X123HJson[i].length; j++) {
+      returnJson.push(X123HJson[i][j]);
+    }
+  }
+
+  return returnJson as unknown as x123RawData[];
+}
+
+function decodeHAFX(HAFXJson: HAFXScienceDecodedJSON) {
   let exportJSON: DataJSON = {
     _id: "",
     processed_data: [],
@@ -232,6 +280,49 @@ function decode(HAFXJson: HAFXScienceDecodedJSON) {
   }
 
   return exportJSON;
+}
+
+function decodeX123(X123Json: x123RawData[]) {
+  let timestampArr: number[] = [];
+  let histogramArr: number[] = [];
+  let statusArr: string[] = [];
+
+  for (let i = 0; i < X123Json.length; i++) {
+    timestampArr.push(X123Json[i].timestamp * 1000);
+    histogramArr.push(X123Json[i].histogram.reduce((acc, cur) => acc + cur, 0));
+    statusArr.push(X123Json[i].status_b64);
+  }
+  const timestamp: RawDataJSON = {
+    type: "Timestamp",
+    field: "general",
+    unit: "",
+    value: timestampArr,
+    data_type: "linear",
+  };
+
+  const histogram: RawDataJSON = {
+    type: "x123",
+    field: "Histogram",
+    unit: "",
+    value: histogramArr,
+    data_type: "linear",
+  };
+
+  const status: RawDataJSON = {
+    type: "x123",
+    field: "Status",
+    unit: "",
+    value: statusArr,
+    data_type: "debug",
+  };
+
+  const jsonData: DataJSON = {
+    _id: "",
+    processed_data: [],
+    raw_data: [timestamp, histogram, status],
+  };
+
+  return jsonData;
 }
 
 function combineDataJSON(data1: DataJSON, data2: DataJSON) {
@@ -281,31 +372,4 @@ function areTimestampsEqual(data: { raw_data: any[] }): boolean {
   }
 
   return true;
-}
-
-function sortDataJSON(data: DataJSON, fieldName: string) {
-  const pivotField = data.raw_data.find((field) => field.field === fieldName);
-
-  if (!pivotField) {
-    error(`Pivot ${fieldName} is not found.`);
-    return;
-  }
-
-  if (pivotField.value.length === 0) {
-    error(`Pivot ${fieldName} is empty.`);
-  }
-
-  const sortedData = pivotField.value
-    .map((pivotValue, index) => ({
-      index,
-      pivotValue,
-    }))
-    .sort((a, b) => a.pivotValue - b.pivotValue)
-    .map((pair) => pair.index);
-
-  data.raw_data.forEach((field) => {
-    field.value = sortedData.map((index) => field.value[index]);
-  });
-
-  return data;
 }

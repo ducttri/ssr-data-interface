@@ -213,7 +213,7 @@ export default function QuickLook() {
           DataJSONSchema as JSONSchemaType<any>
         );
 
-        if (true) {
+        if (valid) {
           setData(json as unknown as DataJSON);
           setSuccess(true);
           setOpen(true);
