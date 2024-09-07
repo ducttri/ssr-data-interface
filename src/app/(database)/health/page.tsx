@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Typography } from "@mui/material";
-import HealthTable from "@/components/HealthTable/HealthTable";
+import HealthTable from "@/components/Table/HealthTable";
 import PageContainer from "@/components/Container/PageContainer";
 
 export default function Health() {
